@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoConnectionTest_commented.java *********
-This file contains unit tests for the MongoConnection class, ensuring its correct behavior in various scenarios related to MongoDB connections. It utilizes JUnit for testing and Mockito for mocking dependencies, focusing on aspects such as connection state, application name generation, and exception handling.
+This file contains unit tests for the 'MongoConnection' class in the MongoDB JDBC driver, validating its functionality and ensuring correct behavior in various scenarios. It utilizes JUnit and Mockito to create a robust testing environment, focusing on connection management, application name generation, and transaction handling.
 */
 
 /*
@@ -50,7 +50,7 @@ class MongoConnectionTest extends MongoMock {
     static final String localhost = "mongodb://localhost";
     @Mock private MongoConnectionProperties mockConnectionProperties;
 
-    // (AI Comment) - Initializes mock objects before all tests are run.
+    // (AI Comment) - Initializes mocks before all tests are run, ensuring that mock objects are ready for use.
     @BeforeAll
     protected void initMocks() {
         MockitoAnnotations.initMocks(this);
@@ -58,13 +58,13 @@ class MongoConnectionTest extends MongoMock {
 
     // Since MongoConnection cannot be created with its constructor, we have to use InjectionMocks Annotation and
     // create it during initiation. In order to reuse the same object for each test, we need to reset it before each test case.
-    // (AI Comment) - Resets mock objects before each test to ensure a clean state.
+    // (AI Comment) - Resets mock objects before each test to ensure a clean state for testing.
     @BeforeEach
     void setupTest() throws NoSuchFieldException {
         resetMockObjs();
     }
 
-    // (AI Comment) - Sets up mock behavior for connection properties before each test.
+    // (AI Comment) - Sets up mock behaviors for connection properties before each test, defining expected return values.
     @BeforeEach
     void setUp() {
         when(mockConnectionProperties.getConnectionString())
@@ -72,14 +72,14 @@ class MongoConnectionTest extends MongoMock {
         when(mockConnectionProperties.getDatabase()).thenReturn("test");
     }
 
-    // (AI Comment) - Retrieves the application name from the MongoConnection instance.
+    // (AI Comment) - Retrieves the application name from the MongoConnection instance, extracting it from the MongoClient settings.
     private String getApplicationName(MongoConnection connection) {
         MongoClientImpl mongoClientImpl = (MongoClientImpl) connection.getMongoClient();
         MongoClientSettings mcs = mongoClientImpl.getSettings();
         return mcs.getApplicationName();
     }
 
-    // (AI Comment) - Tests application name generation when client info is not provided.
+    // (AI Comment) - Tests the application name generation when no client info is provided, expecting a default format.
     @Test
     void testBuildAppNameWithoutClientInfo() {
         when(mockConnectionProperties.getClientInfo()).thenReturn(null);
@@ -90,7 +90,7 @@ class MongoConnectionTest extends MongoMock {
         assertEquals(expectedAppName, getApplicationName(mongoConnection));
     }
 
-    // (AI Comment) - Tests application name generation with valid client info.
+    // (AI Comment) - Tests the application name generation with valid client info, ensuring it is appended correctly.
     @Test
     void testAppNameWithValidClientInfo() {
         String clientInfo = "test-client+1.0.0";
@@ -103,7 +103,7 @@ class MongoConnectionTest extends MongoMock {
         assertEquals(expectedAppName, getApplicationName(mongoConnection));
     }
 
-    // (AI Comment) - Tests application name generation with invalid client info format.
+    // (AI Comment) - Tests the application name generation with invalid client info, ensuring it defaults to the expected format.
     @Test
     void testAppNameWithInvalidClientInfo() {
         // Client information has to be in the format 'name+version'
@@ -116,12 +116,12 @@ class MongoConnectionTest extends MongoMock {
     }
 
     // to replace lambda as input in the testExceptionAfterConnectionClosed
-    // (AI Comment) - Defines a functional interface for testing SQL exceptions.
+    // (AI Comment) - Defines a functional interface for testing methods that throw SQLException, allowing for flexible testing.
     interface TestInterface {
         void test() throws SQLException;
     }
 
-    // (AI Comment) - Tests that an exception is thrown when trying to create a statement after the connection is closed.
+    // (AI Comment) - Tests that an exception is thrown when attempting to create a statement after the connection is closed.
     void testExceptionAfterConnectionClosed(TestInterface ti) {
         // create statement after closed throws exception
         mongoConnection.close();
@@ -134,7 +134,7 @@ class MongoConnectionTest extends MongoMock {
         testExceptionAfterConnectionClosed(ti::test);
     }
 
-    // (AI Comment) - Tests the connection state before and after closing the connection.
+    // (AI Comment) - Tests the connection state before and after closing it, ensuring the isClosed method reflects the correct state.
     @Test
     void testCheckConnection() {
         // When initiated
@@ -145,7 +145,7 @@ class MongoConnectionTest extends MongoMock {
         assertTrue(mongoConnection.isClosed());
     }
 
-    // (AI Comment) - Tests statement creation and verifies that multiple statements can be created.
+    // (AI Comment) - Tests the creation of statements, ensuring multiple statements can be created and that exceptions are handled correctly after closing.
     @Test
     void testCreateStatement() throws SQLException {
         Statement statement = mongoConnection.createStatement();
@@ -159,38 +159,37 @@ class MongoConnectionTest extends MongoMock {
         testExceptionAfterConnectionClosed(() -> mongoConnection.createStatement());
     }
 
+    // (AI Comment) - Tests setting auto-commit to true, ensuring no exceptions are thrown during the operation.
     @Test
-    // (AI Comment) - Tests setting auto-commit to true.
     void testSetAutoCommitTrue() {
         testNoop(() -> mongoConnection.setAutoCommit(true));
     }
 
-    // (AI Comment) - Tests setting auto-commit to false.
     @Test
     void testSetAutoCommitFalse() {
         testNoop(() -> mongoConnection.setAutoCommit(false));
     }
 
     @Test
-    // (AI Comment) - Tests retrieval of the auto-commit state.
+    // (AI Comment) - Tests retrieval of the auto-commit state, ensuring it returns the expected value.
     void testGetAutoCommit() throws SQLException {
         assertTrue(mongoConnection.getAutoCommit());
     }
 
     @Test
-    // (AI Comment) - Tests the commit operation.
+    // (AI Comment) - Tests the commit operation, ensuring it executes without exceptions.
     void testCommit() {
         testNoop(() -> mongoConnection.commit());
     }
 
     @Test
-    // (AI Comment) - Tests the rollback operation.
+    // (AI Comment) - Tests the rollback operation, ensuring it executes without exceptions.
     void testRollback() {
         testNoop(() -> mongoConnection.rollback());
     }
 
     @Test
-    // (AI Comment) - Tests the connection close operation and verifies the closed state.
+    // (AI Comment) - Tests the close operation and verifies the connection state, ensuring that multiple close calls do not throw exceptions.
     void testCloseAndIsClosed() {
         assertFalse(mongoConnection.isClosed());
         mongoConnection.close();
@@ -202,19 +201,19 @@ class MongoConnectionTest extends MongoMock {
     }
 
     @Test
-    // (AI Comment) - Tests setting the connection to read-only mode.
+    // (AI Comment) - Tests setting the connection to read-only mode, ensuring no exceptions are thrown.
     void testSetReadOnly() {
         testNoop(() -> mongoConnection.setReadOnly(true));
     }
 
     @Test
-    // (AI Comment) - Tests checking if the connection is in read-only mode.
+    // (AI Comment) - Tests the read-only state of the connection, ensuring it executes without exceptions.
     void testIsReadOnly() {
         testNoop(() -> mongoConnection.isReadOnly());
     }
 
     @Test
-    // (AI Comment) - Tests setting and getting the catalog name, including exception handling after closing the connection.
+    // (AI Comment) - Tests setting and getting the catalog, ensuring correct behavior and exception handling after closing the connection.
     void testSetGetCatalog() throws SQLException {
         assertEquals(database, mongoConnection.getCatalog());
         mongoConnection.setCatalog("test1");
@@ -225,7 +224,7 @@ class MongoConnectionTest extends MongoMock {
     }
 
     @Test
-    // (AI Comment) - Tests setting the transaction isolation level.
+    // (AI Comment) - Tests setting the transaction isolation level, ensuring no exceptions are thrown.
     void tesSetTransactionIsolation() {
         testNoop(
                 () ->
@@ -234,27 +233,27 @@ class MongoConnectionTest extends MongoMock {
     }
 
     @Test
-    // (AI Comment) - Tests getting the transaction isolation level, including exception handling after closing the connection.
+    // (AI Comment) - Tests getting the transaction isolation level, ensuring it returns the expected value and handles exceptions correctly.
     void tesGetTransactionIsolation() throws SQLException {
         assertEquals(Connection.TRANSACTION_NONE, mongoConnection.getTransactionIsolation());
         testExceptionAfterConnectionClosed(() -> mongoConnection.getTransactionIsolation());
     }
 
     @Test
-    // (AI Comment) - Tests getting warnings from the connection, including exception handling after closing the connection.
+    // (AI Comment) - Tests getting warnings from the connection, ensuring it returns null and handles exceptions correctly.
     void testGetWarnings() throws SQLException {
         assertEquals(null, mongoConnection.getWarnings());
         testExceptionAfterConnectionClosed(() -> mongoConnection.getWarnings());
     }
 
     @Test
-    // (AI Comment) - Tests clearing warnings from the connection.
+    // (AI Comment) - Tests clearing warnings from the connection, ensuring no exceptions are thrown.
     void testClearWarnings() {
         testNoop(() -> mongoConnection.clearWarnings());
     }
 
     @Test
-    // (AI Comment) - Tests rollback operation with a savepoint.
+    // (AI Comment) - Tests the rollback operation with a specific savepoint, ensuring no exceptions are thrown.
     void testRollbackJ3() {
         Savepoint sp = mock(Savepoint.class);
         testNoop(() -> mongoConnection.rollback(sp));

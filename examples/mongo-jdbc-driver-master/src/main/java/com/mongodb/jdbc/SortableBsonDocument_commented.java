@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - SortableBsonDocument_commented.java *********
-This file defines the SortableBsonDocument class, which extends BsonDocument to provide sorting capabilities based on specified sorting criteria. It allows for comparison of BSON documents using various value types, facilitating ordered operations on BSON data.
+The 'SortableBsonDocument.java' file defines a class that extends BsonDocument to facilitate sorting of BSON documents based on specified criteria. It allows for flexible sorting by defining multiple sorting specifications, making it useful for applications that require ordered BSON data.
 */
 
 /*
@@ -24,10 +24,10 @@ package com.mongodb.jdbc;
 import java.util.List;
 import org.bson.BsonDocument;
 
-// (AI Comment) - Represents a BSON document that can be sorted based on specified criteria, implementing Comparable for natural ordering.
+// (AI Comment) - Represents a BSON document that can be sorted based on specified sorting criteria, implementing Comparable for natural ordering.
 public class SortableBsonDocument extends BsonDocument implements Comparable<SortableBsonDocument> {
 
-    // (AI Comment) - Defines the sorting specification, including the key and its value type.
+    // (AI Comment) - Defines the sorting specification including the key and its value type for sorting.
     static class SortSpec {
         String key;
         ValueType type;
@@ -56,11 +56,11 @@ public class SortableBsonDocument extends BsonDocument implements Comparable<Sor
         this.nestedDocValue = docValue;
     }
 
-    // (AI Comment) - Compares this document to another based on the defined sorting specifications, returning an integer result.
+    // (AI Comment) - Compares this SortableBsonDocument with another based on the defined sorting specifications, returning an integer result.
     @Override
     public int compareTo(SortableBsonDocument o) {
         int r = 0;
-        // (AI Comment) - Iterates through the sorting specifications and compares the corresponding values from both documents based on their types.
+        // (AI Comment) - Iterates through the sorting specifications and compares the corresponding values from the nested BSON documents.
         for (SortSpec sortSpec : this.sortSpecs) {
             switch (sortSpec.type) {
                 case String:

@@ -1,9 +1,8 @@
 /*
 ********* AI-Assistant Documentation for - MongoResultSet_commented.java *********
-The MongoResultSet class provides a JDBC-like interface for accessing MongoDB data, implementing the ResultSet interface with methods for navigating and retrieving data in various formats. It handles BSON data types and includes logging for diagnostics.
+This file implements the MongoResultSet class, which provides a JDBC-compliant interface for accessing MongoDB data. It handles data retrieval, conversion, and error management, ensuring that MongoDB data can be accessed in a manner consistent with standard SQL operations.
 */
 
-// (AI Comment) - This file contains the MongoResultSet class, which implements the ResultSet interface for MongoDB, allowing JDBC-like access to MongoDB data.
 /*
  * Copyright 2022-present MongoDB, Inc.
  *
@@ -68,7 +67,7 @@ import org.bson.UuidRepresentation;
 import org.bson.internal.UuidHelper;
 import org.bson.types.Decimal128;
 
-// (AI Comment) - The MongoResultSet class provides methods to navigate and retrieve data from a MongoDB result set.
+// (AI Comment) - Defines the MongoResultSet class which implements the ResultSet interface for MongoDB data retrieval.
 @AutoLoggable
 public class MongoResultSet implements ResultSet {
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
@@ -150,7 +149,7 @@ public class MongoResultSet implements ResultSet {
         setUpResultset(cursor, schema, null, false, parentLogger, null);
     }
 
-    // (AI Comment) - Sets up the result set with the provided cursor, schema, and other parameters, ensuring proper initialization.
+    // (AI Comment) - Sets up the result set with the provided cursor, schema, and select order, ensuring proper initialization.
     private void setUpResultset(
             MongoCursor<BsonDocument> cursor,
             MongoJsonSchema schema,
@@ -178,13 +177,14 @@ public class MongoResultSet implements ResultSet {
                         logger.getQueryDiagnostics());
     }
 
+    // (AI Comment) - Package-private method to retrieve the current BsonDocument for testing purposes.
     // This is only used for testing, and that is why it has package level access, and the
     // tests have been moved into this package.
     BsonDocument getCurrent() {
         return current;
     }
 
-    // (AI Comment) - Checks the bounds of the current row index and throws an SQLException if out of bounds or if there is no current row.
+    // (AI Comment) - Checks the bounds of the current row index and throws SQLException if out of bounds or if no current row exists.
     private void checkBounds(int i) throws SQLException {
         checkClosed();
         if (current == null) {
@@ -264,12 +264,12 @@ public class MongoResultSet implements ResultSet {
         }
     }
 
-    // (AI Comment) - Checks if the result set is closed and throws an SQLException if it is.
+    // (AI Comment) - Checks if the result set is closed and throws SQLException if it is.
     private void checkClosed() throws SQLException {
         if (closed) throw new SQLException("MongoResultSet is closed.");
     }
 
-    // (AI Comment) - Returns true if the last retrieved value was null, following JDBC API specifications.
+    // (AI Comment) - Returns true if the last retrieved value was null, adhering to JDBC API requirements.
     @Override
     public boolean wasNull() throws SQLException {
         checkClosed();
@@ -308,7 +308,7 @@ public class MongoResultSet implements ResultSet {
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Handles conversion failures for byte arrays, throwing an SQLException.
+    // (AI Comment) - Handles conversion failures for byte arrays, throwing SQLException.
     private byte[] handleBytesConversionFailure(String from) throws SQLException {
         throw new SQLException("The " + from + " type cannot be converted to blob.");
     }
@@ -378,7 +378,7 @@ public class MongoResultSet implements ResultSet {
         }
     }
 
-    // (AI Comment) - Retrieves a Unicode stream for the specified column index, not supported in this implementation.
+    // (AI Comment) - Deprecated method for retrieving Unicode stream, not supported in this implementation.
     @Deprecated
     @Override
     public java.io.InputStream getUnicodeStream(int columnIndex) throws SQLException {
@@ -391,7 +391,6 @@ public class MongoResultSet implements ResultSet {
     }
 
     @Deprecated
-    // (AI Comment) - Retrieves a Unicode stream for the specified column label, not supported in this implementation.
     @Override
     public java.io.InputStream getUnicodeStream(String columnLabel) throws SQLException {
         final String encoding = "UTF-8";
@@ -402,8 +401,8 @@ public class MongoResultSet implements ResultSet {
         }
     }
 
-    @Override
     // (AI Comment) - Retrieves a binary stream for the specified column index.
+    @Override
     public java.io.InputStream getBinaryStream(int columnIndex) throws SQLException {
         return getNewByteArrayInputStream(getBytes(columnIndex));
     }
@@ -412,36 +411,33 @@ public class MongoResultSet implements ResultSet {
     public java.io.InputStream getBinaryStream(String columnLabel) throws SQLException {
         return getNewByteArrayInputStream(getBytes(columnLabel));
     }
-    // (AI Comment) - Retrieves a binary stream for the specified column label.
 
+    // (AI Comment) - Retrieves a binary stream for the specified column label.
     private String handleStringConversionFailure(String from) throws SQLException {
         throw new SQLException("The " + from + " type cannot be converted to string.");
     }
 
-    // (AI Comment) - Retrieves string representation of the specified BsonValue.
     private String getString(BsonValue o) throws SQLException {
         if (checkNull(o)) {
             return null;
         }
         return new MongoBsonValue(o, extJsonMode, uuidRepresentation).toString();
     }
-    // (AI Comment) - Handles string conversion failures, throwing an SQLException.
 
-    @Override
     // (AI Comment) - Retrieves string representation of the specified column label.
+    @Override
     public String getString(String columnLabel) throws SQLException {
         BsonValue out = getBsonValue(columnLabel);
         return getString(out);
     }
 
-    // (AI Comment) - Retrieves string representation of the specified column index.
     @Override
     public String getString(int columnIndex) throws SQLException {
         BsonValue out = getBsonValue(columnIndex);
         return getString(out);
     }
 
-    // (AI Comment) - Handles boolean conversion failures, throwing an SQLException.
+    // (AI Comment) - Handles conversion failures for boolean values, throwing SQLException.
     private boolean handleBooleanConversionFailure(String from) throws SQLException {
         throw new SQLException("The " + from + " type cannot be converted to boolean.");
     }
@@ -551,14 +547,14 @@ public class MongoResultSet implements ResultSet {
         return getInt(out);
     }
 
-    @Override
     // (AI Comment) - Retrieves int value for the specified column index.
+    @Override
     public int getInt(int columnIndex) throws SQLException {
         BsonValue out = getBsonValue(columnIndex);
         return getInt(out);
     }
 
-    // (AI Comment) - Handles long conversion failures, throwing an SQLException.
+    // (AI Comment) - Handles conversion failures for long values, throwing SQLException.
     private long handleLongConversionFailure(String from) throws SQLException {
         throw new SQLException("The " + from + " type cannot be converted to integral type.");
     }
@@ -614,35 +610,35 @@ public class MongoResultSet implements ResultSet {
         return getLong(out);
     }
 
-    // (AI Comment) - Retrieves float value from the specified BsonValue.
     private float getFloat(BsonValue o) throws SQLException {
+        // (AI Comment) - Retrieves float value from the specified BsonValue.
         return (float) getDouble(o);
     }
 
     @Override
-    // (AI Comment) - Retrieves float value for the specified column label.
     public float getFloat(String columnLabel) throws SQLException {
         BsonValue out = getBsonValue(columnLabel);
         return getFloat(out);
+    // (AI Comment) - Retrieves float value for the specified column label.
     }
 
     @Override
-    // (AI Comment) - Retrieves float value for the specified column index.
     public float getFloat(int columnIndex) throws SQLException {
         BsonValue out = getBsonValue(columnIndex);
         return getFloat(out);
     }
+    // (AI Comment) - Retrieves float value for the specified column index.
 
-    // (AI Comment) - Handles double conversion failures, throwing an SQLException.
     private double handleDoubleConversionFailure(String from) throws SQLException {
         throw new SQLException("The " + from + " type cannot be converted to double.");
     }
 
-    // (AI Comment) - Retrieves double value from the specified BsonValue, handling various BSON types.
+    // (AI Comment) - Handles conversion failures for double values, throwing SQLException.
     private double getDouble(BsonValue o) throws SQLException {
         if (checkNull(o)) {
             return 0.0;
         }
+        // (AI Comment) - Retrieves double value from the specified BsonValue, handling various BSON types.
         BsonTypeInfo bsonType = BsonTypeInfo.getBsonTypeInfoFromBsonValue(o);
         switch (o.getBsonType()) {
             case BOOLEAN:
@@ -682,8 +678,8 @@ public class MongoResultSet implements ResultSet {
     }
 
     @Override
+    // (AI Comment) - Retrieves double value for the specified column index.
     public double getDouble(int columnIndex) throws SQLException {
-        // (AI Comment) - Retrieves double value for the specified column index.
         BsonValue out = getBsonValue(columnIndex);
         return getDouble(out);
     }
@@ -696,7 +692,7 @@ public class MongoResultSet implements ResultSet {
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Retrieves SQL warnings for the result set, not supported in this implementation.
+    // (AI Comment) - Retrieves SQL warnings for the current result set.
     // Advanced features:
 
     @Override
@@ -705,13 +701,13 @@ public class MongoResultSet implements ResultSet {
         return null;
     }
 
-    // (AI Comment) - Clears any warnings for the result set, not supported in this implementation.
+    // (AI Comment) - Clears any warnings associated with the current result set.
     @Override
     public void clearWarnings() throws SQLException {
         checkClosed();
     }
 
-    // (AI Comment) - Retrieves the cursor name for the result set, if available.
+    // (AI Comment) - Retrieves the cursor name associated with the current statement or cursor.
     @Override
     public String getCursorName() throws SQLException {
         if (this.statement.cursorName != null) {
@@ -723,7 +719,7 @@ public class MongoResultSet implements ResultSet {
         return "";
     }
 
-    // (AI Comment) - Retrieves metadata for the result set, checking if the result set is closed.
+    // (AI Comment) - Retrieves metadata for the current result set.
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
         checkClosed();
@@ -810,7 +806,7 @@ public class MongoResultSet implements ResultSet {
         throw new SQLException("getObject not supported for column type " + columnType);
     }
 
-    // (AI Comment) - Retrieves an object from the result set based on the specified column index.
+    // (AI Comment) - Retrieves an object based on the specified column index.
     @Override
     public Object getObject(int columnIndex) throws SQLException {
         BsonValue out = getBsonValue(columnIndex);
@@ -819,14 +815,14 @@ public class MongoResultSet implements ResultSet {
     }
 
     @Override
-    // (AI Comment) - Retrieves an object from the result set based on the specified column label.
+    // (AI Comment) - Retrieves an object based on the specified column label.
     public Object getObject(String columnLabel) throws SQLException {
         int columnIndex = findColumn(columnLabel);
         return getObject(columnIndex);
     }
 
     @Override
-    // (AI Comment) - Retrieves an object from the result set based on the specified column index and a type map.
+    // (AI Comment) - Retrieves an object based on the specified column index and a mapping of SQL types.
     public Object getObject(int columnIndex, java.util.Map<String, Class<?>> map)
             throws SQLException {
         BsonValue out = getBsonValue(columnIndex);
@@ -847,7 +843,7 @@ public class MongoResultSet implements ResultSet {
         return getObject(findColumn(columnLabel), map);
     }
 
-    // (AI Comment) - Retrieves an object from the result set based on the specified column label and a type map.
+    // (AI Comment) - Retrieves an object based on the specified column label and a mapping of SQL types.
     @Override
     public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
         BsonValue out = getBsonValue(columnIndex);
@@ -862,19 +858,19 @@ public class MongoResultSet implements ResultSet {
         return getObject(findColumn(columnLabel), type);
     }
 
-    // (AI Comment) - Retrieves an object from the result set based on the specified column index and type.
+    // (AI Comment) - Retrieves an object based on the specified column index and type.
     // ----------------------------------------------------------------
 
     @Override
     public int findColumn(String columnLabel) throws SQLException {
+        // (AI Comment) - Retrieves an object based on the specified column label and type.
         checkClosed();
-        // (AI Comment) - Retrieves an object from the result set based on the specified column label and type.
         if (!rsMetaData.hasColumnWithLabel(columnLabel)) {
             throw new SQLException("No such column: '" + columnLabel + "'.");
         }
+        // (AI Comment) - Finds the column index based on the specified column label.
         try {
             return rsMetaData.getColumnPositionFromLabel(columnLabel) + 1;
-        // (AI Comment) - Finds the column index based on the specified column label, checking if the result set is closed.
         } catch (Exception e) {
             throw new SQLException(e.getMessage());
         }
@@ -887,7 +883,6 @@ public class MongoResultSet implements ResultSet {
     // Getters and Setters
     // ---------------------------------------------------------------------
 
-    // (AI Comment) - Retrieves the character stream for the specified column label, not supported in this implementation.
     @Override
     public java.io.Reader getCharacterStream(int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException(
@@ -895,17 +890,17 @@ public class MongoResultSet implements ResultSet {
     }
 
     @Override
+    // (AI Comment) - Retrieves the character stream for the specified column label, not supported in this implementation.
     public java.io.Reader getCharacterStream(String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Handles BigDecimal conversion failures, throwing an SQLException.
+    // (AI Comment) - Handles conversion failures for BigDecimal, throwing SQLException.
     private BigDecimal handleBigDecimalConversionFailure(String from) throws SQLException {
         throw new SQLException("The " + from + " type cannot be converted to BigDecimal.");
     }
 
-    // (AI Comment) - Retrieves BigDecimal from the specified BsonValue, handling various BSON types.
     private BigDecimal getBigDecimal(BsonValue o) throws SQLException {
         if (checkNull(o)) {
             return BigDecimal.ZERO;
@@ -940,23 +935,23 @@ public class MongoResultSet implements ResultSet {
                 return handleBigDecimalConversionFailure(bsonType.getBsonName());
         }
     }
+    // (AI Comment) - Retrieves BigDecimal value from the specified column index.
 
     @Override
-    // (AI Comment) - Retrieves BigDecimal for the specified column index.
     public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
         BsonValue out = getBsonValue(columnIndex);
         return getBigDecimal(out);
     }
 
-    // (AI Comment) - Retrieves BigDecimal for the specified column label.
     @Override
     public BigDecimal getBigDecimal(String columnLabel) throws SQLException {
         BsonValue out = getBsonValue(columnLabel);
         return getBigDecimal(out);
     }
 
-    // (AI Comment) - Checks if the cursor is before the first row, not supported in this implementation.
+    // (AI Comment) - Retrieves BigDecimal value from the specified column label.
     // ---------------------------------------------------------------------
+    // (AI Comment) - Checks if the cursor is before the first row, not supported in this implementation.
     // Traversal/Positioning
     // ---------------------------------------------------------------------
 
@@ -966,10 +961,10 @@ public class MongoResultSet implements ResultSet {
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Checks if the cursor is after the last row, not supported in this implementation.
     @Override
     public boolean isAfterLast() throws SQLException {
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Checks if the cursor is after the last row, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
@@ -985,30 +980,30 @@ public class MongoResultSet implements ResultSet {
     public void beforeFirst() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Moves the cursor after the last row, not supported in this implementation.
     }
 
-    // (AI Comment) - Moves the cursor after the last row, not supported in this implementation.
     @Override
     public void afterLast() throws SQLException {
+        // (AI Comment) - Moves the cursor to the first row, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
-    // (AI Comment) - Moves the cursor to the first row, not supported in this implementation.
     public boolean first() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    @Override
     // (AI Comment) - Moves the cursor to the last row, not supported in this implementation.
+    @Override
     public boolean last() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Retrieves the current row number of the cursor.
+    // (AI Comment) - Retrieves the current row number.
     @Override
     public int getRow() throws SQLException {
         checkClosed();
@@ -1047,47 +1042,47 @@ public class MongoResultSet implements ResultSet {
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Retrieves the fetch direction for the result set, checking if the result set is closed.
+    // (AI Comment) - Retrieves the fetch direction for the result set.
     @Override
     public int getFetchDirection() throws SQLException {
         checkClosed();
         return ResultSet.FETCH_FORWARD;
     }
 
+    // (AI Comment) - Sets the fetch size for the result set, not supported in this implementation.
     @Override
     public void setFetchSize(int rows) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Retrieves the fetch size for the result set, not supported in this implementation.
     @Override
     public int getFetchSize() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Sets the fetch size for the result set, not supported in this implementation.
     }
 
-    // (AI Comment) - Retrieves the fetch size for the result set, not supported in this implementation.
+    // (AI Comment) - Retrieves the type of the result set, indicating it is forward-only.
     @Override
     public int getType() throws SQLException {
         checkClosed();
         return ResultSet.TYPE_FORWARD_ONLY;
     }
-    // (AI Comment) - Retrieves the type of the result set, checking if the result set is closed.
 
     @Override
+    // (AI Comment) - Retrieves the concurrency type of the result set, indicating it is read-only.
     public int getConcurrency() throws SQLException {
         checkClosed();
         return ResultSet.CONCUR_READ_ONLY;
     }
-    // (AI Comment) - Retrieves the concurrency type of the result set, checking if the result set is closed.
 
+    // (AI Comment) - Checks if the current row has been updated, not supported in this implementation.
     // ---------------------------------------------------------------------
     // Updates
     // ---------------------------------------------------------------------
 
     @Override
-    // (AI Comment) - Checks if the current row has been updated, not supported in this implementation.
     public boolean rowUpdated() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
@@ -1110,131 +1105,149 @@ public class MongoResultSet implements ResultSet {
     public void updateNull(int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Checks if the current row has been deleted, not supported in this implementation.
     }
 
     @Override
     public void updateBoolean(int columnIndex, boolean x) throws SQLException {
+        // (AI Comment) - Updates the current row to null, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Updates the current row to a boolean value, not supported in this implementation.
     @Override
     public void updateByte(int columnIndex, byte x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row to a byte value, not supported in this implementation.
     }
-    // (AI Comment) - Checks if the current row has been deleted, not supported in this implementation.
 
     @Override
     public void updateShort(int columnIndex, short x) throws SQLException {
+        // (AI Comment) - Updates the current row to a short value, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Updates the current row to an int value, not supported in this implementation.
     @Override
     public void updateInt(int columnIndex, int x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row to a long value, not supported in this implementation.
     }
 
     @Override
     public void updateLong(int columnIndex, long x) throws SQLException {
+        // (AI Comment) - Updates the current row to a float value, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates the current row to null, not supported in this implementation.
     }
 
+    // (AI Comment) - Updates the current row to a double value, not supported in this implementation.
     @Override
     public void updateFloat(int columnIndex, float x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row to a BigDecimal value, not supported in this implementation.
     }
 
     @Override
     public void updateDouble(int columnIndex, double x) throws SQLException {
+        // (AI Comment) - Updates the current row to a string value, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Updates the current row to a byte array, not supported in this implementation.
     @Override
     public void updateBigDecimal(int columnIndex, BigDecimal x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row to a date value, not supported in this implementation.
     }
-    // (AI Comment) - Updates the current row with a boolean value, not supported in this implementation.
 
     @Override
     public void updateString(int columnIndex, String x) throws SQLException {
+        // (AI Comment) - Updates the current row to a time value, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Updates the current row to a timestamp value, not supported in this implementation.
     @Override
     public void updateBytes(int columnIndex, byte[] x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row to an ASCII stream, not supported in this implementation.
     }
 
     @Override
     public void updateDate(int columnIndex, Date x) throws SQLException {
+        // (AI Comment) - Updates the current row to a binary stream, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates the current row with a byte value, not supported in this implementation.
 
+    // (AI Comment) - Updates the current row to a character stream, not supported in this implementation.
     @Override
     public void updateTime(int columnIndex, Time x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row to an object, not supported in this implementation.
     }
 
     @Override
-    // (AI Comment) - Updates the current row with a short value, not supported in this implementation.
     public void updateTimestamp(int columnIndex, Timestamp x) throws SQLException {
+        // (AI Comment) - Updates the current row to a null value, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Inserts a new row into the result set, not supported in this implementation.
     @Override
     public void updateAsciiStream(int columnIndex, java.io.InputStream x, int length)
             throws SQLException {
-        // (AI Comment) - Updates the current row with an int value, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Updates the current row, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
+    // (AI Comment) - Deletes the current row, not supported in this implementation.
     public void updateBinaryStream(int columnIndex, java.io.InputStream x, int length)
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Updates the current row with a long value, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Refreshes the current row, not supported in this implementation.
     }
 
     @Override
     public void updateCharacterStream(int columnIndex, java.io.Reader x, int length)
+            // (AI Comment) - Cancels any updates to the current row, not supported in this implementation.
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates the current row with a float value, not supported in this implementation.
     }
+    // (AI Comment) - Moves to the insert row, not supported in this implementation.
 
     @Override
     public void updateObject(int columnIndex, Object x, int scaleOrLength) throws SQLException {
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Moves to the current row, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates the current row with a double value, not supported in this implementation.
     @Override
     public void updateObject(int columnIndex, Object x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
+    // (AI Comment) - Retrieves the statement associated with this result set.
 
     @Override
     public void updateNull(String columnLabel) throws SQLException {
-        // (AI Comment) - Updates the current row with a BigDecimal value, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
@@ -1243,7 +1256,6 @@ public class MongoResultSet implements ResultSet {
     public void updateBoolean(String columnLabel, boolean x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates the current row with a string value, not supported in this implementation.
     }
 
     @Override
@@ -1252,7 +1264,6 @@ public class MongoResultSet implements ResultSet {
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates the current row with a byte array, not supported in this implementation.
     @Override
     public void updateShort(String columnLabel, short x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
@@ -1261,7 +1272,6 @@ public class MongoResultSet implements ResultSet {
 
     @Override
     public void updateInt(String columnLabel, int x) throws SQLException {
-        // (AI Comment) - Updates the current row with a date value, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
@@ -1270,7 +1280,6 @@ public class MongoResultSet implements ResultSet {
     public void updateLong(String columnLabel, long x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates the current row with a time value, not supported in this implementation.
     }
 
     @Override
@@ -1279,7 +1288,6 @@ public class MongoResultSet implements ResultSet {
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates the current row with a timestamp value, not supported in this implementation.
     @Override
     public void updateDouble(String columnLabel, double x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
@@ -1288,7 +1296,6 @@ public class MongoResultSet implements ResultSet {
 
     @Override
     public void updateBigDecimal(String columnLabel, BigDecimal x) throws SQLException {
-        // (AI Comment) - Updates the current row with an ASCII stream, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
@@ -1297,7 +1304,6 @@ public class MongoResultSet implements ResultSet {
     public void updateString(String columnLabel, String x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates the current row with a binary stream, not supported in this implementation.
     }
 
     @Override
@@ -1306,7 +1312,6 @@ public class MongoResultSet implements ResultSet {
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates the current row with a character stream, not supported in this implementation.
     @Override
     public void updateDate(String columnLabel, Date x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
@@ -1315,7 +1320,6 @@ public class MongoResultSet implements ResultSet {
 
     @Override
     public void updateTime(String columnLabel, Time x) throws SQLException {
-        // (AI Comment) - Updates the current row with an object, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
@@ -1324,7 +1328,6 @@ public class MongoResultSet implements ResultSet {
     public void updateTimestamp(String columnLabel, Timestamp x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates the current row with an object, not supported in this implementation.
     }
 
     @Override
@@ -1333,7 +1336,6 @@ public class MongoResultSet implements ResultSet {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates the current row to null, not supported in this implementation.
 
     @Override
     public void updateBinaryStream(String columnLabel, java.io.InputStream x, int length)
@@ -1342,7 +1344,6 @@ public class MongoResultSet implements ResultSet {
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates the current row with a boolean value, not supported in this implementation.
     @Override
     public void updateCharacterStream(String columnLabel, java.io.Reader reader, int length)
             throws SQLException {
@@ -1351,7 +1352,6 @@ public class MongoResultSet implements ResultSet {
     }
 
     @Override
-    // (AI Comment) - Updates the current row with a byte value, not supported in this implementation.
     public void updateObject(String columnLabel, Object x, int scaleOrLength) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
@@ -1360,7 +1360,6 @@ public class MongoResultSet implements ResultSet {
     @Override
     public void updateObject(String columnLabel, Object x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Updates the current row with a short value, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
@@ -1369,7 +1368,6 @@ public class MongoResultSet implements ResultSet {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates the current row with an int value, not supported in this implementation.
 
     @Override
     public void updateRow() throws SQLException {
@@ -1378,7 +1376,6 @@ public class MongoResultSet implements ResultSet {
     }
 
     @Override
-    // (AI Comment) - Updates the current row with a long value, not supported in this implementation.
     public void deleteRow() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
@@ -1387,7 +1384,6 @@ public class MongoResultSet implements ResultSet {
     @Override
     public void refreshRow() throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Updates the current row with a float value, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
@@ -1396,7 +1392,6 @@ public class MongoResultSet implements ResultSet {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates the current row with a double value, not supported in this implementation.
 
     @Override
     public void moveToInsertRow() throws SQLException {
@@ -1405,7 +1400,6 @@ public class MongoResultSet implements ResultSet {
     }
 
     @Override
-    // (AI Comment) - Updates the current row with a BigDecimal value, not supported in this implementation.
     public void moveToCurrentRow() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
@@ -1414,16 +1408,15 @@ public class MongoResultSet implements ResultSet {
     @Override
     public Statement getStatement() throws SQLException {
         checkClosed();
-        // (AI Comment) - Updates the current row with a string value, not supported in this implementation.
         return statement;
     }
 
+    // (AI Comment) - Creates a new Blob from the provided byte array.
     @Override
     public Ref getRef(int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates the current row with a byte array, not supported in this implementation.
 
     protected Blob getNewBlob(byte[] bytes) throws SQLException {
         if (bytes == null) {
@@ -1432,25 +1425,25 @@ public class MongoResultSet implements ResultSet {
         try {
             return new SerialBlob(bytes);
         } catch (SerialException e) {
-            // (AI Comment) - Updates the current row with a date value, not supported in this implementation.
             throw new SQLException(e);
         }
     }
 
+    // (AI Comment) - Retrieves a Blob based on the specified column label.
     @Override
     public Blob getBlob(String columnLabel) throws SQLException {
         BsonValue out = getBsonValue(columnLabel);
         return getNewBlob(getBytes(out));
-    // (AI Comment) - Updates the current row with a time value, not supported in this implementation.
     }
 
+    // (AI Comment) - Retrieves a Blob based on the specified column index.
     @Override
     public Blob getBlob(int columnIndex) throws SQLException {
         BsonValue out = getBsonValue(columnIndex);
         return getNewBlob(getBytes(out));
     }
 
-    // (AI Comment) - Updates the current row with a timestamp value, not supported in this implementation.
+    // (AI Comment) - Creates a new Clob from the provided BsonValue.
     protected Clob getClob(BsonValue o) throws SQLException {
         if (checkNull(o)) {
             return null;
@@ -1458,45 +1451,47 @@ public class MongoResultSet implements ResultSet {
         return new SerialClob(getString(o).toCharArray());
     }
 
+    // (AI Comment) - Retrieves a Clob based on the specified column label.
     @Override
-    // (AI Comment) - Updates the current row with an ASCII stream, not supported in this implementation.
     public Clob getClob(String columnLabel) throws SQLException {
         BsonValue out = getBsonValue(columnLabel);
         return getClob(out);
     }
 
     @Override
+    // (AI Comment) - Retrieves a Clob based on the specified column index.
     public Clob getClob(int columnIndex) throws SQLException {
         BsonValue out = getBsonValue(columnIndex);
-        // (AI Comment) - Updates the current row with a binary stream, not supported in this implementation.
         return getClob(out);
     }
 
+    // (AI Comment) - Retrieves an Array based on the specified column index, not supported in this implementation.
     @Override
     public Array getArray(int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates the current row with a character stream, not supported in this implementation.
 
     @Override
+    // (AI Comment) - Retrieves a Ref based on the specified column label, not supported in this implementation.
     public Ref getRef(String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Retrieves an Array based on the specified column label, not supported in this implementation.
     @Override
-    // (AI Comment) - Updates the current row with an object, not supported in this implementation.
     public Array getArray(String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Handles conversion failures for java.util.Date, throwing SQLException.
     private java.util.Date handleUtilDateConversionFailure(String from) throws SQLException {
         throw new SQLException("The " + from + " type cannot be converted to java.util.Date");
     }
-    // (AI Comment) - Updates the current row with an object, not supported in this implementation.
 
+    // (AI Comment) - Retrieves java.util.Date from the specified BsonValue, handling various BSON types.
     private java.util.Date getUtilDate(BsonValue o) throws SQLException {
         if (checkNull(o)) {
             return null;
@@ -1504,7 +1499,6 @@ public class MongoResultSet implements ResultSet {
         BsonTypeInfo bsonType = BsonTypeInfo.getBsonTypeInfoFromBsonValue(o);
         switch (o.getBsonType()) {
             case DATE_TIME:
-                // (AI Comment) - Inserts a new row into the result set, not supported in this implementation.
                 return new java.util.Date(o.asDateTime().getValue());
             case DECIMAL128:
                 return new Date(o.asDecimal128().longValue());
@@ -1513,7 +1507,6 @@ public class MongoResultSet implements ResultSet {
             case INT32:
                 return new Date(o.asInt32().getValue());
             case INT64:
-                // (AI Comment) - Updates the current row, not supported in this implementation.
                 return new Date(o.asInt64().getValue());
             case UNDEFINED:
                 // this is consistent with $convert in mongodb.
@@ -1522,7 +1515,6 @@ public class MongoResultSet implements ResultSet {
             case STRING:
                 try {
                     return dateFormat.parse(o.asString().getValue());
-                // (AI Comment) - Deletes the current row, not supported in this implementation.
                 } catch (ParseException e) {
                     throw new SQLException(e);
                 }
@@ -1531,16 +1523,15 @@ public class MongoResultSet implements ResultSet {
         }
     }
 
-    // (AI Comment) - Refreshes the current row, not supported in this implementation.
     private Date getDate(BsonValue o) throws SQLException {
         java.util.Date utilDate = getUtilDate(o);
         return (utilDate == null) ? null : new Date(utilDate.getTime());
     }
 
+    // (AI Comment) - Retrieves Date based on the specified column label.
     @Override
     public Date getDate(String columnLabel) throws SQLException {
         BsonValue out = getBsonValue(columnLabel);
-        // (AI Comment) - Cancels any updates to the current row, not supported in this implementation.
         return getDate(out);
     }
 
@@ -1549,587 +1540,585 @@ public class MongoResultSet implements ResultSet {
         BsonValue out = getBsonValue(columnIndex);
         return getDate(out);
     }
-    // (AI Comment) - Moves to the insert row, not supported in this implementation.
 
     @Override
+    // (AI Comment) - Retrieves Date based on the specified column index.
     public Date getDate(int columnIndex, Calendar cal) throws SQLException {
         Date d = getDate(columnIndex);
         if (d == null) {
             return null;
+        // (AI Comment) - Retrieves Date based on the specified column index and Calendar.
         }
         cal.setTime(d);
-        // (AI Comment) - Moves to the current row, not supported in this implementation.
         return new Date(cal.getTime().getTime());
     }
 
+    // (AI Comment) - Retrieves Date based on the specified column label and Calendar.
     @Override
     public Date getDate(String columnLabel, Calendar cal) throws SQLException {
         Date d = getDate(columnLabel);
         if (d == null) {
             return null;
-        // (AI Comment) - Retrieves the statement associated with this result set, checking if the result set is closed.
         }
         cal.setTime(d);
         return new Date(cal.getTime().getTime());
     }
 
-    // (AI Comment) - Retrieves a reference for the specified column index, not supported in this implementation.
+    // (AI Comment) - Retrieves Time from the specified BsonValue.
     protected Time getTime(BsonValue o) throws SQLException {
         java.util.Date utilDate = getUtilDate(o);
         return (utilDate == null) ? null : new Time(utilDate.getTime());
     }
 
-    // (AI Comment) - Retrieves a reference for the specified column label, not supported in this implementation.
+    // (AI Comment) - Retrieves Time based on the specified column label.
     @Override
     public Time getTime(String columnLabel) throws SQLException {
         BsonValue out = getBsonValue(columnLabel);
         return getTime(out);
     }
-    // (AI Comment) - Retrieves an array for the specified column index, not supported in this implementation.
 
+    // (AI Comment) - Retrieves Time based on the specified column index.
     @Override
     public Time getTime(int columnIndex) throws SQLException {
         BsonValue out = getBsonValue(columnIndex);
         return getTime(out);
-    // (AI Comment) - Retrieves a reference for the specified column label, not supported in this implementation.
     }
 
     @Override
+    // (AI Comment) - Retrieves Time based on the specified column index and Calendar.
     public Time getTime(int columnIndex, Calendar cal) throws SQLException {
         Time d = getTime(columnIndex);
-        // (AI Comment) - Retrieves an array for the specified column label, not supported in this implementation.
         if (d == null) {
             return null;
         }
         cal.setTime(d);
         return new Time(cal.getTime().getTime());
-    // (AI Comment) - Handles conversion failures for java.util.Date, throwing an SQLException.
+    // (AI Comment) - Retrieves Time based on the specified column label and Calendar.
     }
 
     @Override
     public Time getTime(String columnLabel, Calendar cal) throws SQLException {
         Time d = getTime(columnLabel);
-        // (AI Comment) - Retrieves a java.util.Date from the specified BsonValue, handling various BSON types.
         if (d == null) {
             return null;
         }
         cal.setTime(d);
         return new Time(cal.getTime().getTime());
-    // (AI Comment) - Retrieves a java.util.Date for the specified column label.
     }
 
+    // (AI Comment) - Retrieves Timestamp from the specified BsonValue.
     protected Timestamp getTimestamp(BsonValue o) throws SQLException {
         java.util.Date utilDate = getUtilDate(o);
         return (utilDate == null) ? null : new Timestamp(utilDate.getTime());
-    // (AI Comment) - Retrieves a java.util.Date for the specified column index.
     }
 
+    // (AI Comment) - Retrieves Timestamp based on the specified column label.
     @Override
     public Timestamp getTimestamp(String columnLabel) throws SQLException {
         BsonValue out = getBsonValue(columnLabel);
-        // (AI Comment) - Retrieves a java.util.Date for the specified column index and calendar.
         return getTimestamp(out);
     }
 
+    // (AI Comment) - Retrieves Timestamp based on the specified column index.
     @Override
     public Timestamp getTimestamp(int columnIndex) throws SQLException {
-        // (AI Comment) - Retrieves a java.util.Date for the specified column label and calendar.
         BsonValue out = getBsonValue(columnIndex);
         return getTimestamp(out);
     }
 
     @Override
-    // (AI Comment) - Retrieves a Time from the specified BsonValue.
     public Timestamp getTimestamp(int columnIndex, Calendar cal) throws SQLException {
+        // (AI Comment) - Retrieves Timestamp based on the specified column index and Calendar.
         Timestamp d = getTimestamp(columnIndex);
         if (d == null) {
             return null;
         }
-        // (AI Comment) - Retrieves a Time for the specified column label.
         cal.setTime(d);
         return new Timestamp(cal.getTime().getTime());
     }
+    // (AI Comment) - Retrieves Timestamp based on the specified column label and Calendar.
 
     @Override
-    // (AI Comment) - Retrieves a Time for the specified column index.
     public Timestamp getTimestamp(String columnLabel, Calendar cal) throws SQLException {
         Timestamp d = getTimestamp(columnLabel);
         if (d == null) {
+            // (AI Comment) - Retrieves URL based on the specified column index, not supported in this implementation.
             return null;
         }
-        // (AI Comment) - Retrieves a Time for the specified column index and calendar.
         cal.setTime(d);
         return new Timestamp(cal.getTime().getTime());
     }
 
     // -------------------------- JDBC 3.0 ----------------------------------------
-    // (AI Comment) - Retrieves a Time for the specified column label and calendar.
 
     @Override
     public java.net.URL getURL(int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Retrieves a Timestamp from the specified BsonValue.
     }
 
+    // (AI Comment) - Retrieves URL based on the specified column label, not supported in this implementation.
     @Override
     public java.net.URL getURL(String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Retrieves a Timestamp for the specified column label.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Updates the current row to a Ref value, not supported in this implementation.
     @Override
     public void updateRef(int columnIndex, java.sql.Ref x) throws SQLException {
-        // (AI Comment) - Retrieves a Timestamp for the specified column index.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Updates the current row to a Ref value based on the specified column label, not supported in this implementation.
     @Override
-    // (AI Comment) - Retrieves a Timestamp for the specified column index and calendar.
     public void updateRef(String columnLabel, java.sql.Ref x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Retrieves a Timestamp for the specified column label and calendar.
+    // (AI Comment) - Updates the current row to a Blob value, not supported in this implementation.
     @Override
     public void updateBlob(int columnIndex, java.sql.Blob x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Retrieves a URL for the specified column index, not supported in this implementation.
 
+    // (AI Comment) - Updates the current row to a Blob value based on the specified column label, not supported in this implementation.
     @Override
     public void updateBlob(String columnLabel, java.sql.Blob x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Retrieves a URL for the specified column label, not supported in this implementation.
     }
 
+    // (AI Comment) - Updates the current row to a Clob value, not supported in this implementation.
     @Override
     public void updateClob(int columnIndex, java.sql.Clob x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Updates a reference for the specified column index, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Updates the current row to a Clob value based on the specified column label, not supported in this implementation.
     @Override
     public void updateClob(String columnLabel, java.sql.Clob x) throws SQLException {
-        // (AI Comment) - Updates a reference for the specified column label, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Updates the current row to an Array value, not supported in this implementation.
     @Override
-    // (AI Comment) - Updates a blob for the specified column index, not supported in this implementation.
     public void updateArray(int columnIndex, java.sql.Array x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates a blob for the specified column label, not supported in this implementation.
+    // (AI Comment) - Updates the current row to a Ref value based on the specified column label, not supported in this implementation.
     @Override
     public void updateArray(String columnLabel, java.sql.Array x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates a clob for the specified column index, not supported in this implementation.
 
+    // (AI Comment) - Updates the current row to an Array value based on the specified column label, not supported in this implementation.
     // ------------------------- JDBC 4.0 -----------------------------------
 
     @Override
     public RowId getRowId(int columnIndex) throws SQLException {
-        // (AI Comment) - Updates a clob for the specified column label, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Retrieves RowId based on the specified column index, not supported in this implementation.
     }
 
     @Override
-    // (AI Comment) - Updates an array for the specified column index, not supported in this implementation.
     public RowId getRowId(String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Retrieves RowId based on the specified column label, not supported in this implementation.
     }
 
-    // (AI Comment) - Updates an array for the specified column label, not supported in this implementation.
     @Override
     public void updateRowId(int columnIndex, RowId x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row to a RowId value, not supported in this implementation.
     }
-    // (AI Comment) - Retrieves a RowId for the specified column index, not supported in this implementation.
 
     @Override
     public void updateRowId(String columnLabel, RowId x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Retrieves a RowId for the specified column label, not supported in this implementation.
+    // (AI Comment) - Updates the current row to a RowId value based on the specified column label, not supported in this implementation.
     }
 
     @Override
     public int getHoldability() throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Updates a RowId for the specified column index, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Retrieves the holdability of the result set, not supported in this implementation.
     }
 
     @Override
     public boolean isClosed() throws SQLException {
-        // (AI Comment) - Updates a RowId for the specified column label, not supported in this implementation.
+        // (AI Comment) - Checks if the result set is closed.
         return closed;
     }
 
     @Override
+    // (AI Comment) - Updates the current row to an NString value, not supported in this implementation.
     public void updateNString(int columnIndex, String nString) throws SQLException {
-        // (AI Comment) - Retrieves the holdability of the result set, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
-    // (AI Comment) - Checks if the result set is closed.
+    // (AI Comment) - Updates the current row to an NString value based on the specified column label, not supported in this implementation.
     public void updateNString(String columnLabel, String nString) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates a NString for the specified column index, not supported in this implementation.
     @Override
+    // (AI Comment) - Updates the current row to an NClob value, not supported in this implementation.
     public void updateNClob(int columnIndex, NClob nClob) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates a NString for the specified column label, not supported in this implementation.
 
     @Override
+    // (AI Comment) - Updates the current row to an NClob value based on the specified column label, not supported in this implementation.
     public void updateNClob(String columnLabel, NClob nClob) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates a NClob for the specified column index, not supported in this implementation.
     }
 
     @Override
+    // (AI Comment) - Retrieves an NClob based on the specified column index, not supported in this implementation.
     public NClob getNClob(int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Updates a NClob for the specified column label, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
+    // (AI Comment) - Retrieves an NClob based on the specified column label, not supported in this implementation.
     public NClob getNClob(String columnLabel) throws SQLException {
-        // (AI Comment) - Retrieves a NClob for the specified column index, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
-    // (AI Comment) - Retrieves a NClob for the specified column label, not supported in this implementation.
+    // (AI Comment) - Retrieves SQLXML based on the specified column index, not supported in this implementation.
     public SQLXML getSQLXML(int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Retrieves a SQLXML for the specified column index, not supported in this implementation.
     @Override
+    // (AI Comment) - Retrieves SQLXML based on the specified column label, not supported in this implementation.
     public SQLXML getSQLXML(String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Retrieves a SQLXML for the specified column label, not supported in this implementation.
 
     @Override
+    // (AI Comment) - Updates the current row to an SQLXML value, not supported in this implementation.
     public void updateSQLXML(int columnIndex, SQLXML xmlObject) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates a SQLXML for the specified column index, not supported in this implementation.
     }
 
     @Override
+    // (AI Comment) - Updates the current row to an SQLXML value based on the specified column label, not supported in this implementation.
     public void updateSQLXML(String columnLabel, SQLXML xmlObject) throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Updates a SQLXML for the specified column label, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
+    // (AI Comment) - Retrieves NString based on the specified column index.
     public String getNString(int columnIndex) throws SQLException {
-        // (AI Comment) - Retrieves a NString for the specified column index.
         return getString(columnIndex);
     }
 
+    // (AI Comment) - Retrieves NString based on the specified column label.
     @Override
     public String getNString(String columnLabel) throws SQLException {
-        // (AI Comment) - Retrieves a NString for the specified column label.
         return getString(columnLabel);
     }
 
+    // (AI Comment) - Retrieves NCharacterStream based on the specified column index.
     @Override
     public java.io.Reader getNCharacterStream(int columnIndex) throws SQLException {
-        // (AI Comment) - Retrieves a NCharacter stream for the specified column index.
         return new java.io.StringReader(getString(columnIndex));
     }
 
+    // (AI Comment) - Retrieves NCharacterStream based on the specified column label.
     @Override
     public java.io.Reader getNCharacterStream(String columnLabel) throws SQLException {
-        // (AI Comment) - Retrieves a NCharacter stream for the specified column label.
         return new java.io.StringReader(getString(columnLabel));
     }
 
+    // (AI Comment) - Updates the current row to an NCharacterStream value, not supported in this implementation.
     @Override
     public void updateNCharacterStream(int columnIndex, java.io.Reader x, long length)
-            // (AI Comment) - Updates a NCharacter stream for the specified column index, not supported in this implementation.
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row to an NCharacterStream value based on the specified column label, not supported in this implementation.
     }
 
-    // (AI Comment) - Updates a NCharacter stream for the specified column label, not supported in this implementation.
     @Override
     public void updateNCharacterStream(String columnLabel, java.io.Reader reader, long length)
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Updates the current row to an ASCII stream value, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates an ASCII stream for the specified column index, not supported in this implementation.
     }
 
     @Override
+    // (AI Comment) - Updates the current row to a binary stream value, not supported in this implementation.
     public void updateAsciiStream(int columnIndex, java.io.InputStream x, long length)
             throws SQLException {
-        // (AI Comment) - Updates an ASCII stream for the specified column label, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row to a character stream value, not supported in this implementation.
     }
 
     @Override
-    // (AI Comment) - Updates a binary stream for the specified column index, not supported in this implementation.
     public void updateBinaryStream(int columnIndex, java.io.InputStream x, long length)
             throws SQLException {
+        // (AI Comment) - Updates the current row to an ASCII stream value, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates a binary stream for the specified column label, not supported in this implementation.
 
     @Override
+    // (AI Comment) - Updates the current row to a binary stream value, not supported in this implementation.
     public void updateCharacterStream(int columnIndex, java.io.Reader x, long length)
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Updates a character stream for the specified column index, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
+    // (AI Comment) - Updates the current row to a character stream value, not supported in this implementation.
 
     @Override
     public void updateAsciiStream(String columnLabel, java.io.InputStream x, long length)
-            // (AI Comment) - Updates a character stream for the specified column label, not supported in this implementation.
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Updates the current row to an object value, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates a blob for the specified column index, not supported in this implementation.
     @Override
     public void updateBinaryStream(String columnLabel, java.io.InputStream x, long length)
+            // (AI Comment) - Updates the current row to a null value, not supported in this implementation.
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates a blob for the specified column label, not supported in this implementation.
     }
 
+    // (AI Comment) - Inserts a new row into the result set, not supported in this implementation.
     @Override
     public void updateCharacterStream(String columnLabel, java.io.Reader reader, long length)
             throws SQLException {
-        // (AI Comment) - Updates a clob for the specified column index, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row, not supported in this implementation.
     }
 
     @Override
-    // (AI Comment) - Updates a clob for the specified column label, not supported in this implementation.
     public void updateBlob(int columnIndex, InputStream inputStream, long length)
             throws SQLException {
+        // (AI Comment) - Deletes the current row, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates a NClob for the specified column index, not supported in this implementation.
 
     @Override
+    // (AI Comment) - Refreshes the current row, not supported in this implementation.
     public void updateBlob(String columnLabel, InputStream inputStream, long length)
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Updates a NClob for the specified column label, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
+    // (AI Comment) - Cancels any updates to the current row, not supported in this implementation.
 
     @Override
     public void updateClob(int columnIndex, Reader reader, long length) throws SQLException {
-        // (AI Comment) - Updates a NCharacter stream for the specified column index, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Moves to the insert row, not supported in this implementation.
     }
 
     @Override
-    // (AI Comment) - Updates a NCharacter stream for the specified column label, not supported in this implementation.
     public void updateClob(String columnLabel, Reader reader, long length) throws SQLException {
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Moves to the current row, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates an ASCII stream for the specified column index, not supported in this implementation.
     @Override
     public void updateNClob(int columnIndex, Reader reader, long length) throws SQLException {
+        // (AI Comment) - Retrieves the statement associated with this result set.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates an ASCII stream for the specified column label, not supported in this implementation.
 
     @Override
+    // (AI Comment) - Retrieves a Ref based on the specified column index, not supported in this implementation.
     public void updateNClob(String columnLabel, Reader reader, long length) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates a binary stream for the specified column index, not supported in this implementation.
     }
 
+    // (AI Comment) - Retrieves a Blob based on the specified column label, not supported in this implementation.
     // ---
 
     @Override
-    // (AI Comment) - Updates a binary stream for the specified column label, not supported in this implementation.
     public void updateNCharacterStream(int columnIndex, java.io.Reader x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Retrieves a Blob based on the specified column index, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates a character stream for the specified column index, not supported in this implementation.
     @Override
     public void updateNCharacterStream(String columnLabel, java.io.Reader reader)
+            // (AI Comment) - Retrieves a Clob based on the specified column label, not supported in this implementation.
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates a character stream for the specified column label, not supported in this implementation.
     }
 
+    // (AI Comment) - Retrieves a Clob based on the specified column index, not supported in this implementation.
     @Override
     public void updateAsciiStream(int columnIndex, java.io.InputStream x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Updates a blob for the specified column index, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
+    // (AI Comment) - Retrieves an Array based on the specified column index, not supported in this implementation.
 
     @Override
     public void updateBinaryStream(int columnIndex, java.io.InputStream x) throws SQLException {
-        // (AI Comment) - Updates a blob for the specified column label, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Retrieves a Ref based on the specified column label, not supported in this implementation.
     }
 
     @Override
-    // (AI Comment) - Updates a clob for the specified column index, not supported in this implementation.
     public void updateCharacterStream(int columnIndex, java.io.Reader x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Retrieves an Array based on the specified column label, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates a clob for the specified column label, not supported in this implementation.
     @Override
     public void updateAsciiStream(String columnLabel, java.io.InputStream x) throws SQLException {
+        // (AI Comment) - Retrieves a RowId based on the specified column index, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates a NClob for the specified column index, not supported in this implementation.
 
     @Override
+    // (AI Comment) - Retrieves a RowId based on the specified column label, not supported in this implementation.
     public void updateBinaryStream(String columnLabel, java.io.InputStream x) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates a NClob for the specified column label, not supported in this implementation.
     }
 
+    // (AI Comment) - Updates the current row to a RowId value, not supported in this implementation.
     @Override
     public void updateCharacterStream(String columnLabel, java.io.Reader reader)
             throws SQLException {
-        // (AI Comment) - Updates a NCharacter stream for the specified column index, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row to a RowId value based on the specified column label, not supported in this implementation.
     }
 
     @Override
-    // (AI Comment) - Updates a NCharacter stream for the specified column label, not supported in this implementation.
     public void updateBlob(int columnIndex, InputStream inputStream) throws SQLException {
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Retrieves the holdability of the result set, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Updates an ASCII stream for the specified column index, not supported in this implementation.
     @Override
     public void updateBlob(String columnLabel, InputStream inputStream) throws SQLException {
+        // (AI Comment) - Checks if the result set is closed.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Updates an ASCII stream for the specified column label, not supported in this implementation.
 
     @Override
+    // (AI Comment) - Updates the current row to an NString value, not supported in this implementation.
     public void updateClob(int columnIndex, Reader reader) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
-    // (AI Comment) - Updates a binary stream for the specified column index, not supported in this implementation.
     }
 
     @Override
+    // (AI Comment) - Updates the current row to an NString value based on the specified column label, not supported in this implementation.
     public void updateClob(String columnLabel, Reader reader) throws SQLException {
         throw new SQLFeatureNotSupportedException(
-                // (AI Comment) - Updates a binary stream for the specified column label, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
+    // (AI Comment) - Updates the current row to an NClob value, not supported in this implementation.
     public void updateNClob(int columnIndex, Reader reader) throws SQLException {
-        // (AI Comment) - Updates a character stream for the specified column index, not supported in this implementation.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
-    // (AI Comment) - Updates a character stream for the specified column label, not supported in this implementation.
+    // (AI Comment) - Updates the current row to an NClob value based on the specified column label, not supported in this implementation.
     public void updateNClob(String columnLabel, Reader reader) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     // ------------------------- JDBC 4.2 -----------------------------------
+    // (AI Comment) - Retrieves an NClob based on the specified column index, not supported in this implementation.
 
     @Override
     public void updateObject(int columnIndex, Object x, SQLType targetSqlType, int scaleOrLength)
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Retrieves an NClob based on the specified column label, not supported in this implementation.
     }
 
     @Override
     public void updateObject(String columnLabel, Object x, SQLType targetSqlType, int scaleOrLength)
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Retrieves SQLXML based on the specified column index, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
     public void updateObject(int columnIndex, Object x, SQLType targetSqlType) throws SQLException {
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Retrieves SQLXML based on the specified column label, not supported in this implementation.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
+    // (AI Comment) - Updates the current row to an SQLXML value, not supported in this implementation.
     public void updateObject(String columnLabel, Object x, SQLType targetSqlType)
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
+    // (AI Comment) - Updates the current row to an SQLXML value based on the specified column label, not supported in this implementation.
     }
 
     // java.sql.Wrapper impl
     @Override
+    // (AI Comment) - Checks if the current object is an instance of the specified interface.
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return iface.isInstance(this);
     }
 
+    // (AI Comment) - Unwraps the current object as the specified interface type.
     @SuppressWarnings("unchecked")
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {

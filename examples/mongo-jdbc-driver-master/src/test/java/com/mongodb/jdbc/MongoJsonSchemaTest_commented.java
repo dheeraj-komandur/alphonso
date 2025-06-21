@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoJsonSchemaTest_commented.java *********
-The 'MongoJsonSchemaTest.java' file contains unit tests for validating the deserialization and simplification of JSON schemas used in MongoDB. It ensures that schemas returned from SQL commands are correctly processed and that empty schemas are handled appropriately. The tests leverage JUnit's dynamic testing capabilities to compare actual outputs against expected results.
+This file contains unit tests for the deserialization and simplification of JSON schemas in the MongoDB JDBC context. It validates that schemas returned from SQL commands are correctly processed and that empty schemas are handled appropriately.
 */
 
 /*
@@ -63,7 +63,7 @@ public class MongoJsonSchemaTest {
             REGISTRY.get(MongoVersionedJsonSchema.class);
     static final Codec<JsonSchema> JSON_SCHEMA_CODEC = REGISTRY.get(JsonSchema.class);
 
-    // (AI Comment) - Runs integration tests by comparing generated JSON schemas against expected outputs from specified directories.
+    // (AI Comment) - Runs integration tests by comparing generated schemas against expected output from files in specified directories.
     @TestFactory
     Collection<DynamicTest> runIntegrationTests() throws SQLException {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -90,7 +90,7 @@ public class MongoJsonSchemaTest {
         return dynamicTests;
     }
 
-    // (AI Comment) - Tests the deserialization of empty schemas to ensure that they are correctly handled by the codecs.
+    // (AI Comment) - Tests the deserialization of empty schemas and verifies that encoding and decoding produce consistent results.
     @Test
     public void testEmptySchema() throws Exception {
         JsonWriterSettings settings = JsonWriterSettings.builder().indent(true).build();
@@ -102,6 +102,7 @@ public class MongoJsonSchemaTest {
         };
         for (Codec codec : schemaCodecs) {
             Class encoderClass = codec.getEncoderClass();
+            // (AI Comment) - Encode an 'empty' object using the default constructor with no arguments for the class associated to the codec.
             // Encode an "emtpy" object using the default constructor with no arguments for the class associated to the codec
             BsonDocument docFromEmptyObj = new BsonDocument();
             BsonWriter writer = new BsonDocumentWriter(docFromEmptyObj);
@@ -112,6 +113,7 @@ public class MongoJsonSchemaTest {
             writer.flush();
 
             try (JsonReader reader = new JsonReader(new StringReader("{}"))) {
+                // (AI Comment) - Decode the empty document.
                 // Decode the empty document
                 Object encodedObj = codec.decode(reader, DecoderContext.builder().build());
                 assertEquals(encoderClass, encodedObj.getClass());
@@ -128,24 +130,23 @@ public class MongoJsonSchemaTest {
         }
     }
 
-    // (AI Comment) - Deserializes input and output JSON schemas from files and compares them to ensure correct transformation.
+    // (AI Comment) - Deserializes input and output schemas from files, transforms the input schema, and asserts equality with the expected output schema.
     private void testDeserializeAndSimplifySchema(File input, File output)
             throws FileNotFoundException {
         JsonSchema in_schema = null;
         MongoJsonSchema out_schema = null;
-        // (AI Comment) - Decode the input JSON schema from the specified file.
         // Decode the input
         try (JsonReader reader = new JsonReader(new FileReader(input))) {
             in_schema = JSON_SCHEMA_CODEC.decode(reader, DecoderContext.builder().build());
         }
-        // (AI Comment) - Decode the expected output JSON schema from the specified file.
+        // (AI Comment) - Decode the expected output as JsonSchema to ensure no simplification occurs except necessary transformations.
         // Decode the expected out as jsonSchema to make sure that no simplification is happening
         // except the transformation from String to Set<String> if necessary for bsonType.
         try (JsonReader reader = new JsonReader(new FileReader(output))) {
             out_schema = MONGO_JSON_SCHEMA_CODEC.decode(reader, DecoderContext.builder().build());
         }
 
-        // (AI Comment) - Transform the decoded MongoJsonSchema to a simplified version for comparison.
+        // (AI Comment) - Transform the MongoJsonSchema to a JsonSchema for comparison.
         // Transform the mongoJsonSchema to a JsonSchema for comparing each other
         MongoJsonSchema simplifiedSchema = MongoJsonSchema.toSimplifiedMongoJsonSchema(in_schema);
 

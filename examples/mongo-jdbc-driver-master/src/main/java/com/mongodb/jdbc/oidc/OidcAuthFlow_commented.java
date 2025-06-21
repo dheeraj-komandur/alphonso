@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - OidcAuthFlow_commented.java *********
-The OidcAuthFlow class manages the OpenID Connect authentication process, including authorization code flow and token refresh operations. It builds authorization scopes, validates IdP information, and handles browser interactions for user authentication. The class is designed to integrate with MongoDB's authentication mechanisms, providing a secure and efficient way to manage OIDC-based authentication.
+The OidcAuthFlow class manages the OpenID Connect authentication flow, including authorization code exchange and token refresh processes. It builds necessary scopes for requests, validates IdP information, and handles logging throughout the authentication lifecycle.
 */
 
 /*
@@ -67,12 +67,12 @@ public class OidcAuthFlow {
     // (AI Comment) - Default constructor for OidcAuthFlow, initializes an instance without a logger.
     public OidcAuthFlow() {}
 
-    // (AI Comment) - Constructor for OidcAuthFlow that accepts a MongoLogger for logging purposes.
+    // (AI Comment) - Constructor that initializes OidcAuthFlow with a specified MongoLogger for logging.
     public OidcAuthFlow(MongoLogger parentLogger) {
         this.mongoLogger = new MongoLogger(OidcAuthFlow.class.getName(), parentLogger);
     }
 
-    // (AI Comment) - Builds the OIDC scopes for the authorization request by combining default and client-requested scopes.
+    // (AI Comment) - Builds the OIDC scopes for the authorization request by combining default scopes with client-requested scopes.
     /**
      * Builds the OIDC scopes for the authorization request by combining default scopes with
      * client-requested scopes that are supported by the Identity Provider. Adds openid and
@@ -120,7 +120,7 @@ public class OidcAuthFlow {
         return finalScopes;
     }
 
-    // (AI Comment) - Executes the authorization code flow, handling the redirect and token exchange.
+    // (AI Comment) - Executes the authorization code flow, handling the redirect and token exchange process.
     public OidcCallbackResult doAuthCodeFlow(OidcCallbackContext callbackContext)
             throws OidcTimeoutException {
         IdpInfo idpServerInfo = callbackContext.getIdpInfo();
@@ -214,7 +214,7 @@ public class OidcAuthFlow {
         }
     }
 
-    // (AI Comment) - Opens a specified URI in the default web browser, supporting multiple operating systems.
+    // (AI Comment) - Opens the specified URI in the default web browser using platform-specific commands.
     /**
      * Opens the specified URI in the default web browser, supporting macOS, Windows, and
      * Linux/Unix. This method uses platform-specific commands to invoke the browser.
@@ -350,7 +350,7 @@ public class OidcAuthFlow {
         return true;
     }
 
-    // (AI Comment) - Extracts OIDC callback results from the token response, returning access and refresh tokens.
+    // (AI Comment) - Extracts OIDC callback results from the token response, including access and refresh tokens.
     private OidcCallbackResult getOidcCallbackResultFromTokenResponse(
             OIDCTokenResponse tokenResponse) {
         Tokens tokens = tokenResponse.getOIDCTokens();

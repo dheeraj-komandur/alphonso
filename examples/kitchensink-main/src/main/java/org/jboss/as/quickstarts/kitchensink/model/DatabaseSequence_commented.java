@@ -1,9 +1,9 @@
 /*
 ********* AI-Assistant Documentation for - DatabaseSequence_commented.java *********
-This file defines the DatabaseSequence class, which models a MongoDB document for storing and managing database sequence information, including an identifier and the sequence value.
+The DatabaseSequence class serves as a model for storing and managing unique identifier sequences in a MongoDB collection, facilitating the generation of unique IDs for application entities.
 */
 
-// (AI Comment) - Represents a MongoDB document for storing database sequence information, including an identifier and the sequence value.
+// (AI Comment) - Defines the DatabaseSequence class, which represents a sequence in a MongoDB collection for generating unique identifiers.
 package org.jboss.as.quickstarts.kitchensink.model;
 
 import org.springframework.data.annotation.Id;
@@ -13,19 +13,19 @@ import java.math.BigInteger;
 
 @Document(collection = "database_sequences")
 public class DatabaseSequence {
-    // (AI Comment) - Unique identifier for the database sequence, annotated with @Id for MongoDB.
+    // (AI Comment) - Holds the unique identifier for the sequence, annotated with @Id for MongoDB.
     @Id
     private String id;
 
-    // (AI Comment) - Holds the current value of the sequence as a BigInteger.
+    // (AI Comment) - Stores the current value of the sequence as a BigInteger.
     private BigInteger sequence;
 
-    // (AI Comment) - Retrieves the unique identifier of the database sequence.
+    // (AI Comment) - Retrieves the unique identifier of the sequence.
     public String getId() {
         return id;
     }
 
-    // (AI Comment) - Sets the unique identifier for the database sequence.
+    // (AI Comment) - Sets the unique identifier for the sequence.
     public void setId(String id) {
         this.id = id;
     }

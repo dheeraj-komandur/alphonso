@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - BsonUtilsTest_commented.java *********
-The 'BsonUtilsTest.java' file contains unit tests for the BsonUtils class, focusing on the serialization and deserialization of BsonDocuments. It ensures that the methods function correctly and handle edge cases, such as null inputs, thereby contributing to the robustness of the MongoDB JDBC implementation.
+This file contains unit tests for the BsonUtils class, focusing on the serialization and deserialization of BSON documents. It ensures that BSON operations maintain data integrity and handle edge cases, such as null documents, correctly.
 */
 
 /*
@@ -19,6 +19,7 @@ The 'BsonUtilsTest.java' file contains unit tests for the BsonUtils class, focus
  * limitations under the License.
  */
 
+// (AI Comment) - Defines the package for MongoDB JDBC utilities, specifically for BSON operations.
 package com.mongodb.jdbc;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,10 +30,10 @@ import org.bson.BsonInt32;
 import org.bson.BsonString;
 import org.junit.jupiter.api.Test;
 
-// (AI Comment) - Test class for BsonUtils, validating serialization and deserialization of BsonDocuments.
+// (AI Comment) - Test class for BsonUtils, containing unit tests for serialization and deserialization of BSON documents.
 class BsonUtilsTest {
 
-    // (AI Comment) - Tests the serialization and deserialization process of a BsonDocument, ensuring integrity of data.
+    // (AI Comment) - Tests the serialization and deserialization process of a BSON document, ensuring integrity of data.
     @Test
     void testSerializeDeserialize() throws MongoSerializationException {
         BsonDocument originalDoc =
@@ -52,7 +53,7 @@ class BsonUtilsTest {
                 "Original and deserialized documents should be equal");
     }
 
-    // (AI Comment) - Tests that serializing a null BsonDocument throws a MongoSerializationException as expected.
+    // (AI Comment) - Tests that serializing a null BSON document throws a MongoSerializationException as expected.
     @Test
     void testSerializeNullDocument() {
         assertThrows(

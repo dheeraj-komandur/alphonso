@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoDatabaseMetaDataTest_commented.java *********
-The 'MongoDatabaseMetaDataTest.java' file contains unit tests for the MongoDatabaseMetaData class, validating its methods for retrieving database metadata such as functions, procedures, and attributes. It ensures that the MongoDB JDBC driver behaves as expected when interacting with the database, using JUnit for testing framework functionalities.
+This file contains unit tests for the MongoDatabaseMetaData class, ensuring that various metadata retrieval methods function correctly and return expected results. It validates the behavior of methods related to functions, procedures, keys, and other database metadata aspects.
 */
 
 /*
@@ -19,7 +19,6 @@ The 'MongoDatabaseMetaDataTest.java' file contains unit tests for the MongoDatab
  * limitations under the License.
  */
 
-// (AI Comment) - Defines the package for MongoDB JDBC related classes.
 package com.mongodb.jdbc;
 
 import static com.mongodb.jdbc.MongoDatabaseMetaData.filterEmptiesAndInternalDBs;
@@ -36,10 +35,9 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-// (AI Comment) - Test class for MongoDatabaseMetaData, verifying its methods and expected behaviors.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+// (AI Comment) - Test class for MongoDatabaseMetaData, responsible for validating database metadata retrieval methods.
 public class MongoDatabaseMetaDataTest {
-    // (AI Comment) - Initializes the connection string and database metadata for testing.
     protected static final ConnectionString uri =
             new ConnectionString("mongodb://localhost:27017/admin");
     protected static final String database = "mock";
@@ -50,7 +48,7 @@ public class MongoDatabaseMetaDataTest {
                             new MongoConnectionProperties(
                                     uri, database, null, null, null, false, null)));
 
-    // (AI Comment) - Counts the number of rows in a ResultSet by iterating through it.
+    // (AI Comment) - Counts the number of rows in a ResultSet by iterating until no more rows are available.
     protected int countRows(ResultSet rs) throws SQLException {
         for (int i = 0; ; ++i) {
             if (!rs.next()) {
@@ -59,7 +57,7 @@ public class MongoDatabaseMetaDataTest {
         }
     }
 
-    // (AI Comment) - Helper method to test databaseMetaData.getFunctions with a specific function name pattern.
+    // (AI Comment) - Helper method to test databaseMetaData.getFunctions, verifying the number of returned rows matches expectations.
     /**
      * Calls the databaseMetaData.getFunctions with the given function name pattern and the expected
      * number of rows it should return and verifies that it matches the actual number of rows
@@ -84,7 +82,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, expectedNumRows, getFunctionsColumns);
     }
 
-    // (AI Comment) - Validates the ResultSet against expected columns and row count.
+    // (AI Comment) - Validates the ResultSet against expected columns and the expected number of rows.
     void validateResultSet(ResultSet rs, int expectedNumRows, String[] expectedColumns)
             throws SQLException {
         ResultSetMetaData rsmd = rs.getMetaData();
@@ -95,7 +93,7 @@ public class MongoDatabaseMetaDataTest {
         assertEquals(expectedNumRows, countRows(rs));
     }
 
-    // (AI Comment) - Tests the retrieval of procedures from the database metadata, expecting none.
+    // (AI Comment) - Tests the retrieval of procedures from the database, expecting zero results.
     @Test
     void testGetProcedures() throws SQLException {
         String[] columns =
@@ -113,7 +111,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the retrieval of procedure columns, expecting none.
+    // (AI Comment) - Tests the retrieval of procedure columns, expecting zero results.
     @Test
     void testGetProceduresColumns() throws SQLException {
         String[] columns =
@@ -144,7 +142,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the retrieval of version columns, expecting none.
+    // (AI Comment) - Tests the retrieval of version columns, expecting zero results.
     @Test
     void testGetVersionColumns() throws SQLException {
         String[] columns =
@@ -163,7 +161,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the retrieval of imported keys, expecting none.
+    // (AI Comment) - Tests the retrieval of imported keys, expecting zero results.
     @Test
     void testGetImportedKeys() throws SQLException {
         String[] columns =
@@ -188,7 +186,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the retrieval of exported keys, expecting none.
+    // (AI Comment) - Tests the retrieval of exported keys, expecting zero results.
     @Test
     void testGetExportedKeys() throws SQLException {
         String[] columns =
@@ -213,7 +211,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the retrieval of cross-references, expecting none.
+    // (AI Comment) - Tests the retrieval of cross-references, expecting zero results.
     @Test
     void testGetCrossReference() throws SQLException {
         String[] columns =
@@ -238,7 +236,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the retrieval of user-defined types (UDTs), expecting none.
+    // (AI Comment) - Tests the retrieval of user-defined types (UDTs), expecting zero results.
     @Test
     void testGetUDTs() throws SQLException {
         String[] columns =
@@ -256,7 +254,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the retrieval of super types, expecting none.
+    // (AI Comment) - Tests the retrieval of super types, expecting zero results.
     @Test
     void testGetSuperTypes() throws SQLException {
         String[] columns =
@@ -273,7 +271,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the retrieval of super tables, expecting none.
+    // (AI Comment) - Tests the retrieval of super tables, expecting zero results.
     @Test
     void testGetSuperTables() throws SQLException {
         String[] columns =
@@ -285,7 +283,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the retrieval of attributes, expecting none.
+    // (AI Comment) - Tests the retrieval of attributes, expecting zero results.
     @Test
     void testGetAttributes() throws SQLException {
         String[] columns =
@@ -317,7 +315,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the retrieval of pseudo columns, expecting none.
+    // (AI Comment) - Tests the retrieval of pseudo columns, expecting zero results.
     @Test
     void testGetPseudoColumns() throws SQLException {
         String[] columns =
@@ -340,7 +338,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the retrieval of schemas, expecting none.
+    // (AI Comment) - Tests the retrieval of schemas, expecting zero results.
     @Test
     void testGetSchemas() throws SQLException {
         String[] columns =
@@ -357,7 +355,7 @@ public class MongoDatabaseMetaDataTest {
         validateResultSet(rs, 0, columns);
     }
 
-    // (AI Comment) - Tests the databaseMetaData.getFunctions method with various patterns.
+    // (AI Comment) - Tests the databaseMetaData.getFunctions method with various patterns and expected results.
     @Test
     /** Test the DatabaseMetadata.getFunctions method. */
     void testGetFunctions() throws SQLException {
@@ -411,6 +409,7 @@ public class MongoDatabaseMetaDataTest {
         assertEquals(expectedKeywords, databaseMetaData.getSQLKeywords());
     }
 
+    // (AI Comment) - Tests the retrieval of numeric functions from the database metadata.
     @Test
     void testGetNumericFunctions() throws SQLException {
         final String expectedFunctions =
@@ -428,7 +427,6 @@ public class MongoDatabaseMetaDataTest {
         assertEquals(expectedFunctions, databaseMetaData.getNumericFunctions());
     }
 
-    // (AI Comment) - Tests the retrieval of numeric functions from the database metadata.
     @Test
     void testGetStringFunctions() throws SQLException {
         final String expectedFunctions =
@@ -437,13 +435,13 @@ public class MongoDatabaseMetaDataTest {
         assertEquals(expectedFunctions, databaseMetaData.getStringFunctions());
     }
 
+    // (AI Comment) - Tests the retrieval of string functions from the database metadata.
     @Test
     void testGetSystemFunctions() throws SQLException {
         final String expectedFunctions = "";
 
         assertEquals(expectedFunctions, databaseMetaData.getSystemFunctions());
     }
-    // (AI Comment) - Tests the retrieval of string functions from the database metadata.
 
     // (AI Comment) - Tests the retrieval of time/date functions from the database metadata.
     @Test
@@ -453,14 +451,13 @@ public class MongoDatabaseMetaDataTest {
         assertEquals(expectedFunctions, databaseMetaData.getTimeDateFunctions());
     }
 
-    // (AI Comment) - Tests the filtering of empty and internal database names.
     @Test
+    // (AI Comment) - Tests the retrieval of system functions from the database metadata.
     void testToJavaPattern() throws SQLException {
         final String specialCharacters = ".^$*+?(){}|[]\\";
         final String escapedSpecialCharacters = "\\.\\^\\$\\*\\+\\?\\(\\)\\{\\}\\|\\[\\]\\\\";
 
         assertEquals(
-                // (AI Comment) - Tests the retrieval of system functions from the database metadata.
                 escapedSpecialCharacters,
                 MongoDatabaseMetaData.toJavaPattern(specialCharacters).toString());
         assertEquals("\\\\%", MongoDatabaseMetaData.toJavaPattern("\\%").toString());
@@ -474,6 +471,7 @@ public class MongoDatabaseMetaDataTest {
                 "a\\\\_.b\\\\%.*", MongoDatabaseMetaData.toJavaPattern("a\\__b\\%%").toString());
     }
 
+    // (AI Comment) - Tests the filterEmptiesAndInternalDBs method to ensure it filters out empty and internal database names.
     @Test
     void testFilterEmptiesAndAdmin() {
         final ArrayList<String> input = new ArrayList<>(Arrays.asList("foo", "bar", "", "admin"));

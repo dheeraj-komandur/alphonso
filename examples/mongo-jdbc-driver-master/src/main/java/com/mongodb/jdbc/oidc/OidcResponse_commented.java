@@ -21,7 +21,7 @@ The 'OidcResponse.java' file defines a class that models the response from an Op
 
 package com.mongodb.jdbc.oidc;
 
-// (AI Comment) - Represents an OIDC response containing authorization code, state, error, and error description.
+// (AI Comment) - Represents an OIDC response containing authorization code, state, error, and error description. Provides getters and setters for each field and a custom toString method for formatted output.
 public class OidcResponse {
     private String code;
     private String state;
@@ -33,12 +33,12 @@ public class OidcResponse {
         return code;
     }
 
-    // (AI Comment) - Returns the state parameter received in the OIDC response.
+    // (AI Comment) - Returns the state parameter associated with the OIDC response.
     public String getState() {
         return state;
     }
 
-    // (AI Comment) - Returns the error code if an error occurred during the OIDC process.
+    // (AI Comment) - Returns any error that occurred during the OIDC process.
     public String getError() {
         return error;
     }
@@ -58,17 +58,17 @@ public class OidcResponse {
         this.state = state;
     }
 
-    // (AI Comment) - Sets the error code for the OIDC response.
+    // (AI Comment) - Sets any error that occurred during the OIDC process.
     public void setError(String error) {
         this.error = error;
     }
 
-    // (AI Comment) - Sets the error description for the OIDC response.
+    // (AI Comment) - Sets the description of the error that occurred during the OIDC process.
     public void setErrorDescription(String errorDescription) {
         this.errorDescription = errorDescription;
     }
 
-    // (AI Comment) - Generates a string representation of the OIDC response, including code, state, error, and error description if present.
+    // (AI Comment) - Generates a string representation of the OIDC response, including code, state, error, and error description if they are not null.
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

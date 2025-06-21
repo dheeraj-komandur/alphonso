@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoJsonSchema_commented.java *********
-This file defines the MongoJsonSchema class, which is responsible for representing and manipulating MongoDB JSON schemas. It includes methods for converting standard JSON schemas into MongoDB-compatible formats, handling various schema properties, and determining the nullability of fields.
+The 'MongoJsonSchema.java' file provides a representation of MongoDB JSON schemas, facilitating the conversion between JSON schema formats and MongoDB's BSON schema. It includes methods for creating schemas, adding properties, and determining nullability, ensuring that the schemas are valid and conform to MongoDB's requirements.
 */
 
 /*
@@ -47,7 +47,7 @@ public class MongoJsonSchema {
     private static final Codec<MongoJsonSchema> CODEC =
             MongoDriver.getCodecRegistry().get(MongoJsonSchema.class);
 
-    // (AI Comment) - Holds scalar properties of the schema, including name, type, and required status.
+    // (AI Comment) - Holds scalar properties for the MongoJsonSchema, including name, type, and required status.
     public static class ScalarProperties {
         protected String name;
         protected boolean isRequired = true;
@@ -72,7 +72,7 @@ public class MongoJsonSchema {
     public MongoJsonSchema items;
     public boolean additionalProperties;
 
-    // (AI Comment) - Converts a base JSON schema into a simplified MongoJsonSchema, flattening any nested structures.
+    // (AI Comment) - Converts a deserialized jsonSchema into a MongoJsonSchema, ensuring bsonType is a single type.
     /**
      * Converts a deserialized jsonSchema into a MongoJsonSchema. The MongoJsonSchema instance is
      * semantically equivalent to the base jsonSchema, but bsonType has to be a single type
@@ -87,7 +87,7 @@ public class MongoJsonSchema {
         return flattenNestedAnyOfs(unsimplifiedSchema);
     }
 
-    // (AI Comment) - Converts a base JSON schema into a MongoJsonSchema, handling BSON type conversions.
+    // (AI Comment) - Converts a deserialized jsonSchema into a MongoJsonSchema, handling bsonType and flattening anyOf.
     /**
      * Converts a deserialized jsonSchema into a MongoJsonSchema. The MongoJsonSchema instance is
      * semantically equivalent to the base jsonSchema, but bsonType has to be a single type
@@ -197,7 +197,7 @@ public class MongoJsonSchema {
         return result;
     }
 
-    // (AI Comment) - Converts polymorphic items from a JSON schema to a MongoJsonSchema.
+    // (AI Comment) - Converts polymorphic items field to a MongoJsonSchema, ensuring valid types.
     /**
      * Converts a polymorphic items field which can either be a JsonSchema or an Array of JsonSchema
      * to a set of MongoJsonSchema.
@@ -227,7 +227,7 @@ public class MongoJsonSchema {
         return new MongoJsonSchema();
     }
 
-    // (AI Comment) - Converts polymorphic additional properties to a boolean value indicating their presence.
+    // (AI Comment) - Converts polymorphic additionalProperties to a boolean, validating types.
     /**
      * Converts a polymorphic additionalProperties which can either be a boolean or a Document to a
      * boolean.
@@ -261,7 +261,7 @@ public class MongoJsonSchema {
                 : polymorphicAdditionalProperties.asBoolean().getValue();
     }
 
-    // (AI Comment) - Converts polymorphic BSON types to a set of strings.
+    // (AI Comment) - Converts polymorphic bsonType to a set of Strings, ensuring valid types.
     /**
      * Converts a polymorphic bsonType which can either be a BsonArray or a BsonString to a set of
      * Strings.
@@ -297,7 +297,7 @@ public class MongoJsonSchema {
         return result;
     }
 
-    // (AI Comment) - Flattens nested 'anyOf' structures in the schema for easier processing.
+    // (AI Comment) - Flattens nested anyOf schemas for simplification.
     /**
      * Flattens nested anyOf.
      *
@@ -341,7 +341,7 @@ public class MongoJsonSchema {
         return result;
     }
 
-    // (AI Comment) - Creates an empty MongoJsonSchema representing an object type.
+    // (AI Comment) - Creates an empty MongoJsonSchema representing an object.
     public static MongoJsonSchema createEmptyObjectSchema() {
         MongoJsonSchema ret = new MongoJsonSchema();
         ret.bsonType = "object";
@@ -350,7 +350,7 @@ public class MongoJsonSchema {
         return ret;
     }
 
-    // (AI Comment) - Creates a MongoJsonSchema for a scalar type based on the provided BSON type.
+    // (AI Comment) - Creates a MongoJsonSchema for a scalar type based on the provided type string.
     public static MongoJsonSchema createScalarSchema(String type) {
         MongoJsonSchema ret = new MongoJsonSchema();
         ret.bsonType = type;
@@ -369,7 +369,7 @@ public class MongoJsonSchema {
         return to;
     }
 
-    // (AI Comment) - Adds scalar properties to the MongoJsonSchema, converting them to scalar schemas.
+    // (AI Comment) - Adds scalar properties to the MongoJsonSchema, converting them into scalar MongoJsonSchemas.
     /**
      * Adds scalar properties to a MongoJsonSchema. Below is an example for adding a scalar
      * property:
@@ -455,7 +455,7 @@ public class MongoJsonSchema {
         return bsonType != null && bsonType.equals("object");
     }
 
-    // (AI Comment) - Determines the nullability of a column in the schema based on its properties.
+    // (AI Comment) - Determines the nullability of a column in the schema based on its properties and required status.
     /**
      * Gets the nullability of a column (field) in this schemas list of properties. Its nullability
      * is determined as follows:
@@ -535,7 +535,7 @@ public class MongoJsonSchema {
         return nullable;
     }
 
-    // (AI Comment) - Gets the BSON type information for the schema, throwing an exception if invalid.
+    // (AI Comment) - Gets the bson type for this schema as a BsonTypeInfo enum value, validating the schema.
     /**
      * Gets the bson type for this schema as a BsonTypeInfo enum value.
      *

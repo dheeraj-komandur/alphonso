@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - DataLake_commented.java *********
-The 'DataLake.java' file defines a simple class that holds version information for a Data Lake, providing a method to output its state as a string for logging purposes.
+The 'DataLake.java' file defines a simple class that holds version information for a DataLake configuration, providing a method for logging its state.
 */
 
 /*
@@ -21,12 +21,12 @@ The 'DataLake.java' file defines a simple class that holds version information f
 
 package com.mongodb.jdbc;
 
-// (AI Comment) - Represents a DataLake object containing version information for logging and tracking.
+// (AI Comment) - Represents a DataLake configuration with versioning information for logging and tracking.
 public class DataLake {
     public String version;
     public String mongoSQLVersion;
 
-    // (AI Comment) - Overrides the toString method to provide a string representation of the DataLake instance, including version details.
+    // (AI Comment) - Overrides the toString method to provide a string representation of the DataLake object, including version and mongoSQLVersion.
     // Override toString for logging
     @Override
     public String toString() {

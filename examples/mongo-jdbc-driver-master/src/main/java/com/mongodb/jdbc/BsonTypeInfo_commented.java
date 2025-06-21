@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - BsonTypeInfo_commented.java *********
-The 'BsonTypeInfo.java' file defines an enum that encapsulates the mapping of BSON types to JDBC types, providing necessary metadata for each type. It facilitates the conversion between BSON and SQL types, ensuring compatibility in database operations involving MongoDB and JDBC.
+This file defines the BsonTypeInfo enum, which maps BSON types to JDBC types and their associated metadata, enabling seamless integration between BSON data and SQL operations in MongoDB.
 */
 
 /*
@@ -29,8 +29,9 @@ import java.util.Set;
 import org.bson.BsonType;
 import org.bson.BsonValue;
 
-// (AI Comment) - BsonTypeInfo is an enum that maps BSON types to their corresponding JDBC types and metadata, facilitating the conversion between BSON and SQL types.
+// (AI Comment) - BsonTypeInfo is an enum that maps BSON types to their corresponding JDBC types and metadata, facilitating type conversion and validation.
 public enum BsonTypeInfo {
+    // (AI Comment) - Defines various BSON types with their associated properties such as name, JDBC type, case sensitivity, and scale.
     BSON_DOUBLE("double", BsonType.DOUBLE, Types.DOUBLE, false, 15, 15, 2, 15, 15, 8),
     BSON_STRING("string", BsonType.STRING, Types.LONGVARCHAR, true, 0, 0, 0, null, null, null),
     BSON_OBJECT("object", BsonType.DOCUMENT, Types.OTHER, false, 0, 0, 0, null, null, null),
@@ -65,6 +66,7 @@ public enum BsonTypeInfo {
     BSON_MAXKEY("maxKey", BsonType.MAX_KEY, Types.OTHER, false, 0, 0, 0, null, null, null),
     BSON_BSON("bson", BsonType.UNDEFINED, Types.OTHER, false, 0, 0, 0, null, null, null);
 
+    // (AI Comment) - BSON_TYPE_NAMES is a set containing all valid BSON type names, excluding BSON_BSON which is a catch-all type.
     // BSON_TYPE_NAMES is the set of all valid BSON type names as listed
     // here: https://mongodb.github.io/mongo-java-driver/3.12/javadoc/org/bson/BsonType.html
     // Note that BsonTypeInfo contains a BSON_BSON variant which is intentionally
@@ -121,7 +123,7 @@ public enum BsonTypeInfo {
     // The length in bytes for fixed length data type.
     private final Integer fixedBytesLength;
 
-    // (AI Comment) - Constructor for BsonTypeInfo that initializes the BSON type metadata including name, type, JDBC type, and various scale and precision attributes.
+    // (AI Comment) - Constructor for BsonTypeInfo that initializes the BSON type properties.
     BsonTypeInfo(
             String bsonName,
             BsonType bsonType,
@@ -145,22 +147,22 @@ public enum BsonTypeInfo {
         this.fixedBytesLength = fixedBytesLength;
     }
 
-    // (AI Comment) - Returns the BSON name associated with this BsonTypeInfo.
+    // (AI Comment) - Returns the BSON name associated with this BSON type.
     public String getBsonName() {
         return bsonName;
     }
 
-    // (AI Comment) - Returns the BSON type associated with this BsonTypeInfo.
+    // (AI Comment) - Returns the BSON type enumeration for this BSON type.
     public BsonType getBsonType() {
         return bsonType;
     }
 
-    // (AI Comment) - Returns the JDBC type associated with this BsonTypeInfo.
+    // (AI Comment) - Returns the JDBC type associated with this BSON type.
     public int getJdbcType() {
         return jdbcType;
     }
 
-    // (AI Comment) - Indicates whether the BSON type is case-sensitive.
+    // (AI Comment) - Indicates whether this BSON type is case-sensitive.
     public boolean getCaseSensitivity() {
         return caseSensitivity;
     }
@@ -175,27 +177,27 @@ public enum BsonTypeInfo {
         return maxScale;
     }
 
-    // (AI Comment) - Returns the numeric precision radix for this BsonTypeInfo.
+    // (AI Comment) - Returns the numeric precision radix for this BSON type.
     public int getNumPrecRadix() {
         return numPrecRadix;
     }
 
-    // (AI Comment) - Returns the precision for this BsonTypeInfo, or null if not applicable.
+    // (AI Comment) - Returns the precision for this BSON type, if applicable.
     public Integer getPrecision() {
         return precision;
     }
 
-    // (AI Comment) - Returns the fixed bytes length for this BsonTypeInfo, or null if not applicable.
+    // (AI Comment) - Returns the fixed bytes length for this BSON type, if applicable.
     public Integer getFixedBytesLength() {
         return fixedBytesLength;
     }
 
-    // (AI Comment) - Returns the number of decimal digits for this BsonTypeInfo, or null if not applicable.
+    // (AI Comment) - Returns the number of decimal digits for this BSON type, if applicable.
     public Integer getDecimalDigits() {
         return decimalDigits;
     }
 
-    // (AI Comment) - Returns the maximum length of binary and character-based data in bytes, or null for other data types.
+    // (AI Comment) - Returns the maximum length of binary and character-based data in bytes.
     /**
      * CHAR_OCTET_LENGTH is the maximum length of binary and character based data in bytes. For any
      * other datatype the value is null. We can use 'precision' combined with the data type for

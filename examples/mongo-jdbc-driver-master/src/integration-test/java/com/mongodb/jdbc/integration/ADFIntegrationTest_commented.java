@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - ADFIntegrationTest_commented.java *********
-The ADFIntegrationTest.java file contains integration tests for the MongoDB JDBC driver, focusing on connection handling, logging behavior, and UUID representation. It utilizes JUnit 5 to define and execute tests, ensuring that the driver functions correctly under various scenarios and configurations.
+The 'ADFIntegrationTest.java' file contains integration tests for the MongoDB JDBC driver, focusing on connection handling, logging behavior, and UUID representation. It utilizes JUnit 5 to dynamically generate tests based on configurations and validates the driver's functionality against expected outcomes.
 */
 
 /*
@@ -64,6 +64,7 @@ public class ADFIntegrationTest {
     private static final String CURRENT_DIR =
             Paths.get(".").toAbsolutePath().normalize().toString();
 
+    // (AI Comment) - Defines the JDBC connection URL, allowing for environment variable overrides.
     private static final String LOCAL_HOST = "jdbc:mongodb://localhost";
     private static final String URL =
             System.getenv("ADF_TEST_LOCAL_HOST") != null
@@ -78,8 +79,10 @@ public class ADFIntegrationTest {
     };
     private static final String UUID_COLLECTION = "uuid";
 
+    // (AI Comment) - List to hold test entries loaded from configuration files.
     private static List<TestEntry> testEntries;
 
+    // (AI Comment) - Creates a new MongoDB connection with optional properties.
     /**
      * Creates a new connection.
      *
@@ -120,7 +123,7 @@ public class ADFIntegrationTest {
         testEntries = IntegrationTestUtils.loadTestConfigs(TEST_DIRECTORY);
     }
 
-    // (AI Comment) - Creates and returns a collection of dynamic tests based on pre-loaded test entries.
+    // (AI Comment) - Runs integration tests dynamically based on loaded test entries.
     @TestFactory
     Collection<DynamicTest> runIntegrationTests() {
         List<DynamicTest> dynamicTests = new ArrayList<>();
@@ -140,6 +143,7 @@ public class ADFIntegrationTest {
         return dynamicTests;
     }
 
+    // (AI Comment) - Callable class for executing SQL queries in a separate thread.
     /** Simple callable used to spawn a new statement and execute a query. */
     public static class SimpleQueryExecutor implements Callable<Void> {
         private final Connection conn;
@@ -210,6 +214,7 @@ public class ADFIntegrationTest {
         }
     }
 
+    // (AI Comment) - Establishes a connection with a specified logging level.
     /**
      * Connect with the given logging level.
      *
@@ -217,7 +222,6 @@ public class ADFIntegrationTest {
      * @return the connection.
      * @throws SQLException If an error occurs during the connection process.
      */
-    // (AI Comment) - Establishes a MongoDB connection with a specified logging level.
     private MongoConnection connect(Level logLevel) throws SQLException {
         Properties loggingProps = new Properties();
         if (null != logLevel) {
@@ -229,6 +233,7 @@ public class ADFIntegrationTest {
         return getBasicConnection(loggingProps);
     }
 
+    // (AI Comment) - Adds tasks for executing valid and invalid SQL statements.
     /**
      * Add taks to execute a valid and an invalid statement via the given connection.
      *
@@ -236,7 +241,6 @@ public class ADFIntegrationTest {
      * @param conn The connection to use to create new statements.
      * @throws SQLException If an error occurs when creating a new statement.
      */
-    // (AI Comment) - Adds tasks for executing valid and invalid SQL statements using the provided connection.
     private void addSimpleQueryExecTasks(List<Callable<Void>> tasks, Connection conn)
             throws SQLException {
         // Connection with no logging and a valid query to execute.
@@ -245,7 +249,7 @@ public class ADFIntegrationTest {
         tasks.add(new ADFIntegrationTest.SimpleQueryExecutor(conn, "INVALID QUERY TO EXECUTE"));
     }
 
-    // (AI Comment) - Cleans up resources after logging tests, including closing connections and deleting log files.
+    // (AI Comment) - Cleans up resources after tests, closing connections and deleting log files.
     /**
      * Clean-up after the logging test. It will close the connection and delete the log file if it
      * exists.
@@ -266,13 +270,13 @@ public class ADFIntegrationTest {
         }
     }
 
+    // (AI Comment) - Tests UUID representation handling in MongoDB URI.
     /**
      * Tests the handling of different UUID representations specified in the URI. The uuid fields
      * have been pre-loaded into the database, stored in their respective uuid representations
      * according to their type. This test verifies that each representation is correctly retrieved
      * and converted to the expected string format.
      */
-    // (AI Comment) - Tests the retrieval of UUID representations from the database based on URI specifications.
     @Test
     public void testUUIDRepresentationInURI() {
         for (String representation : UUID_REPRESENTATIONS) {
@@ -315,13 +319,13 @@ public class ADFIntegrationTest {
         }
     }
 
+    // (AI Comment) - Tests standard UUID representation with legacy UUID types.
     /**
      * Tests the behavior of standard UUID representation when querying legacy UUID types. This test
      * ensures that when using the standard representation, legacy UUID types are correctly
      * retrieved and represented in the expected $binary format.
      */
     @Test
-    // (AI Comment) - Verifies the behavior of standard UUID representation with legacy UUID types.
     public void testStandardRepresentationWithLegacyTypes() {
         try (MongoConnection conn =
                         getBasicConnection(DEFAULT_TEST_DB, null, "uuidRepresentation=STANDARD");
@@ -361,13 +365,13 @@ public class ADFIntegrationTest {
         }
     }
 
+    // (AI Comment) - Tests behavior of different UUID representations for the 'javalegacy' type.
     /**
      * Tests the behavior of different UUID representations when querying the 'javalegacy' UUID
      * type. This test verifies that each representation retrieves the 'javalegacy' UUID correctly,
      * and that the value of the UUID are different.
      */
     @Test
-    // (AI Comment) - Tests the handling of different UUID representations for the 'javalegacy' UUID type.
     public void testDifferentRepresentationsForJavaLegacy() {
         Set<String> uuidValues = new HashSet<>();
         for (String representation : UUID_REPRESENTATIONS) {

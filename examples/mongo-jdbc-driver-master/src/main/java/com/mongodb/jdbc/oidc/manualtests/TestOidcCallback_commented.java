@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestOidcCallback_commented.java *********
-The 'TestOidcCallback.java' file provides a test implementation for the OIDC callback functionality in the MongoDB JDBC driver, demonstrating how to authenticate and refresh tokens using OIDC. It serves as a practical example for developers working with OIDC in the context of MongoDB.
+The 'TestOidcCallback.java' file is designed to test the OpenID Connect (OIDC) callback functionality, specifically focusing on the processes of obtaining and refreshing access tokens. It provides a simple command-line interface to demonstrate these flows and handle potential errors during the authentication process.
 */
 
 /*
@@ -51,8 +51,8 @@ public class TestOidcCallback {
                     new JdbcOidcCallbackContext(
                             null, 1, initialResult.getRefreshToken(), TestOidcUtils.IDP_INFO, null);
             OidcCallbackResult refreshResult = oidcCallback.onRequest(refreshContext);
+            // (AI Comment) - Handles the result of the refresh token request, printing the new tokens or an error message.
             if (refreshResult != null) {
-                // (AI Comment) - Handles the result of the refresh token request, printing the new tokens or an error message.
                 System.out.println("Refreshed Access Token: " + refreshResult.getAccessToken());
                 System.out.println("Refreshed Refresh Token: " + refreshResult.getRefreshToken());
             } else {

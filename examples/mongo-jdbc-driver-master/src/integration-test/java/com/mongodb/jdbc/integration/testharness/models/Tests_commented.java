@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - Tests_commented.java *********
-The 'Tests.java' file defines a model class that holds a list of test entries for integration testing in the MongoDB JDBC framework, facilitating the organization and execution of test cases.
+The 'Tests.java' file defines a class that serves as a container for a list of test entries used in integration testing for the MongoDB JDBC framework.
 */
 
 /*

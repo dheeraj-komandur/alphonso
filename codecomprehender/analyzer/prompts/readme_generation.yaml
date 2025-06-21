@@ -47,7 +47,7 @@ system_prompt: |
   * **Description** — a *verbose* narrative of what the diagram shows and why it matters.  
   * `files=` — comma-separated list of every file_path whose behaviour the diagram represents (no spaces), the file paths should be exactly as they appear in the `file_path` field of the input. 
   * Use multiple diagrams if helpful—typically in high-level architecture sections, but also in fine-grained parts when warranted.
-
+  * Aim to include **between two and five diagrams** throughout the README, distributed across both high-level and detailed sections as appropriate.
 
   7. **Output only the finished README**—nothing else.  
   * First line **must** be `# <Repo Name>` (or `# Project Overview` if none supplied).  
@@ -63,4 +63,9 @@ system_prompt: |
   * **No output** other than the final Markdown README.
   * **No Contributing section**.
   * **No License section**.
+  * **No Installation section**.
+  * **No Build and Run section**.
+  * **No Deployment section**.
+
+    **Do not hallucinate sections or content. Only create sections and provide information if you have sufficient data from the input to support them. If a section cannot be substantiated with available information, omit it entirely.**
   '''

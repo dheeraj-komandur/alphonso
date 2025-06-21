@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoFunctions_commented.java *********
-The 'MongoFunctions.java' file provides a structured representation of MongoDB functions, categorizing them into types such as numeric, string, and date/time. It facilitates easy access and management of these functions through a singleton instance, ensuring that function properties are consistently defined and categorized.
+The 'MongoFunctions.java' file provides a singleton implementation for managing MongoDB functions, categorizing them into numeric, string, date/time, and system functions. It encapsulates the properties and behaviors of these functions, allowing for easy retrieval and categorization.
 */
 
 /*
@@ -24,9 +24,9 @@ package com.mongodb.jdbc;
 import java.util.HashSet;
 import java.util.Set;
 
-// (AI Comment) - Defines the MongoFunctions class, which manages a collection of MongoDB functions categorized by type.
+// (AI Comment) - This class provides a singleton implementation for managing MongoDB functions, categorizing them into numeric, string, date/time, and system functions.
 public class MongoFunctions {
-    // (AI Comment) - Enumerates the categories of functions available in MongoDB, including string, numeric, date/time, system, conversion, and uncategorized functions.
+    // (AI Comment) - Enumeration representing different categories of MongoDB functions.
     public enum FunctionCategory {
         STRING_FUNC,
         NUM_FUNC,
@@ -36,7 +36,7 @@ public class MongoFunctions {
         UNCATEGORIZED_FUNC
     }
 
-    // (AI Comment) - Defines the MongoFunction class, which encapsulates the properties of a MongoDB function, including its name, return type, comment, argument types, and category.
+    // (AI Comment) - Represents a MongoDB function with its name, return type, comment, argument types, and category.
     public static class MongoFunction {
         public String name;
         public String returnType;
@@ -44,7 +44,7 @@ public class MongoFunctions {
         public String[] argTypes;
         public FunctionCategory functionCategory;
 
-        // (AI Comment) - Constructor for MongoFunction that initializes all properties including the function category.
+        // (AI Comment) - Constructor initializing all properties of the MongoFunction class.
         protected MongoFunction(
                 String name,
                 String returnType,
@@ -58,7 +58,7 @@ public class MongoFunctions {
             this.functionCategory = category;
         }
 
-        // (AI Comment) - Constructor for MongoFunction that initializes properties but defaults the function category to UNCATEGORIZED_FUNC.
+        // (AI Comment) - Constructor initializing MongoFunction with a default category of UNCATEGORIZED_FUNC.
         protected MongoFunction(String name, String returnType, String comment, String[] argTypes) {
             this.name = name;
             this.returnType = returnType;
@@ -68,16 +68,15 @@ public class MongoFunctions {
         }
     }
 
-    // (AI Comment) - Singleton instance of MongoFunctions to ensure only one instance exists.
+    // (AI Comment) - Holds the instance of the singleton MongoFunctions class and arrays for categorized function strings.
     private static MongoFunctions instance;
-    // (AI Comment) - Array of MongoFunction objects representing all available functions.
     public MongoFunction[] functions;
     public String numericFunctionsString;
     public String stringFunctionsString;
     public String dateFunctionsString;
     public String systemFunctionsString;
 
-    // (AI Comment) - Defines common function names as constants for easy reference throughout the class.
+    // (AI Comment) - Static final strings representing common function names used in MongoDB.
     // Common and repeated function names.
     protected static final String ABS = "ABS";
     protected static final String CEIL = "CEIL";
@@ -99,13 +98,13 @@ public class MongoFunctions {
     protected static final String EXTRACT = "EXTRACT";
     protected static final String SUBSTRING = "SUBSTRING";
 
-    // (AI Comment) - Constructor for MongoFunctions that initializes the functions array and categorizes the functions.
+    // (AI Comment) - Constructor that initializes the MongoFunctions instance with a predefined list of MongoFunction objects.
     private MongoFunctions(MongoFunction[] functions) {
         this.functions = functions;
         initCategorizedFunctionsList();
     }
 
-    // (AI Comment) - Static method to retrieve the singleton instance of MongoFunctions, initializing it if necessary.
+    // (AI Comment) - Static method to retrieve the singleton instance of MongoFunctions, creating it if necessary.
     public static MongoFunctions getInstance() {
         if (null == instance) {
             instance =
@@ -971,7 +970,7 @@ public class MongoFunctions {
         return instance;
     }
 
-    // (AI Comment) - Initializes categorized function lists by iterating through the functions array and appending function names to the appropriate category.
+    // (AI Comment) - Initializes categorized function lists for numeric, string, date/time, and system functions.
     // Build the list of numeric, string, dateTime and system functions.
     private void initCategorizedFunctionsList() {
         StringBuilder numericFunctionsBuilder = new StringBuilder();
@@ -981,7 +980,7 @@ public class MongoFunctions {
 
         Set<String> seenFunctions = new HashSet<>();
 
-        // (AI Comment) - Iterates through the functions to categorize them into numeric, string, date/time, and system functions.
+        // (AI Comment) - Iterates through functions to categorize them and build corresponding strings, avoiding duplicates.
         StringBuilder currBuilder = null;
         for (MongoFunction currFunc : functions) {
             switch (currFunc.functionCategory) {

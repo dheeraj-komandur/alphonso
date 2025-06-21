@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoListTablesResult_commented.java *********
-This file defines the 'MongoListTablesResult' class, which models the result of a MongoDB operation to list tables, including their names and types. It provides a method to set the type of the table with specific mapping logic for MongoDB collections.
+This file defines the 'MongoListTablesResult' class, which models the result of a MongoDB operation that lists tables, including their names and types. It provides a method to set the type of the table with specific mapping logic for MongoDB collections.
 */
 
 /*

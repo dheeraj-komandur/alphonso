@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public class MongoRunCmdListTablesResult {
     public CursorInfo cursor;
 
-    // (AI Comment) - Returns the cursor information associated with the list tables command result.
+    // (AI Comment) - Returns the cursor information associated with the result.
     public CursorInfo getCursor() {
         return cursor;
     }

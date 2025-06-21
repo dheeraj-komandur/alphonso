@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MemberRepository_commented.java *********
-The MemberRepository interface provides a data access layer for Member entities in a Spring application, enabling CRUD operations and custom queries using MongoDB.
+The MemberRepository interface provides an abstraction for data access operations related to Member entities, including retrieval and deletion based on various criteria, leveraging Spring Data's MongoDB support.
 */
 
 /*
@@ -32,18 +32,18 @@ import java.util.List;
 // (AI Comment) - Repository interface for Member entities, extending MongoRepository to provide CRUD operations and custom queries.
 @Repository
 public interface MemberRepository extends MongoRepository<Member, String> {
-    // (AI Comment) - Retrieves a Member entity by its unique identifier (BigInteger id).
+    // (AI Comment) - Retrieves a Member entity by its unique identifier.
     Member findById(BigInteger id);
 
-    // (AI Comment) - Retrieves a Member entity by its email address (String email).
+    // (AI Comment) - Finds a Member entity by its email address.
     Member findByEmail(String email);
 
-    // (AI Comment) - Retrieves all Member entities sorted in ascending order by their name.
+    // (AI Comment) - Retrieves all Member entities sorted in ascending order by name.
     List<Member> findAllByOrderByNameAsc();
 
-    // (AI Comment) - Deletes a Member entity by its unique identifier (BigInteger id) and returns the deleted entity.
+    // (AI Comment) - Deletes a Member entity by its unique identifier and returns the deleted entity.
     Member deleteMemberById(BigInteger id);
 
-    // (AI Comment) - Deletes a Member entity by its email address (String email) and returns the deleted entity.
+    // (AI Comment) - Deletes a Member entity by its email address and returns the deleted entity.
     Member deleteMemberByEmail(String email);
 }

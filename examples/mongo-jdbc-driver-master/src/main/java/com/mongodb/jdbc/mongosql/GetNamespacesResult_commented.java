@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - GetNamespacesResult_commented.java *********
-The GetNamespacesResult.java file defines data structures for handling the results of a GetNamespaces operation in the MongoDB JDBC driver. It encapsulates a list of namespaces, each represented by a database and collection name, and provides methods for serialization to JSON format.
+This file defines the GetNamespacesResult class, which encapsulates the result of a MongoDB GetNamespaces operation, including a list of Namespace objects. It provides constructors for BSON serialization and methods for JSON representation.
 */
 
 /*
@@ -19,7 +19,6 @@ The GetNamespacesResult.java file defines data structures for handling the resul
  * limitations under the License.
  */
 
-// (AI Comment) - Defines the package for MongoDB JDBC SQL integration.
 package com.mongodb.jdbc.mongosql;
 
 import static com.mongodb.jdbc.utils.BsonUtils.JSON_WRITER_NO_INDENT_SETTINGS;
@@ -34,35 +33,30 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 // (AI Comment) - Represents the result of a GetNamespaces operation, encapsulating a list of Namespace objects.
 public class GetNamespacesResult {
 
-    // (AI Comment) - Codec for serializing and deserializing GetNamespacesResult objects.
     private static final Codec<GetNamespacesResult> CODEC =
             MongoDriver.getCodecRegistry().get(GetNamespacesResult.class);
 
-    // (AI Comment) - List of namespaces returned by the GetNamespaces operation.
     @BsonProperty("namespaces")
     public final List<Namespace> namespaces;
 
-    // (AI Comment) - Constructor that initializes the namespaces list.
+    // (AI Comment) - Constructor that initializes the namespaces list from a BSON property.
     @BsonCreator
     public GetNamespacesResult(@BsonProperty("namespaces") List<Namespace> namespaces) {
         this.namespaces = namespaces;
     }
 
-    // (AI Comment) - Represents a single namespace consisting of a database and collection.
+    // (AI Comment) - Represents a single namespace consisting of a database and collection name.
     public static class Namespace {
-        // (AI Comment) - Codec for serializing and deserializing Namespace objects.
         private static final Codec<Namespace> CODEC =
                 MongoDriver.getCodecRegistry().get(Namespace.class);
 
-        // (AI Comment) - Database name associated with the namespace.
         @BsonProperty("database")
         public final String database;
-        // (AI Comment) - Collection name associated with the namespace.
 
         @BsonProperty("collection")
         public final String collection;
 
-        // (AI Comment) - Constructor that initializes the database and collection names.
+        // (AI Comment) - Constructor that initializes the database and collection names from BSON properties.
         @BsonCreator
         public Namespace(
                 @BsonProperty("database") String database,

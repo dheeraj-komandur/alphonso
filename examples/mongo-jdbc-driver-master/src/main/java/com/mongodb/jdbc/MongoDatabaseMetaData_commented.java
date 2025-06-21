@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoDatabaseMetaData_commented.java *********
-This file contains the MongoDatabaseMetaData class, which implements the DatabaseMetaData interface for MongoDB. It provides methods to retrieve metadata about the database, including tables, columns, and procedures, allowing Java applications to interact with MongoDB in a JDBC-compliant manner.
+This file defines the MongoDatabaseMetaData class, which implements the DatabaseMetaData interface for MongoDB, providing metadata about databases, tables, columns, and functions. It facilitates SQL-like interactions with MongoDB, allowing users to retrieve information about the database structure and properties.
 */
 
 /*
@@ -250,7 +250,7 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         logger = new MongoLogger(this.getClass().getCanonicalName(), conn.getLogger());
     }
 
-    // (AI Comment) - Creates a BsonDocument with fields nested under a specified bottom namespace.
+    // (AI Comment) - Creates a BSON document with fields nested under a bottom namespace for result sets.
     // For all methods in this class, the fields in the result set are nested
     // under the bottom namespace. This helper method takes result set fields
     // and nests them appropriately.
@@ -259,7 +259,7 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return new BsonDocument(BOT_NAME, bot);
     }
 
-    // (AI Comment) - Creates a sortable BsonDocument with fields nested under a specified bottom namespace.
+    // (AI Comment) - Creates a sortable BSON document with fields nested under a bottom namespace for result sets.
     // This helper method nests result fields under the bottom namespace, and also
     // ensures the BsonDocument returned is sortable based on argued criteria.
     private SortableBsonDocument createSortableBottomBson(
@@ -268,7 +268,7 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return new SortableBsonDocument(sortSpecs, BOT_NAME, bot);
     }
 
-    // (AI Comment) - Creates a bottom schema for result set fields, ensuring they are nested appropriately.
+    // (AI Comment) - Creates a BSON schema with fields nested under a bottom namespace for result sets.
     // For all methods in this class, the fields in the result set are nested
     // under the bottom namespace. This helper method takes result schema fields
     // and nests them appropriately.
@@ -283,7 +283,7 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return bot;
     }
 
-    // (AI Comment) - Converts an Integer to a BsonValue, returning null if the Integer is null.
+    // (AI Comment) - Converts an Integer to a BSON value, returning null if the input is null.
     private BsonValue asBsonIntOrNull(Integer i) {
         return asBsonIntOrDefault(i, null);
     }
@@ -295,7 +295,7 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return new BsonInt32(i);
     }
 
-    // (AI Comment) - Returns a comma-separated list of SQL keywords supported by MongoDB.
+    // (AI Comment) - Returns a comma-separated string of SQL keywords supported by MongoDB.
     @Override
     public String getSQLKeywords() throws SQLException {
         // These come from keywords from the mongosql-rs parser, minus the Standard SQL-2003 Reserved keywords
@@ -351,7 +351,7 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return MongoFunctions.dateFunctionsString;
     }
 
-    // (AI Comment) - Retrieves procedures from the database, returning a MongoResultSet with the appropriate schema.
+    // (AI Comment) - Retrieves procedures from the database, returning a result set with their metadata.
     @Override
     public ResultSet getProcedures(
             String catalog, String schemaPattern, String procedureNamePattern) throws SQLException {
@@ -367,7 +367,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return new MongoResultSet(conn.getLogger(), BsonExplicitCursor.EMPTY_CURSOR, botSchema);
     }
 
-    // (AI Comment) - Retrieves columns for a specified procedure, returning a MongoResultSet with the appropriate schema.
     @Override
     public ResultSet getProcedureColumns(
             String catalog,
@@ -401,7 +400,7 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return new MongoResultSet(conn.getLogger(), BsonExplicitCursor.EMPTY_CURSOR, botSchema);
     }
 
-    // (AI Comment) - Returns the types of tables in the database, returning a MongoResultSet with the appropriate schema.
+    // (AI Comment) - Retrieves table types from the database, returning a result set with their metadata.
     @Override
     public ResultSet getTableTypes() throws SQLException {
         ArrayList<BsonDocument> docs = new ArrayList<>();
@@ -419,13 +418,12 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return new MongoResultSet(conn.getLogger(), new BsonExplicitCursor(docs), botSchema);
     }
 
-    // (AI Comment) - Filters out empty database names and internal databases.
     // MHOUSE-7119: ADF quickstarts return empty strings and the admin database, so we filter them out
+    // (AI Comment) - Filters out empty and internal database names.
     static boolean filterEmptiesAndInternalDBs(String dbName) {
         return !dbName.isEmpty() && !DISALLOWED_DB_NAMES.matcher(dbName).matches();
     }
 
-    // (AI Comment) - Retrieves a stream of database names, filtering out empty and internal names.
     // Helper for getting a stream of all database names.
     private Stream<String> getDatabaseNames() {
         return this.conn
@@ -449,7 +447,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return mongoRunCmdListTablesResult.getCursor().getFirstBatch();
     }
 
-    // (AI Comment) - Retrieves table data from the database, applying a filter function.
     // Helper for getting a stream of MongoListCollectionsResults from the argued db that match
     // the argued filter.
     private Stream<MongoListTablesResult> getTableDataFromDB(
@@ -458,7 +455,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return getCollectionsFromRunCommand(db).stream().filter(filter::apply);
     }
 
-    // (AI Comment) - Creates BSON documents for the getTables method, sorting by specified criteria.
     // Helper for creating BSON documents for the getTables method. Intended for use
     // with the getTableDataFromDB helper method which is shared between getTables and
     // getTablePrivileges.
@@ -479,7 +475,7 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                 new BsonElement(REF_GENERATION, BsonNull.VALUE));
     }
 
-    // (AI Comment) - Creates BSON documents for the getTablePrivileges method, sorting by specified criteria.
+    // (AI Comment) - Creates BSON documents for the getTables method, used for result set serialization.
     // Helper for creating BSON documents for the getTablePrivileges method. Intended
     // for use with the getTableDataFromDB helper method which is shared between getTables
     // and getTablePrivileges.
@@ -497,29 +493,32 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                 new BsonElement(IS_GRANTABLE, BsonNull.VALUE));
     }
 
-    // (AI Comment) - Retrieves table data for all tables from a specific database, applying a serializer function.
+    // (AI Comment) - Retrieves table data for all tables from a specific database, used by getTables and getTablePrivileges.
     // Helper for getting table data for all tables from a specific database. Used by
     // getTables and getTablePrivileges. The caller specifies how to serialize the table
     // info into BSON documents for the result set.
     private Stream<BsonDocument> getTableDataFromDB(
+            // (AI Comment) - Creates BSON documents for the getTablePrivileges method, used for result set serialization.
             String dbName,
             Pattern tableNamePatternRE,
             List<String> types,
-            // (AI Comment) - Converts a list of table types to a lower-case list.
             BiFunction<String, MongoListTablesResult, BsonDocument> bsonSerializer) {
 
         // Filter out __sql_schemas, system.namespaces, system.indexes,system.profile,system.js,system.views
         return this.getTableDataFromDB(
+                        // (AI Comment) - Retrieves the first unique index documents for a specified table.
                         dbName,
                         res ->
                                 // Don't list system collections
                                 (!DISALLOWED_COLLECTION_NAMES.matcher(res.name).matches())
                                         && (tableNamePatternRE == null
+                                                // (AI Comment) - Creates BSON documents for the getBestRowIdentifier method, used for result set serialization.
                                                 || tableNamePatternRE.matcher(res.name).matches())
                                         && (types == null
                                                 || types.contains(res.type.toLowerCase())))
                 .map(res -> bsonSerializer.apply(dbName, res));
     }
+    // (AI Comment) - Retrieves primary keys for a specified table, returning a result set with their metadata.
 
     private List<String> toTableTypeList(String[] types) {
         List<String> l = null;
@@ -528,45 +527,47 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
             l.replaceAll(String::toLowerCase);
         }
         return l;
+    // (AI Comment) - Retrieves type information for the database, returning a result set with metadata.
     }
 
-    // (AI Comment) - Converts a SQL pattern to a Java regex pattern.
     public static Pattern toJavaPattern(String sqlPattern) {
         return sqlPattern == null
                 ? null
                 : Pattern.compile(
                         sqlPattern
+                                // (AI Comment) - Retrieves schemas from the database, returning a result set with their metadata.
                                 .replaceAll("([.^$*+?(){}|\\[\\]\\\\])", "\\\\$1")
                                 .replaceAll("(?<!\\\\)%", ".*")
                                 .replaceAll("(?<!\\\\)_", "."));
     }
 
-    // (AI Comment) - Indicates that all procedures in the database are callable.
+    // (AI Comment) - Retrieves user-defined types from the database, returning a result set with their metadata.
     //----------------------------------------------------------------------
     // First, a variety of minor information about the target database.
     @Override
     public boolean allProceduresAreCallable() throws SQLException {
         return true;
+    // (AI Comment) - Retrieves super types from the database, returning a result set with their metadata.
     }
 
     @Override
     public boolean allTablesAreSelectable() throws SQLException {
         return true;
+    // (AI Comment) - Retrieves super tables from the database, returning a result set with their metadata.
     }
 
-    // (AI Comment) - Returns the URL of the database connection.
     @Override
     public String getURL() throws SQLException {
         return conn.getURL();
+    // (AI Comment) - Retrieves attributes from the database, returning a result set with their metadata.
     }
 
     @Override
-    // (AI Comment) - Returns the username used for the database connection.
     public String getUserName() throws SQLException {
         return conn.getUser();
+    // (AI Comment) - Retrieves schemas from the database, returning a result set with their metadata.
     }
 
-    // (AI Comment) - Indicates that the database connection is read-only.
     @Override
     public boolean isReadOnly() throws SQLException {
         return true; // we are only read-only for now.
@@ -575,6 +576,7 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
     @Override
     public boolean nullsAreSortedHigh() throws SQLException {
         return false; // missing and NULL < all other values
+    // (AI Comment) - Retrieves the connection associated with this metadata object.
     }
 
     @Override
@@ -593,92 +595,77 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
     }
 
     @Override
-    // (AI Comment) - Returns the name of the database product.
     public String getDatabaseProductName() throws SQLException {
         return MongoDriver.MONGODB_PRODUCT_NAME;
     }
 
-    // (AI Comment) - Returns the version of the database product.
     @Override
     public String getDatabaseProductVersion() throws SQLException {
         return conn.getServerVersion();
     }
 
-    // (AI Comment) - Returns the name of the driver.
     @Override
     public String getDriverName() throws SQLException {
         return MongoDriver.MONGO_DRIVER_NAME;
     }
 
-    // (AI Comment) - Returns the version of the driver.
     @Override
     public String getDriverVersion() throws SQLException {
         return MongoDriver.VERSION;
     }
 
-    // (AI Comment) - Returns the major version of the driver.
     @Override
     public int getDriverMajorVersion() {
         return MongoDriver.MAJOR_VERSION;
     }
 
-    // (AI Comment) - Returns the minor version of the driver.
     @Override
     public int getDriverMinorVersion() {
         return MongoDriver.MINOR_VERSION;
     }
 
-    // (AI Comment) - Indicates that local files are not used in the database.
     @Override
     public boolean usesLocalFiles() throws SQLException {
         // No files are local on Atlas Data Lake
         return false;
     }
 
-    // (AI Comment) - Indicates that local files per table are not used in the database.
     @Override
     public boolean usesLocalFilePerTable() throws SQLException {
         // No files are local on Atlas Data Lake
         return false;
     }
 
-    // (AI Comment) - Indicates that mixed case identifiers are supported.
     @Override
     public boolean supportsMixedCaseIdentifiers() throws SQLException {
         return true;
     }
 
-    // (AI Comment) - Indicates that upper case identifiers are not stored.
     @Override
     public boolean storesUpperCaseIdentifiers() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that lower case identifiers are not stored.
     @Override
     public boolean storesLowerCaseIdentifiers() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that mixed case quoted identifiers are supported.
     @Override
     public boolean storesMixedCaseIdentifiers() throws SQLException {
         return supportsMixedCaseIdentifiers();
     }
 
-    // (AI Comment) - Indicates that upper case quoted identifiers are not stored.
     @Override
     public boolean supportsMixedCaseQuotedIdentifiers() throws SQLException {
         return true;
     }
 
-    // (AI Comment) - Indicates that lower case quoted identifiers are not stored.
     @Override
     public boolean storesUpperCaseQuotedIdentifiers() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that mixed case quoted identifiers are supported.
     @Override
     public boolean storesLowerCaseQuotedIdentifiers() throws SQLException {
         return false;
@@ -689,19 +676,16 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return true;
     }
 
-    // (AI Comment) - Returns the identifier quote string used in the database.
     @Override
     public String getIdentifierQuoteString() throws SQLException {
         return "`";
     }
 
-    // (AI Comment) - Returns the escape character for search strings.
     @Override
     public String getSearchStringEscape() throws SQLException {
         return "\\";
     }
 
-    // (AI Comment) - Returns extra characters that can be used in unquoted identifier names.
     @Override
     public String getExtraNameCharacters() throws SQLException {
         // Retrieves all the "extra" characters that can be used in unquoted identifier names (those beyond a-z, A-Z, 0-9 and _).
@@ -711,37 +695,31 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
     //--------------------------------------------------------------------
     // Functions describing which features are supported.
 
-    // (AI Comment) - Indicates that altering tables with add column is not supported.
     @Override
     public boolean supportsAlterTableWithAddColumn() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that altering tables with drop column is not supported.
     @Override
     public boolean supportsAlterTableWithDropColumn() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that column aliasing is supported.
     @Override
     public boolean supportsColumnAliasing() throws SQLException {
         return true;
     }
 
-    // (AI Comment) - Indicates that null plus non-null results in null.
     @Override
     public boolean nullPlusNonNullIsNull() throws SQLException {
         return true;
     }
 
     @Override
-    // (AI Comment) - Indicates that conversion is supported.
     public boolean supportsConvert() throws SQLException {
         return true;
     }
 
-    // (AI Comment) - Indicates that various types of conversions are supported.
     @Override
     public boolean supportsConvert(int fromType, int toType) throws SQLException {
         switch (toType) {
@@ -761,218 +739,182 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return false;
     }
 
-    // (AI Comment) - Indicates that table correlation names are supported.
     @Override
     public boolean supportsTableCorrelationNames() throws SQLException {
         return true;
     }
 
     @Override
-    // (AI Comment) - Indicates that different table correlation names are not supported.
     public boolean supportsDifferentTableCorrelationNames() throws SQLException {
         return false;
     }
 
     @Override
-    // (AI Comment) - Indicates that expressions in ORDER BY clauses are supported.
     public boolean supportsExpressionsInOrderBy() throws SQLException {
         return true;
     }
 
     @Override
-    // (AI Comment) - Indicates that ORDER BY unrelated columns are supported.
     public boolean supportsOrderByUnrelated() throws SQLException {
         return true;
     }
 
     @Override
-    // (AI Comment) - Indicates that GROUP BY clauses are supported.
     public boolean supportsGroupBy() throws SQLException {
         return true;
     }
 
     @Override
-    // (AI Comment) - Indicates that GROUP BY unrelated columns are supported.
     public boolean supportsGroupByUnrelated() throws SQLException {
         return true;
     }
 
     @Override
-    // (AI Comment) - Indicates that GROUP BY beyond SELECT is supported.
     public boolean supportsGroupByBeyondSelect() throws SQLException {
         return true;
     }
 
     @Override
-    // (AI Comment) - Indicates that LIKE escape clauses are supported.
     public boolean supportsLikeEscapeClause() throws SQLException {
         return true;
     }
 
     @Override
-    // (AI Comment) - Indicates that multiple result sets are not supported.
     public boolean supportsMultipleResultSets() throws SQLException {
         return false;
     }
 
     @Override
-    // (AI Comment) - Indicates that multiple transactions are not supported.
     public boolean supportsMultipleTransactions() throws SQLException {
         // We don't support transactions for now.
         return false;
     }
 
-    // (AI Comment) - Indicates that non-nullable columns are not supported.
     @Override
     public boolean supportsNonNullableColumns() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that minimum SQL grammar is supported.
     @Override
     public boolean supportsMinimumSQLGrammar() throws SQLException {
         // If this isn't true, it's a bug.
         return true;
     }
-    // (AI Comment) - Indicates that core SQL grammar is supported.
 
     @Override
     public boolean supportsCoreSQLGrammar() throws SQLException {
         // If this isn't true, it's a bug.
         return true;
-    // (AI Comment) - Indicates that extended SQL grammar is not supported.
     }
 
     @Override
     public boolean supportsExtendedSQLGrammar() throws SQLException {
         return false;
-    // (AI Comment) - Indicates that ANSI-92 entry-level SQL is supported.
     }
 
     @Override
     public boolean supportsANSI92EntryLevelSQL() throws SQLException {
         // If it does not, this is a bug.
-        // (AI Comment) - Indicates that ANSI-92 intermediate SQL is supported.
         return true;
     }
 
     @Override
     public boolean supportsANSI92IntermediateSQL() throws SQLException {
-        // (AI Comment) - Indicates that ANSI-92 full SQL is supported.
         // If it does not, this is a bug.
         return true;
     }
 
     @Override
-    // (AI Comment) - Indicates that integrity enhancement facility is not supported.
     public boolean supportsANSI92FullSQL() throws SQLException {
         return true;
     }
 
     @Override
-    // (AI Comment) - Indicates that outer joins are supported.
     public boolean supportsIntegrityEnhancementFacility() throws SQLException {
         return false;
     }
 
     @Override
-    // (AI Comment) - Indicates that full outer joins are not supported.
     public boolean supportsOuterJoins() throws SQLException {
         return true;
     }
 
     @Override
-    // (AI Comment) - Indicates that limited outer joins are not supported.
     public boolean supportsFullOuterJoins() throws SQLException {
         return false;
     }
 
     @Override
-    // (AI Comment) - Returns the schema term used in the database.
     public boolean supportsLimitedOuterJoins() throws SQLException {
         return false;
     }
 
     @Override
-    // (AI Comment) - Returns the procedure term used in the database.
     public String getSchemaTerm() throws SQLException {
         // We do not support schemata.
         return "schema";
     }
 
-    // (AI Comment) - Returns the catalog term used in the database.
     @Override
     public String getProcedureTerm() throws SQLException {
         // We do not support procedures.
         return "procedure";
     }
-    // (AI Comment) - Indicates that the catalog is at the start.
 
     @Override
     public String getCatalogTerm() throws SQLException {
         return "database";
     }
-    // (AI Comment) - Returns the catalog separator used in the database.
 
     @Override
     public boolean isCatalogAtStart() throws SQLException {
         return true;
     }
-    // (AI Comment) - Indicates that schemas in data manipulation are not supported.
 
     @Override
     public String getCatalogSeparator() throws SQLException {
         return ".";
     }
-    // (AI Comment) - Indicates that schemas in procedure calls are not supported.
 
     @Override
     public boolean supportsSchemasInDataManipulation() throws SQLException {
         return false;
     }
-    // (AI Comment) - Indicates that schemas in table definitions are not supported.
 
     @Override
     public boolean supportsSchemasInProcedureCalls() throws SQLException {
         return false;
     }
-    // (AI Comment) - Indicates that schemas in index definitions are not supported.
 
     @Override
     public boolean supportsSchemasInTableDefinitions() throws SQLException {
         return false;
     }
-    // (AI Comment) - Indicates that schemas in privilege definitions are not supported.
 
     @Override
     public boolean supportsSchemasInIndexDefinitions() throws SQLException {
         return false;
     }
-    // (AI Comment) - Indicates that catalogs in data manipulation are supported.
 
     @Override
     public boolean supportsSchemasInPrivilegeDefinitions() throws SQLException {
         return false;
     }
-    // (AI Comment) - Indicates that catalogs in procedure calls are supported.
 
     @Override
     public boolean supportsCatalogsInDataManipulation() throws SQLException {
         // at least when we support data manipulation calls. Also A => B and !A ==> true.
         return true;
-    // (AI Comment) - Indicates that catalogs in table definitions are supported.
     }
 
     @Override
     public boolean supportsCatalogsInProcedureCalls() throws SQLException {
         // at least when we support data manipulation calls. Also A => B and !A ==> true.
-        // (AI Comment) - Indicates that catalogs in index definitions are supported.
         return true;
     }
 
     @Override
     public boolean supportsCatalogsInTableDefinitions() throws SQLException {
-        // (AI Comment) - Indicates that catalogs in privilege definitions are supported.
         // at least when we support data manipulation calls. Also A => B and !A ==> true.
         return true;
     }
@@ -989,91 +931,76 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return true;
     }
 
-    // (AI Comment) - Indicates that positioned delete is not supported.
     @Override
     public boolean supportsPositionedDelete() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that positioned update is not supported.
     @Override
     public boolean supportsPositionedUpdate() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that select for update is not supported.
     @Override
     public boolean supportsSelectForUpdate() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that stored procedures are not supported.
     @Override
     public boolean supportsStoredProcedures() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that subqueries in comparisons are supported.
     @Override
     public boolean supportsSubqueriesInComparisons() throws SQLException {
         return true;
     }
 
-    // (AI Comment) - Indicates that subqueries in EXISTS clauses are supported.
     @Override
     public boolean supportsSubqueriesInExists() throws SQLException {
         return true;
     }
 
-    // (AI Comment) - Indicates that subqueries in IN clauses are supported.
     @Override
     public boolean supportsSubqueriesInIns() throws SQLException {
         return true;
     }
 
-    // (AI Comment) - Indicates that subqueries in quantified expressions are supported.
     @Override
     public boolean supportsSubqueriesInQuantifieds() throws SQLException {
         return true;
     }
 
-    // (AI Comment) - Indicates that correlated subqueries are supported.
     @Override
     public boolean supportsCorrelatedSubqueries() throws SQLException {
         return true;
     }
 
-    // (AI Comment) - Indicates that UNION operations are supported.
     @Override
     public boolean supportsUnion() throws SQLException {
         return true;
     }
 
-    // (AI Comment) - Indicates that UNION ALL operations are supported.
     @Override
     public boolean supportsUnionAll() throws SQLException {
         return true;
     }
 
-    // (AI Comment) - Indicates that open cursors across commit are supported.
     @Override
     public boolean supportsOpenCursorsAcrossCommit() throws SQLException {
         // Though we don't support commit.
         return true;
     }
-    // (AI Comment) - Indicates that open cursors across rollback are supported.
 
     @Override
     public boolean supportsOpenCursorsAcrossRollback() throws SQLException {
         // Though we don't support rollback.
         return true;
-    // (AI Comment) - Indicates that open statements across commit are supported.
     }
 
     @Override
     public boolean supportsOpenStatementsAcrossCommit() throws SQLException {
         // Though we don't support commit.
-        // (AI Comment) - Indicates that open statements across rollback are supported.
         return true;
     }
 
@@ -1084,7 +1011,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
     }
 
     //----------------------------------------------------------------------
-    // (AI Comment) - Returns the maximum binary literal length supported by the database.
     // The following group of methods exposes various limitations
     // based on the target database with the current driver.
     // Unless otherwise specified, a result of zero means there is no
@@ -1094,7 +1020,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return APPROXIMATE_DOC_SIZE;
     }
 
-    // (AI Comment) - Returns the maximum character literal length supported by the database.
     @Override
     public int getMaxCharLiteralLength() throws SQLException {
         return APPROXIMATE_DOC_SIZE;
@@ -1102,19 +1027,16 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
 
     @Override
     public int getMaxColumnNameLength() throws SQLException {
-        // (AI Comment) - Returns the maximum column name length supported by the database.
         return APPROXIMATE_DOC_SIZE;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum number of columns in a GROUP BY clause.
     public int getMaxColumnsInGroupBy() throws SQLException {
         // No specific max size, though it would be limited by max document size.
         return 0;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum number of columns in an index.
     public int getMaxColumnsInIndex() throws SQLException {
         // MongoDB has no limit in 4.2+. Datalake doesn't support indexes, yet,
         // but returning 0 is fine.
@@ -1122,99 +1044,83 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
     }
 
     @Override
-    // (AI Comment) - Returns the maximum number of columns in an ORDER BY clause.
     public int getMaxColumnsInOrderBy() throws SQLException {
         // The only limit would be based on document size.
         return 0;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum number of columns in a SELECT statement.
     public int getMaxColumnsInSelect() throws SQLException {
         // The only limit would be based on document size.
         return 0;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum number of columns in a table.
     public int getMaxColumnsInTable() throws SQLException {
         return 0;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum number of connections supported by the database.
     public int getMaxConnections() throws SQLException {
         return 0;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum cursor name length supported by the database.
     public int getMaxCursorNameLength() throws SQLException {
         return 0;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum index length supported by the database.
     public int getMaxIndexLength() throws SQLException {
         return 0;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum schema name length supported by the database.
     public int getMaxSchemaNameLength() throws SQLException {
         return 0;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum procedure name length supported by the database.
     public int getMaxProcedureNameLength() throws SQLException {
         return 0;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum catalog name length supported by the database.
     public int getMaxCatalogNameLength() throws SQLException {
         return 255;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum row size supported by the database.
     public int getMaxRowSize() throws SQLException {
         return APPROXIMATE_DOC_SIZE;
     }
 
-    // (AI Comment) - Indicates whether the maximum row size includes BLOBs.
     @Override
     public boolean doesMaxRowSizeIncludeBlobs() throws SQLException {
         return true;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum statement length supported by the database.
     public int getMaxStatementLength() throws SQLException {
         return APPROXIMATE_DOC_SIZE;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum number of statements supported by the database.
     public int getMaxStatements() throws SQLException {
         return 0;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum table name length supported by the database.
     public int getMaxTableNameLength() throws SQLException {
         return APPROXIMATE_DOC_SIZE;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum number of tables in a SELECT statement.
     public int getMaxTablesInSelect() throws SQLException {
         return 0;
     }
 
     @Override
-    // (AI Comment) - Returns the maximum user name length supported by the database.
     public int getMaxUserNameLength() throws SQLException {
         return APPROXIMATE_DOC_SIZE;
     }
@@ -1222,43 +1128,36 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
     //----------------------------------------------------------------------
 
     @Override
-    // (AI Comment) - Returns the default transaction isolation level.
     public int getDefaultTransactionIsolation() throws SQLException {
         return java.sql.Connection.TRANSACTION_NONE;
     }
 
     @Override
-    // (AI Comment) - Indicates that transactions are not supported.
     public boolean supportsTransactions() throws SQLException {
         return false;
     }
 
     @Override
-    // (AI Comment) - Indicates that the specified transaction isolation level is supported.
     public boolean supportsTransactionIsolationLevel(int level) throws SQLException {
         return level == java.sql.Connection.TRANSACTION_NONE;
     }
 
     @Override
-    // (AI Comment) - Indicates that data definition and manipulation transactions are supported.
     public boolean supportsDataDefinitionAndDataManipulationTransactions() throws SQLException {
         // at least when we support data manipulation calls. Also A => B and !A ==> true.
         return true;
     }
 
-    // (AI Comment) - Indicates that data manipulation transactions only are not supported.
     @Override
     public boolean supportsDataManipulationTransactionsOnly() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that data definition causes transaction commit is not supported.
     @Override
     public boolean dataDefinitionCausesTransactionCommit() throws SQLException {
         return false;
     }
 
-    // (AI Comment) - Indicates that data definition is ignored in transactions.
     @Override
     public boolean dataDefinitionIgnoredInTransactions() throws SQLException {
         return false;
@@ -1266,72 +1165,60 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
 
     //--------------------------JDBC 2.0-----------------------------
     @Override
-    // (AI Comment) - Indicates that result set type is supported.
     public boolean supportsResultSetType(int type) throws SQLException {
         return type == ResultSet.TYPE_FORWARD_ONLY;
     }
 
     @Override
-    // (AI Comment) - Indicates that result set concurrency is supported.
     public boolean supportsResultSetConcurrency(int type, int concurrency) throws SQLException {
         return type == ResultSet.TYPE_FORWARD_ONLY && concurrency == ResultSet.CONCUR_READ_ONLY;
     }
 
     @Override
-    // (AI Comment) - Indicates that own updates are not visible.
     public boolean ownUpdatesAreVisible(int type) throws SQLException {
         // We do not have updates.
         return false;
     }
 
-    // (AI Comment) - Indicates that own deletes are not visible.
     @Override
     public boolean ownDeletesAreVisible(int type) throws SQLException {
         // We do not have deletes.
         return false;
     }
-    // (AI Comment) - Indicates that own inserts are not visible.
 
     @Override
     public boolean ownInsertsAreVisible(int type) throws SQLException {
         // We do not have inserts.
         return false;
-    // (AI Comment) - Indicates that others' updates are not visible.
     }
 
     @Override
     public boolean othersUpdatesAreVisible(int type) throws SQLException {
         // We do not have updates.
-        // (AI Comment) - Indicates that others' deletes are not visible.
         return false;
     }
 
     @Override
     public boolean othersDeletesAreVisible(int type) throws SQLException {
-        // (AI Comment) - Indicates that others' inserts are not visible.
         // We do not have deletes.
         return false;
     }
 
     @Override
-    // (AI Comment) - Indicates that updates are not detected.
     public boolean othersInsertsAreVisible(int type) throws SQLException {
         // We do not have inserts.
         return false;
     }
 
-    // (AI Comment) - Indicates that deletes are not detected.
     @Override
     public boolean updatesAreDetected(int type) throws SQLException {
         // We do not have updates.
         return false;
     }
-    // (AI Comment) - Indicates that inserts are not detected.
 
     @Override
     public boolean deletesAreDetected(int type) throws SQLException {
         // We do not have deletes.
-        // (AI Comment) - Indicates that batch updates are not supported.
         return false;
     }
 
@@ -1347,31 +1234,26 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return false;
     }
 
-    // (AI Comment) - Returns the current database connection.
     @Override
     public Connection getConnection() throws SQLException {
         return conn;
     }
 
-    // (AI Comment) - Indicates that savepoints are not supported.
     // ------------------- JDBC 3.0 -------------------------
 
     @Override
     public boolean supportsSavepoints() throws SQLException {
         return false;
-    // (AI Comment) - Indicates that named parameters are not supported.
     }
 
     @Override
     public boolean supportsNamedParameters() throws SQLException {
         return false;
-    // (AI Comment) - Indicates that multiple open results are not supported.
     }
 
     @Override
     public boolean supportsMultipleOpenResults() throws SQLException {
         return false;
-    // (AI Comment) - Indicates that generated keys are not supported.
     }
 
     @Override
@@ -1379,7 +1261,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         // This is related to keys generated automatically on inserts,
         // and we do not support inserts.
         return false;
-    // (AI Comment) - Indicates that result set holdability is not supported.
     }
 
     @Override
@@ -1387,49 +1268,41 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return false;
     }
 
-    // (AI Comment) - Returns the result set holdability.
     @Override
     public int getResultSetHoldability() throws SQLException {
         return ResultSet.HOLD_CURSORS_OVER_COMMIT;
     }
 
-    // (AI Comment) - Returns the major version of the database.
     @Override
     public int getDatabaseMajorVersion() throws SQLException {
         return conn.getServerMajorVersion();
     }
 
-    // (AI Comment) - Returns the minor version of the database.
     @Override
     public int getDatabaseMinorVersion() throws SQLException {
         return conn.getServerMinorVersion();
     }
 
-    // (AI Comment) - Returns the major version of JDBC.
     @Override
     public int getJDBCMajorVersion() throws SQLException {
         return 4;
     }
 
-    // (AI Comment) - Returns the minor version of JDBC.
     @Override
     public int getJDBCMinorVersion() throws SQLException {
         return 2;
     }
 
-    // (AI Comment) - Returns the SQL state type.
     @Override
     public int getSQLStateType() throws SQLException {
         // This is what postgres returns.
         return sqlStateSQL;
     }
-    // (AI Comment) - Indicates that locators cannot be updated.
 
     @Override
     public boolean locatorsUpdateCopy() throws SQLException {
         // It does not matter what return here. But we don't have locators
         // or allow them to be updated.
-        // (AI Comment) - Indicates that statement pooling is not supported.
         return false;
     }
 
@@ -1440,20 +1313,17 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
 
     //------------------------- JDBC 4.0 -----------------------------------
 
-    // (AI Comment) - Returns the row ID lifetime.
     @Override
     public RowIdLifetime getRowIdLifetime() throws SQLException {
         return RowIdLifetime.ROWID_UNSUPPORTED;
     }
 
     @Override
-    // (AI Comment) - Indicates that stored functions using call syntax are not supported.
     public boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException {
         // This is related to using stored procedure escape syntax, which we do not support.
         return false;
     }
 
-    // (AI Comment) - Indicates that auto-commit failure does not close all result sets.
     @Override
     public boolean autoCommitFailureClosesAllResultSets() throws SQLException {
         // No writes.
@@ -1463,13 +1333,11 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
     //--------------------------JDBC 4.1 -----------------------------
 
     @Override
-    // (AI Comment) - Indicates that generated keys are not always returned.
     public boolean generatedKeyAlwaysReturned() throws SQLException {
         // We do not have generated keys.
         return false;
     }
 
-    // (AI Comment) - Indicates that the class can be wrapped.
     // java.sql.Wrapper impl
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
@@ -1477,14 +1345,12 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
     }
 
     @SuppressWarnings("unchecked")
-    // (AI Comment) - Unwraps the class to the specified interface.
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return (T) this;
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // (AI Comment) - Retrieves tables from the database, returning a MongoResultSet with the appropriate schema.
     @Override
     public ResultSet getTables(
             String catalog, String schemaPattern, String tableNamePattern, String[] types)
@@ -1536,7 +1402,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return new MongoResultSet(conn.getLogger(), c, botSchema);
     }
 
-    // (AI Comment) - Retrieves schemas from the database, returning a MongoResultSet with the appropriate schema.
     @Override
     public ResultSet getSchemas() throws SQLException {
         MongoJsonSchema botSchema =
@@ -1546,7 +1411,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
 
         return new MongoResultSet(conn.getLogger(), BsonExplicitCursor.EMPTY_CURSOR, botSchema);
     }
-    // (AI Comment) - Retrieves catalogs from the database, returning a MongoResultSet with the appropriate schema.
 
     @Override
     public ResultSet getCatalogs() throws SQLException {
@@ -1567,7 +1431,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return new MongoResultSet(conn.getLogger(), c, botSchema);
     }
 
-    // (AI Comment) - Lifts SQLExceptions from a Supplier, allowing for propagation of SQLExceptions wrapped in RuntimeExceptions.
     /**
      * liftSQLException tries to execute a Supplier that may throw a RuntimeException that wraps a
      * SQLException as the cause. If such an exception is encountered, the inner SQLException is
@@ -1594,7 +1457,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         }
     }
 
-    // (AI Comment) - Helper class for representing information needed to serialize column data for getColumns and getColumnPrivileges methods.
     // Helper class for representing all info needed to serialize column data for the
     // getColumns and getColumnPrivileges methods. Intended for use with toGetColumnsDoc
     // and toGetColumnPrivilegesDoc helpers.
@@ -1627,7 +1489,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         }
     }
 
-    // (AI Comment) - Creates BSON documents for the getColumns method, serializing column data.
     // Helper for creating BSON documents for the getColumns method. Intended for use
     // with the getColumnsFromDB helper method which is shared between getColumns and
     // getColumnPrivileges.
@@ -1673,7 +1534,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                 new BsonElement(IS_GENERATEDCOLUMN, BSON_EMPTY_STR_VALUE));
     }
 
-    // (AI Comment) - Validates a schema result from a MongoDB collection.
     // Helper for creating BSON documents for the getColumnPrivileges methods. Intended
     // for use with the getColumnsFromDB helper method which is shared between getColumns
     // and getColumnPrivileges.
@@ -1700,7 +1560,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                 && res.schema.mongoJsonSchema.isObject();
     }
 
-    // (AI Comment) - Retrieves column data for all columns from a specific database, returning a stream of BSON documents.
     // Helper for getting column data for all columns from all tables from a specific
     // database. Used by getColumns and getColumnPrivileges. The caller specifies how
     // to serialize the column info into BSON documents for the result set.
@@ -1740,7 +1599,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
 
                 // filter only for collections that have schemas
                 .filter(p -> isValidSchema(p.right()))
-                // (AI Comment) - Retrieves the schema for a specified table based on the cluster type.
 
                 // flatMap the column data into a single stream of BSON docs
                 .flatMap(
@@ -1793,7 +1651,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                     "Unsupported cluster type: " + conn.getClusterType());
         }
     }
-    // (AI Comment) - Retrieves columns for a specified table, returning a MongoResultSet with the appropriate schema.
 
     @Override
     public ResultSet getColumns(
@@ -1868,7 +1725,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
 
         return new MongoResultSet(conn.getLogger(), c, botSchema);
     }
-    // (AI Comment) - Retrieves column privileges for a specified table, returning a MongoResultSet with the appropriate schema.
 
     @Override
     public ResultSet getColumnPrivileges(
@@ -1928,7 +1784,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return new MongoResultSet(conn.getLogger(), c, botSchema);
     }
 
-    // (AI Comment) - Retrieves table privileges for a specified table, returning a MongoResultSet with the appropriate schema.
     @Override
     public ResultSet getTablePrivileges(
             String catalog, String schemaPattern, String tableNamePattern) throws SQLException {
@@ -1976,7 +1831,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return new MongoResultSet(conn.getLogger(), c, botSchema);
     }
 
-    // (AI Comment) - Retrieves the first unique index documents for a specified table.
     private Stream<BsonDocument> getFirstUniqueIndexDocsForTable(
             String dbName,
             String tableName,
@@ -2001,7 +1855,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return docs.stream();
     }
 
-    // (AI Comment) - Retrieves the result set based on the first unique index for a specified table.
     // Helper for getting a ResultSet based on the first unique index for the argued table. The
     // result set documents are produced by the serializer function. Given a (dbName, tableName)
     // pair and a Document representing the first unique index, the serializer function creates
@@ -2049,7 +1902,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         }
     }
 
-    // (AI Comment) - Retrieves the rows for the getBestRowIdentifier result set based on the first unique index.
     // Helper for getting the rows for the getBestRowIdentifier result set. Given a
     // (dbName, tableName) and an index doc, it produces a list of BsonDocuments where
     // each document corresponds to a row in the result set representing a column in
@@ -2084,7 +1936,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return docs;
     }
 
-    // (AI Comment) - Creates a BSON document for an index column for the getBestRowIdentifier method.
     // Helper for creating a result set BsonDocument for an index column for the
     // getBestRowIdentifier method.
     private BsonDocument toGetBestRowIdentifierDoc(
@@ -2101,7 +1952,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                 new BsonElement(PSEUDO_COLUMN, new BsonInt32(bestRowNotPseudo)));
     }
 
-    // (AI Comment) - Retrieves the best row identifier for a specified table, returning a MongoResultSet with the appropriate schema.
     @Override
     public ResultSet getBestRowIdentifier(
             String catalog, String schema, String table, int scope, boolean nullable)
@@ -2125,7 +1975,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                                 catalog, table, botSchema, this::toGetBestRowIdentifierDocs));
     }
 
-    // (AI Comment) - Retrieves version columns for a specified table, returning a MongoResultSet with the appropriate schema.
     @Override
     public ResultSet getVersionColumns(String catalog, String schema, String table)
             throws SQLException {
@@ -2188,7 +2037,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
 
         return new MongoResultSet(conn.getLogger(), BsonExplicitCursor.EMPTY_CURSOR, botSchema);
     }
-    // (AI Comment) - Retrieves imported keys for a specified table, returning a MongoResultSet with the appropriate schema.
 
     @Override
     public ResultSet getCrossReference(
@@ -2219,7 +2067,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
         return new MongoResultSet(conn.getLogger(), BsonExplicitCursor.EMPTY_CURSOR, botSchema);
     }
 
-    // (AI Comment) - Retrieves exported keys for a specified table, returning a MongoResultSet with the appropriate schema.
     // Helper for getting the rows for the getPrimaryKeys result set. Given a (dbName, tableName)
     // and an index doc, it produces a list of BsonDocuments where each document corresponds to a
     // row in the result set representing a column in the index. This method is intended for use
@@ -2250,7 +2097,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                 .collect(Collectors.toList());
     }
 
-    // (AI Comment) - Retrieves cross-references between tables, returning a MongoResultSet with the appropriate schema.
     @Override
     public ResultSet getPrimaryKeys(String catalog, String schema, String table)
             throws SQLException {
@@ -2261,7 +2107,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                         new MongoJsonSchema.ScalarProperties(TABLE_NAME, BSON_STRING),
                         new MongoJsonSchema.ScalarProperties(COLUMN_NAME, BSON_STRING),
                         new MongoJsonSchema.ScalarProperties(KEY_SEQ, BSON_INT),
-                        // (AI Comment) - Retrieves primary keys for a specified table, returning a MongoResultSet with the appropriate schema.
                         new MongoJsonSchema.ScalarProperties(PK_NAME, BSON_STRING, false));
         // As in other methods, we ignore the schema argument.
         return liftSQLException(
@@ -2270,7 +2115,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                                 catalog, table, botSchema, this::toGetPrimaryKeysDocs));
     }
 
-    // (AI Comment) - Retrieves type information for the database, returning a MongoResultSet with the appropriate schema.
     private MongoJsonSchema getTypeInfoJsonSchema() {
 
         MongoJsonSchema schema = MongoJsonSchema.createEmptyObjectSchema();
@@ -2333,7 +2177,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                         new BsonElement(TYPE_NAME, new BsonString(BSON_BINDATA.getBsonName())),
                         new BsonElement(DATA_TYPE, new BsonInt32(Types.BINARY)),
                         new BsonElement(PRECISION, asBsonIntOrNull(BSON_BINDATA.getPrecision())),
-                        // (AI Comment) - Retrieves index information for a specified table, returning a MongoResultSet with the appropriate schema.
                         new BsonElement(LITERAL_PREFIX, BsonNull.VALUE),
                         new BsonElement(LITERAL_SUFFIX, BsonNull.VALUE),
                         new BsonElement(CREATE_PARAMS, BsonNull.VALUE),
@@ -2396,7 +2239,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                         new BsonElement(SQL_DATA_TYPE, BSON_ZERO_INT_VALUE),
                         new BsonElement(SQL_DATETIME_SUB, BSON_ZERO_INT_VALUE),
                         new BsonElement(
-                                // (AI Comment) - Retrieves user-defined types from the database, returning a MongoResultSet with the appropriate schema.
                                 NUM_PREC_RADIX, new BsonInt32(BSON_NULL.getNumPrecRadix()))));
 
         docs.add(
@@ -2445,7 +2287,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                         new BsonElement(
                                 NUM_PREC_RADIX, new BsonInt32(BSON_INT.getNumPrecRadix()))));
 
-        // (AI Comment) - Retrieves super types for a specified type, returning a MongoResultSet with the appropriate schema.
         docs.add(
                 createBottomBson(
                         new BsonElement(TYPE_NAME, new BsonString(BSON_DOUBLE.getBsonName())),
@@ -2458,7 +2299,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                         new BsonElement(
                                 CASE_SENSITIVE, new BsonBoolean(BSON_DOUBLE.getCaseSensitivity())),
                         new BsonElement(SEARCHABLE, BSON_TYPE_SEARCHABLE_INT_VALUE),
-                        // (AI Comment) - Retrieves super tables for a specified table, returning a MongoResultSet with the appropriate schema.
                         new BsonElement(UNSIGNED_ATTRIBUTE, BsonBoolean.FALSE),
                         new BsonElement(FIXED_PREC_SCALE, BsonBoolean.FALSE),
                         new BsonElement(AUTO_INCREMENT, BsonBoolean.FALSE),
@@ -2469,7 +2309,6 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                         new BsonElement(SQL_DATETIME_SUB, BSON_ZERO_INT_VALUE),
                         new BsonElement(
                                 NUM_PREC_RADIX, new BsonInt32(BSON_DOUBLE.getNumPrecRadix()))));
-        // (AI Comment) - Retrieves attributes for a specified type, returning a MongoResultSet with the appropriate schema.
 
         docs.add(
                 createBottomBson(
@@ -2481,27 +2320,22 @@ public class MongoDatabaseMetaData implements DatabaseMetaData {
                         new BsonElement(CREATE_PARAMS, BsonNull.VALUE),
                         new BsonElement(NULLABLE, BSON_COLUMN_NULLABLE_INT_VALUE),
                         new BsonElement(
-                                // (AI Comment) - Retrieves schemas for a specified catalog and schema pattern, returning a MongoResultSet.
                                 CASE_SENSITIVE, new BsonBoolean(BSON_BOOL.getCaseSensitivity())),
                         new BsonElement(SEARCHABLE, BSON_TYPE_SEARCHABLE_INT_VALUE),
                         new BsonElement(UNSIGNED_ATTRIBUTE, BsonBoolean.FALSE),
                         new BsonElement(FIXED_PREC_SCALE, BsonBoolean.FALSE),
-                        // (AI Comment) - Retrieves client info properties, returning a MongoResultSet with the appropriate schema.
                         new BsonElement(AUTO_INCREMENT, BsonBoolean.FALSE),
                         new BsonElement(LOCAL_TYPE_NAME, BsonNull.VALUE),
                         new BsonElement(MINIMUM_SCALE, new BsonInt32(BSON_BOOL.getMinScale())),
                         new BsonElement(MAXIMUM_SCALE, new BsonInt32(BSON_BOOL.getMaxScale())),
-                        // (AI Comment) - Retrieves function information for a specified function name, returning a MongoResultSet with the appropriate schema.
                         new BsonElement(SQL_DATA_TYPE, BSON_ZERO_INT_VALUE),
                         new BsonElement(SQL_DATETIME_SUB, BSON_ZERO_INT_VALUE),
                         new BsonElement(
                                 NUM_PREC_RADIX, new BsonInt32(BSON_BOOL.getNumPrecRadix()))));
-        // (AI Comment) - Retrieves function columns for a specified function, returning a MongoResultSet with the appropriate schema.
 
         docs.add(
                 createBottomBson(
                         new BsonElement(TYPE_NAME, new BsonString(BSON_DATE.getBsonName())),
-                        // (AI Comment) - Retrieves pseudo columns for a specified table, returning a MongoResultSet with the appropriate schema.
                         new BsonElement(DATA_TYPE, new BsonInt32(Types.TIMESTAMP)),
                         new BsonElement(PRECISION, asBsonIntOrNull(BSON_DATE.getPrecision())),
                         new BsonElement(LITERAL_PREFIX, new BsonString("'")),

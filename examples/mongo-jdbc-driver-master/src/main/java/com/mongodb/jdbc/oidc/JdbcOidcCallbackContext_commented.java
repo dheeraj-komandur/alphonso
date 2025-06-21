@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - JdbcOidcCallbackContext_commented.java *********
-This file defines the JdbcOidcCallbackContext class, which implements the OidcCallbackContext interface to manage OIDC callback context information for JDBC operations, including user credentials and session details.
+This file defines the JdbcOidcCallbackContext class, which encapsulates the context for OIDC callbacks in JDBC, including user information and session details. It provides methods to access various attributes related to the OIDC callback, ensuring a structured approach to handling authentication contexts.
 */
 
 /*

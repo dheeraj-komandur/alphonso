@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - BsonTypeInfoTest_commented.java *********
-This file contains unit tests for the BSON type information retrieval methods in the 'BsonTypeInfo' class, ensuring that the methods correctly return type information based on BSON type names and BSON values.
+The 'BsonTypeInfoTest.java' file serves as a unit test suite for the BSON type information retrieval methods in the 'BsonTypeInfo' class. It ensures that the methods correctly map BSON type names and BSON values to their respective type information, validating both expected behavior and error handling.
 */
 
 /*

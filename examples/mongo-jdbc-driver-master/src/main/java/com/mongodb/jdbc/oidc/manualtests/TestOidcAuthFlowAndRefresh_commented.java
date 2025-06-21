@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestOidcAuthFlowAndRefresh_commented.java *********
-The 'TestOidcAuthFlowAndRefresh.java' file is designed to test the OIDC authentication flow and the refresh token functionality. It initializes the necessary contexts and executes the authentication process, handling both the initial authentication and subsequent token refresh operations.
+The 'TestOidcAuthFlowAndRefresh.java' file is designed to test the OIDC authentication flow and the refresh token mechanism within the MongoDB JDBC OIDC package. It initializes the authentication process, handles the retrieval of access and refresh tokens, and manages the refresh token flow, providing a console output of the results.
 */
 
 /*
@@ -29,25 +29,25 @@ import java.time.Duration;
 
 // (AI Comment) - This class contains the main method to test the OIDC authentication flow and refresh token functionality.
 public class TestOidcAuthFlowAndRefresh {
-    // (AI Comment) - Main method that initiates the OIDC authentication flow and handles the refresh token process.
+    // (AI Comment) - Main entry point for the application that initiates the OIDC authentication flow and handles token refresh.
     public static void main(String[] args) {
+        // (AI Comment) - Initializes the OIDC authentication flow and sets up the callback context with a timeout and IDP information.
         OidcAuthFlow authFlow = new OidcAuthFlow();
 
-        // (AI Comment) - Sets a timeout duration for the authentication process and initializes the callback context with necessary parameters.
         Duration timeout = Duration.ofMinutes(5);
         OidcCallbackContext callbackContext =
                 new JdbcOidcCallbackContext(timeout, 1, null, TestOidcUtils.IDP_INFO, null);
 
-        // (AI Comment) - Executes the authentication code flow and processes the result, including handling the refresh token if available.
         OidcCallbackResult result = TestOidcUtils.testAuthCodeFlow(callbackContext, authFlow);
+        // (AI Comment) - Handles the result of the authentication flow, retrieves the refresh token, and attempts to refresh the access token.
         if (result != null) {
-            // (AI Comment) - Creates a new callback context for refreshing the token using the refresh token obtained from the initial authentication result.
             // get refresh token from the AuthCodeFLow result
+            // (AI Comment) - Creates a new callback context for refreshing the token using the refresh token obtained from the initial flow.
             OidcCallbackContext refreshContext =
                     new JdbcOidcCallbackContext(
                             timeout, 1, result.getRefreshToken(), TestOidcUtils.IDP_INFO, null);
             try {
-                // (AI Comment) - Attempts to refresh the access token and handles any exceptions that may occur during the process.
+                // (AI Comment) - Executes the refresh token flow and handles potential exceptions, printing results or errors to the console.
                 OidcCallbackResult refreshResult = authFlow.doRefresh(refreshContext);
                 if (refreshResult != null) {
                     System.out.println("Refreshed Access Token: " + refreshResult.getAccessToken());

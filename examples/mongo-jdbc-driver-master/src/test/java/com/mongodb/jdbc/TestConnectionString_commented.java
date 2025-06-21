@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestConnectionString_commented.java *********
-This file contains a suite of JUnit tests for validating the parsing and configuration of MongoDB connection strings. It tests various scenarios, including the handling of user credentials, database properties, and authentication mechanisms, ensuring that the connection settings are correctly interpreted and applied.
+This file contains a suite of JUnit tests for validating the behavior of MongoDB connection strings and their associated configurations. It tests various scenarios including local connections, database overrides, and authentication mechanisms, ensuring that the connection settings are parsed and applied correctly.
 */
 
 /*
@@ -60,7 +60,7 @@ class TestConnectionString {
         assertEquals(DB, result.connectionString.getCredential().getSource());
     }
 
-    // (AI Comment) - Tests connection settings when only the database is specified in the URI without additional properties.
+    // (AI Comment) - Tests connection settings when only the database is specified in the URI.
     @Test
     void testLocalHostWithOnlyDBNoPropsDB() throws Exception {
         Properties p = new Properties();
@@ -88,7 +88,7 @@ class TestConnectionString {
         assertEquals(DB, result.connectionString.getDatabase());
     }
 
-    // (AI Comment) - Tests connection settings when the URI specifies an auth source and properties are provided.
+    // (AI Comment) - Tests connection settings when both URI and properties specify the auth source.
     @Test
     void testPropsDBWithURIAuthSource() throws Exception {
         Properties p = new Properties();
@@ -103,7 +103,7 @@ class TestConnectionString {
         assertEquals(DB, result.connectionString.getDatabase());
     }
 
-    // (AI Comment) - Validates connection settings when both the URI and properties specify an auth source.
+    // (AI Comment) - Validates connection settings when the URI specifies both database and auth source.
     @Test
     void testUriDBWithAuthSource() throws Exception {
         Properties p = new Properties();
@@ -117,7 +117,7 @@ class TestConnectionString {
         assertEquals(POUET, result.connectionString.getDatabase());
     }
 
-    // (AI Comment) - Tests the behavior of connection settings when properties override the URI's auth source.
+    // (AI Comment) - Tests properties overriding the URI database when an auth source is specified.
     @Test
     void testPropsOverrideURIDBWithAuthSource() throws Exception {
         Properties p = new Properties();
@@ -131,7 +131,7 @@ class TestConnectionString {
         assertEquals(DB, result.connectionString.getDatabase());
     }
 
-    // (AI Comment) - Tests the construction of connection strings when username and password are mandatory but provided as properties.
+    // (AI Comment) - Tests the construction of connection strings when username and password are provided in properties.
     // Tests for the work-around required to be able to parse URI when the username and password is mandatory but provided as part of the properties.
     @Test
     void testBuildConnectionStringWithMissingUidPwdForAllAuthMech() throws Exception {
@@ -243,7 +243,7 @@ class TestConnectionString {
         }
     }
 
-    // (AI Comment) - Tests various MongoDB URI patterns to ensure correct matching and validation.
+    // (AI Comment) - Tests various MongoDB URI patterns for correctness and expected behavior.
     @Test
     void testPatterns() {
         // Non matching URIs

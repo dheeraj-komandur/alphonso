@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - X509Authentication_commented.java *********
-The 'X509Authentication.java' file provides functionality for configuring X.509 authentication in MongoDB JDBC connections, enabling secure communication through SSL using client certificates specified in PEM files.
+The 'X509Authentication.java' file provides functionality for configuring X.509 authentication in MongoDB JDBC connections, enabling secure communication through client certificates. It handles the extraction of private keys and certificates from PEM files and sets up the necessary SSL context for secure connections.
 */
 
 /*
@@ -37,7 +37,7 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo;
 import org.bouncycastle.pkcs.jcajce.JcePKCSPBEInputDecryptorProviderBuilder;
 
-// (AI Comment) - This class handles X.509 authentication for MongoDB connections, configuring SSL contexts using client certificates from PEM files.
+// (AI Comment) - This class handles X.509 authentication for MongoDB connections, utilizing client certificates for secure communication.
 public class X509Authentication {
     private static final BouncyCastleProvider BC_PROVIDER = new BouncyCastleProvider();
     private final MongoLogger logger;
@@ -47,7 +47,7 @@ public class X509Authentication {
         this.logger = logger;
     }
 
-    // (AI Comment) - Configures X.509 authentication by creating an SSL context from the provided PEM file and passphrase, applying it to the MongoDB client settings.
+    // (AI Comment) - Configures X.509 authentication by setting up SSL context using the provided PEM file and optional passphrase.
     public void configureX509Authentication(
             com.mongodb.MongoClientSettings.Builder settingsBuilder,
             String pemPath,
@@ -70,16 +70,15 @@ public class X509Authentication {
         }
     }
 
-    // (AI Comment) - Creates an SSL context from the private key and certificate extracted from the PEM file, ensuring secure communication.
+    // (AI Comment) - Creates an SSL context from the specified PEM file, extracting the private key and certificate.
     private SSLContext createSSLContext(String pemPath, char[] passphrase) throws Exception {
         PrivateKey privateKey = null;
         Certificate cert = null;
 
-        // (AI Comment) - Processes the PEM file to extract private keys and certificates, handling both encrypted and unencrypted keys.
         try (PEMParser pemParser = new PEMParser(new FileReader(pemPath))) {
             Object pemObj;
 
-            // (AI Comment) - Iterates through the PEM objects found in the PEM file, processing them based on their type.
+            // (AI Comment) - Processes PEM objects to extract private keys and certificates, handling both encrypted and unencrypted formats.
             // Iterate through PEM objects found in the PEM file and process them based on type:
             //  - Encrypted/unencrypted private keys
             //  - X.509 certificates
@@ -128,7 +127,7 @@ public class X509Authentication {
         return createSSLContextFromKeyAndCert(privateKey, cert);
     }
 
-    // (AI Comment) - Initializes an SSL context using the provided private key and certificate, setting up a key store for secure connections.
+    // (AI Comment) - Creates an SSL context from the provided private key and certificate, initializing the key manager factory.
     private SSLContext createSSLContextFromKeyAndCert(PrivateKey privateKey, Certificate cert)
             throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
@@ -138,6 +137,7 @@ public class X509Authentication {
         KeyManagerFactory kmf =
                 KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 
+        // (AI Comment) - Initializes the SSL context with default trust managers after setting up the key manager factory.
         // Passphrase not needed for in memory keystore
         kmf.init(keyStore, null);
 

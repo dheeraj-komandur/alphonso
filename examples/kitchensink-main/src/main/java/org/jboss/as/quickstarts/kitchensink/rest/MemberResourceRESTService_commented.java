@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MemberResourceRESTService_commented.java *********
-This file implements a RESTful service for managing members in a kitchen sink application, providing endpoints to list, create, retrieve, and delete members while ensuring data integrity through validation.
+The 'MemberResourceRESTService.java' file implements a RESTful service for managing members in a kitchen sink application. It provides endpoints for listing, creating, retrieving, and deleting members, ensuring proper validation and error handling throughout the process.
 */
 
 /*
@@ -69,7 +69,7 @@ public class MemberResourceRESTService {
         return repository.findAll();
     }
 
-    // (AI Comment) - Looks up a member by their ID and throws a 404 error if not found.
+    // (AI Comment) - Looks up a member by their ID and returns the member object; throws an exception if not found.
     @GetMapping("/api/members/{id:[0-9]+}")
     @ResponseBody
     public Member lookupMemberById(@PathVariable("id") long id) {
@@ -82,7 +82,7 @@ public class MemberResourceRESTService {
         return member;
     }
 
-    // (AI Comment) - Deletes a member by their ID and throws a 404 error if not found.
+    // (AI Comment) - Deletes a member by their ID; throws an exception if the member is not found.
     @DeleteMapping("/api/members/{id:[0-9]+}")
     public void deleteMemberById(@PathVariable("id") long id) {
         Member member = repository.findById(BigInteger.valueOf(id));
@@ -94,7 +94,7 @@ public class MemberResourceRESTService {
         repository.deleteMemberById(BigInteger.valueOf(id));
     }
 
-    // (AI Comment) - Creates a new member from the provided data, validating input and handling errors.
+    // (AI Comment) - Creates a new member from the provided data, validates it, and handles potential errors.
     /**
      * Creates a new member from the values provided. Performs validation, and will return a JAX-RS response with either 200 ok,
      * or with a map of fields, and related errors.
@@ -118,7 +118,7 @@ public class MemberResourceRESTService {
         return member;
     }
 
-    // (AI Comment) - Validates the member's email to ensure uniqueness before registration.
+    // (AI Comment) - Validates the member's email to ensure uniqueness; throws an exception if a duplicate is found.
     /**
      * <p>
      * Validates the given Member variable and throws validation exception if the error is caused because an existing member with the same email is registered
@@ -137,7 +137,7 @@ public class MemberResourceRESTService {
         }
     }
 
-    // (AI Comment) - Checks if a member with the same email address is already registered.
+    // (AI Comment) - Checks if a member with the same email already exists in the repository.
     /**
      * Checks if a member with the same email address is already registered. Returns a more friendly error response
      *

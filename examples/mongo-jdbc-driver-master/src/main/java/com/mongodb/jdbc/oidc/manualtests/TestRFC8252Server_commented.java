@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestRFC8252Server_commented.java *********
-This file contains a test class for starting an RFC8252-compliant HTTP server to handle OpenID Connect responses, primarily for testing purposes. It initializes the server, waits for a response, and manages server lifecycle and exceptions.
+TestRFC8252Server.java is a utility for testing the RFC8252HttpServer's functionality in handling OIDC responses. It initializes the server, waits for a response, and manages exceptions, providing a simple way to verify the server's operation.
 */
 
 /*
@@ -19,37 +19,42 @@ This file contains a test class for starting an RFC8252-compliant HTTP server to
  * limitations under the License.
  */
 
+// (AI Comment) - Package declaration for the manual tests related to OIDC functionality.
 package com.mongodb.jdbc.oidc.manualtests;
 
 import com.mongodb.jdbc.oidc.OidcResponse;
 import com.mongodb.jdbc.oidc.OidcTimeoutException;
 import com.mongodb.jdbc.oidc.RFC8252HttpServer;
 import java.io.IOException;
+// (AI Comment) - Main class to start the RFC8252HttpServer and wait for the OIDC response. Used for testing the serving of the HTML pages and the OIDC response.
 /**
  * Main class to start the RFC8252HttpServer and wait for the OIDC response Used for testing the
  * serving of the HTML pages and the OIDC response
  */
-// (AI Comment) - Main class to start the RFC8252HttpServer and wait for the OIDC response used for testing the serving of the HTML pages and the OIDC response.
 public class TestRFC8252Server {
-    // (AI Comment) - Entry point of the application that initializes and starts the RFC8252HttpServer, waits for an OIDC response, and handles exceptions.
+    // (AI Comment) - Main method that initializes and starts the RFC8252HttpServer, waits for an OIDC response, and handles exceptions.
     public static void main(String[] args) {
-        // (AI Comment) - Initializes the server on the default redirect port and starts it.
+        // (AI Comment) - Defines the port for the RFC8252HttpServer using the default redirect port.
         int port = RFC8252HttpServer.DEFAULT_REDIRECT_PORT;
+        // (AI Comment) - Instantiates the RFC8252HttpServer to handle OIDC requests.
         RFC8252HttpServer server = new RFC8252HttpServer();
+        // (AI Comment) - Starts the RFC8252HttpServer to begin listening for requests.
         try {
             server.start();
             System.out.println("Server started on port " + port);
 
-            // (AI Comment) - Waits for the OIDC response from the server and prints the result.
+            // (AI Comment) - Retrieves the OIDC response from the server and prints the result to the console.
             // Wait for the OIDC response
             OidcResponse oidcResponse = server.getOidcResponse();
             System.out.println("Server Result:\n" + oidcResponse.toString());
 
-            // (AI Comment) - Handles cleanup by stopping the server in the finally block, ensuring it runs regardless of exceptions.
+            // (AI Comment) - Pauses the main thread for 2 seconds to allow for processing.
             Thread.sleep(2000);
+        // (AI Comment) - Catches and handles IO, OIDC timeout, and interruption exceptions, printing the stack trace.
         } catch (IOException | OidcTimeoutException | InterruptedException e) {
             e.printStackTrace();
         } finally {
+            // (AI Comment) - Stops the RFC8252HttpServer to clean up resources.
             server.stop();
         }
     }

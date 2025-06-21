@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoMock_commented.java *********
-The 'MongoMock.java' file provides an abstract base class for mocking MongoDB interactions in unit tests. It defines various static fields for BSON types and their labels, along with methods to generate BSON documents and JSON schemas for testing purposes. This setup facilitates the testing of MongoDB-related functionality without requiring a live database connection.
+The 'MongoMock.java' file provides an abstract class for mocking MongoDB interactions in unit tests, facilitating the creation of mock clients, databases, and BSON documents for comprehensive testing of MongoDB-related functionality.
 */
 
 /*
@@ -45,7 +45,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.util.reflection.FieldSetter;
 
-// (AI Comment) - Abstract class providing mock implementations for MongoDB interactions, including mock clients and database operations.
+// (AI Comment) - Abstract class providing mock implementations for MongoDB interactions, including mock client and database setup for testing.
 public abstract class MongoMock {
     static ConnectionString uri = new ConnectionString("mongodb://localhost:27017/admin");
     protected static String database = "test";
@@ -187,6 +187,7 @@ public abstract class MongoMock {
                                     UuidHelper.encodeUuidToBinary(
                                             ALL_UUID_VAL, UuidRepresentation.JAVA_LEGACY)));
 
+    // (AI Comment) - Resets mock objects before each test case, ensuring a clean state for MongoDB interactions.
     @Mock protected static MongoClient mongoClient;
     @Mock protected static MongoDatabase mongoDatabase;
     @Mock protected static AggregateIterable<BsonDocument> aggregateIterable;
@@ -197,7 +198,6 @@ public abstract class MongoMock {
             new MongoConnection(
                     new MongoConnectionProperties(uri, database, null, null, null, false, null));
 
-    // (AI Comment) - Retrieves a declared field from the specified class or its superclasses, throwing an exception if not found.
     private static Field getDeclaredFieldFromClassOrSuperClass(Class c, String fieldName)
             throws NoSuchFieldException {
         try {
@@ -211,7 +211,6 @@ public abstract class MongoMock {
         throw new NoSuchFieldException(fieldName);
     }
 
-    // (AI Comment) - Resets mock objects before each test case, ensuring a clean state for MongoDB interactions.
     // reset the mock objects before every test case
     protected static void resetMockObjs() throws NoSuchFieldException {
         FieldSetter.setField(
@@ -246,7 +245,7 @@ public abstract class MongoMock {
         void test() throws SQLException;
     }
 
-    // (AI Comment) - Generates a MongoDB JSON schema for validation, defining required fields and their types.
+    // (AI Comment) - Generates a MongoDB JSON schema for validation, defining the structure and required fields of documents.
     protected static MongoJsonSchema generateMongoJsonSchema() {
         /*
         {
@@ -471,7 +470,7 @@ public abstract class MongoMock {
         return schemaResult;
     }
 
-    // (AI Comment) - Generates a MongoDB JSON schema encompassing all BSON types, defining their properties and requirements.
+    // (AI Comment) - Generates a BSON document representing all possible types supported by MongoDB, useful for comprehensive testing.
     protected static MongoJsonSchema generateMongoJsonSchemaAllTypes() {
         String schema =
                 "{"
@@ -577,7 +576,6 @@ public abstract class MongoMock {
                 .decode(new JsonReader(schema), DecoderContext.builder().build());
     }
 
-    // (AI Comment) - Creates a BSON document representing all BSON types, including various field types and their values.
     static BsonDocument generateRowAllTypes() {
         String doc =
                 "{\"all\": {"

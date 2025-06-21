@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoDriverTest_commented.java *********
-The 'MongoDriverTest.java' file contains unit tests for the MongoDriver class, validating various connection scenarios, property handling, and logging functionality. It ensures that the driver behaves correctly under different configurations and input conditions, using JUnit and Mockito for effective testing.
+The 'MongoDriverTest.java' file contains unit tests for the MongoDriver class, validating its connection handling, authentication mechanisms, and logging configurations. It ensures that the driver behaves correctly under various scenarios, including error handling and property validation, using the JUnit and Mockito frameworks.
 */
 
 /*
@@ -84,7 +84,7 @@ class MongoDriverTest {
     private static final String PWD_CONN_KEY = "password";
     private static final String DB_CONN_KEY = "database";
 
-    // (AI Comment) - Sets mandatory properties for MongoDB connection tests, initializing the database name.
+    // (AI Comment) - Sets mandatory properties for the MongoDriver connection, specifically the database name.
     private static final Properties mandatoryProperties = setProperties();
 
     private static Properties setProperties() {
@@ -100,7 +100,7 @@ class MongoDriverTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    // (AI Comment) - Tests the basic MongoDB connection URL, ensuring that missing properties are handled correctly.
+    // (AI Comment) - Tests the basic connection URL handling, ensuring mandatory properties are validated correctly.
     @Test
     void testBasicURL() throws SQLException {
         MongoDriver d = new MongoDriver();
@@ -120,8 +120,8 @@ class MongoDriverTest {
         assertNotNull(d.getUnvalidatedConnection(basicURL, p));
     }
 
-    @Test
     // (AI Comment) - Validates the connection using a URI that includes the database name.
+    @Test
     void testURIDBURL() throws SQLException {
         MongoDriver d = new MongoDriver();
         Properties p = new Properties();
@@ -149,7 +149,7 @@ class MongoDriverTest {
         }
     }
 
-    // (AI Comment) - Tests the connection URL without a password, expecting an exception due to invalid URI.
+    // (AI Comment) - Tests the connection URL without a password, expecting an SQLException due to invalid URI.
     @Test
     void testuserNoPWDURL() throws SQLException {
         MongoDriver d = new MongoDriver();
@@ -165,8 +165,8 @@ class MongoDriverTest {
         }
     }
 
+    // (AI Comment) - Tests the JDBC connection URL, ensuring user mismatch throws an exception.
     @Test
-    // (AI Comment) - Validates the JDBC connection URL, ensuring that user mismatches throw exceptions.
     void testJDBCURL() throws SQLException {
         MongoDriver d = new MongoDriver();
 
@@ -181,8 +181,8 @@ class MongoDriverTest {
                 "The connection should fail because of a user mismatch between the URI and the properties");
     }
 
+    // (AI Comment) - Validates user connection URL handling, ensuring proper exception handling for mismatched credentials.
     @Test
-    // (AI Comment) - Tests the user connection URL, checking for proper handling of user and password mismatches.
     void testUserURL() throws SQLException {
         MongoDriver d = new MongoDriver();
         missingConnectionSettings(d, userURL, null);
@@ -215,7 +215,7 @@ class MongoDriverTest {
                 "The connection should fail because of a password mismatch between the URI and the properties");
     }
 
-    // (AI Comment) - Validates the replication connection URL, ensuring proper handling of user mismatches.
+    // (AI Comment) - Tests the replication connection URL, ensuring it handles user mismatches correctly.
     @Test
     void testReplURL() throws SQLException {
         MongoDriver d = new MongoDriver();
@@ -243,8 +243,8 @@ class MongoDriverTest {
                 "The connection should fail because of a password mismatch between the URI and the properties");
     }
 
+    // (AI Comment) - Tests MongoDB OIDC authentication mechanism with a username.
     @Test
-    // (AI Comment) - Tests the MongoDB OIDC authentication mechanism with a username.
     void testMongoDBOIDCAuthMechanismWithUsername() throws SQLException {
         MongoDriver d = new MongoDriver();
         Properties p = new Properties();
@@ -253,7 +253,7 @@ class MongoDriverTest {
     }
 
     @Test
-    // (AI Comment) - Tests the MongoDB OIDC authentication mechanism without a username.
+    // (AI Comment) - Tests MongoDB OIDC authentication mechanism without a username.
     void testMongoDBOIDCAuthMechanismWithoutUsername() throws SQLException {
         MongoDriver d = new MongoDriver();
         Properties p = new Properties();
@@ -262,7 +262,7 @@ class MongoDriverTest {
     }
 
     @Test
-    // (AI Comment) - Validates that using a password with MONGODB-OIDC authentication throws an exception.
+    // (AI Comment) - Tests MongoDB OIDC authentication mechanism with a password, expecting an exception.
     void testMongoDBOIDCAuthMechanismWithPassword() throws SQLException {
         MongoDriver d = new MongoDriver();
         Properties p = new Properties();
@@ -274,7 +274,7 @@ class MongoDriverTest {
     }
 
     @Test
-    // (AI Comment) - Tests the retrieval of property information from the MongoDriver.
+    // (AI Comment) - Tests the retrieval of property information from the MongoDriver, ensuring correct properties are returned.
     void testGetPropertyInfo() throws SQLException {
         MongoDriver d = new MongoDriver();
 
@@ -313,8 +313,8 @@ class MongoDriverTest {
         assertEquals(1, res.length);
         assertEquals("user", res[0].name);
     }
+    // (AI Comment) - Tests invalid logging level handling, expecting an SQLException.
 
-    // (AI Comment) - Tests the handling of invalid logging levels, expecting an exception.
     @Test
     void testInvalidLoggingLevel() throws Exception {
         // Default connection settings.
@@ -327,8 +327,8 @@ class MongoDriverTest {
                 "Expected connection to fail because log level is invalid.");
     }
 
+    // (AI Comment) - Tests logging off scenario, ensuring no log files are created.
     @Test
-    // (AI Comment) - Tests logging functionality when logging is turned off.
     void testLoggingOff() throws Exception {
         // Default connection settings.
         // No logging. No files are created, nothing is logged.
@@ -341,7 +341,7 @@ class MongoDriverTest {
     }
 
     @Test
-    // (AI Comment) - Tests logging functionality with severe logging level, ensuring no logs are created for successful connections.
+    // (AI Comment) - Tests severe logging level, ensuring log file remains empty on successful connection.
     void testLoggingSevere() throws Exception {
         // Creates a log file for the connection. Only logs error.
         // Connection is successful, the log file will be empty.
@@ -356,9 +356,9 @@ class MongoDriverTest {
         // Clean-up
         cleanupLoggingTest(conn, props);
     }
+    // (AI Comment) - Tests severe logging with an error, ensuring log file captures the exception.
 
     @Test
-    // (AI Comment) - Tests logging functionality with severe logging level when an error occurs, ensuring logs are created.
     void testLoggingSevereWithError() throws Exception {
         // Creates a log file for the connection. Only logs error.
         // Connection is successful, the log file will be empty.
@@ -387,7 +387,7 @@ class MongoDriverTest {
     }
 
     @Test
-    // (AI Comment) - Tests logging functionality with finer logging level, ensuring logs are created for public method entries.
+    // (AI Comment) - Tests logging with a custom directory, ensuring logs are created correctly.
     void testLoggingFiner() throws Exception {
         // Creates a log file for the connection. Log public method entries.
         // Connection is successful, the log file will contain logs.
@@ -408,7 +408,6 @@ class MongoDriverTest {
         cleanupLoggingTest(conn, props);
     }
 
-    // (AI Comment) - Tests logging functionality with a custom log directory, ensuring logs are created correctly.
     @Test
     void testCustomLogDir() throws Exception {
         // Creates a log file for the connection in the custom directory.
@@ -435,7 +434,7 @@ class MongoDriverTest {
         cleanupLoggingTest((MongoConnection) conn, props);
     }
 
-    // (AI Comment) - Tests the behavior when an invalid custom log directory is set, expecting an exception.
+    // (AI Comment) - Tests invalid custom log directory handling, expecting an SQLException.
     @Test
     void testInvalidCustomLogDir() throws Exception {
         // Set the custom log dir to an invalid path
@@ -449,7 +448,7 @@ class MongoDriverTest {
                 "Expected to fail because the logging directory does not exist.");
     }
 
-    // (AI Comment) - Tests logging functionality when logging to console, ensuring no log file is created.
+    // (AI Comment) - Tests logging to console, ensuring no log file is created.
     @Test
     void testLogDirIsConsole() throws Exception {
 
@@ -468,7 +467,7 @@ class MongoDriverTest {
         cleanupLoggingTest(conn, props);
     }
 
-    // (AI Comment) - Tests multiple connections to the same log directory, ensuring logs are correctly handled.
+    // (AI Comment) - Tests multiple connections to the same log directory, ensuring log content is validated correctly.
     @Test
     void testMultipleConnectionSameLogDir() throws Exception {
         // Set the custom log dir to an invalid path
@@ -551,7 +550,7 @@ class MongoDriverTest {
         props.setProperty(LOG_DIR.getPropertyName(), logDirPath);
     }
 
-    // (AI Comment) - Checks the content of the log file against expected values.
+    // (AI Comment) - Checks the log content for expected entries and counts.
     /**
      * Check that the log file contains the expect number of lines and the filtered line.
      *
@@ -571,7 +570,7 @@ class MongoDriverTest {
         assertEquals(expectedFilteredLineCount, logLinesCount);
     }
 
-    // (AI Comment) - Creates a new connection and verifies if the related log file exists.
+    // (AI Comment) - Creates a new connection and verifies the associated log file exists if logging is enabled.
     /**
      * Creates a new Connection and check if the related log file exist if it should.
      *
@@ -596,7 +595,7 @@ class MongoDriverTest {
         return connection;
     }
 
-    // (AI Comment) - Retrieves the log file associated with the connection based on logging properties.
+    // (AI Comment) - Retrieves the log file associated with the connection, throwing an exception if not logging to files.
     /**
      * Get the log file which will be associated with the connection when/if logging is turned on.
      *
@@ -617,7 +616,7 @@ class MongoDriverTest {
         return logFile;
     }
 
-    // (AI Comment) - Checks if the connection is logging to console or a file based on the provided properties.
+    // (AI Comment) - Checks if the connection is logging to console or a file.
     /**
      * Check if the connection is going to log to Console or a file.
      *
@@ -636,7 +635,7 @@ class MongoDriverTest {
         }
     }
 
-    // (AI Comment) - Cleans up the logging test by closing the connection and deleting the log file if it exists.
+    // (AI Comment) - Cleans up the logging test by closing the connection and deleting log files.
     /**
      * Close the connection and remove the log file if it exists.
      *
@@ -661,7 +660,7 @@ class MongoDriverTest {
         }
     }
 
-    // (AI Comment) - Tests the client info property, ensuring valid formats are accepted and invalid formats throw exceptions.
+    // (AI Comment) - Tests the client info property handling, ensuring valid and invalid formats are processed correctly.
     @Test
     void testClientInfoProperty() throws Exception {
         MongoDriver d = new MongoDriver();
@@ -685,7 +684,7 @@ class MongoDriverTest {
         assertNotNull(c);
     }
 
-    // (AI Comment) - Tests the extended JSON mode property, ensuring valid modes are accepted and invalid modes throw exceptions.
+    // (AI Comment) - Tests the extended JSON mode property handling, ensuring valid and invalid formats are processed correctly.
     @Test
     void testExtJsonModeProperty() throws Exception {
         MongoDriver d = new MongoDriver();
@@ -730,7 +729,7 @@ class MongoDriverTest {
         assertSame(conn1.getMongoClient(), conn3.getMongoClient());
     }
 
-    // (AI Comment) - Tests client caching with different keyed properties, ensuring different clients are created.
+    // (AI Comment) - Tests client caching with different keyed properties, ensuring separate MongoClient instances are created.
     @Test
     void testClientCachingWithDifferentKeyedProperties() throws Exception {
         MongoDriver d = new MongoDriver();
@@ -749,7 +748,7 @@ class MongoDriverTest {
         assertNotSame(conn1.getMongoClient(), conn2.getMongoClient());
     }
 
-    // (AI Comment) - Tests client caching with different unkeyed properties, ensuring the same client is reused.
+    // (AI Comment) - Tests client caching with different unkeyed properties, ensuring shared MongoClient instances are used.
     @Test
     void testClientCachingWithDifferentUnkeyedProperties() throws Exception {
         // Testing with different JSON modes, a property that is not part of the unique key used
@@ -771,7 +770,7 @@ class MongoDriverTest {
         assertSame(conn1.getMongoClient(), conn2.getMongoClient());
     }
 
-    // (AI Comment) - Tests the MongoDB X.509 authentication mechanism without a passphrase, expecting an exception.
+    // (AI Comment) - Tests MongoDB X.509 authentication mechanism without a passphrase, expecting an exception.
     @Test
     void testMongoDBX509AuthMechanismWithoutPassphrase() throws SQLException {
         MongoDriver d = new MongoDriver();
@@ -785,7 +784,7 @@ class MongoDriverTest {
                 "Expected to fail because x509Passphrase is missing.");
     }
 
-    // (AI Comment) - Tests the MongoDB X.509 authentication mechanism with a PEM path and passphrase, ensuring correct configuration.
+    // (AI Comment) - Tests MongoDB X.509 authentication with a PEM path and passphrase, ensuring correct configuration.
     @Test
     void testMongoDBX509WithPemPathAndPassphrase() throws SQLException {
         String passphrase = "passphrase";
@@ -814,7 +813,7 @@ class MongoDriverTest {
                 "x509Passphrase should match the provided value.");
     }
 
-    // (AI Comment) - Retrieves the size of the MongoDB client cache, ensuring thread-safe access.
+    // (AI Comment) - Retrieves the size of the client cache using reflection to access private fields.
     private int getClientCacheSize() throws NoSuchFieldException, IllegalAccessException {
         Field cacheField = MongoDriver.class.getDeclaredField("mongoClientCache");
         cacheField.setAccessible(true);
@@ -833,7 +832,7 @@ class MongoDriverTest {
         }
     }
 
-    // (AI Comment) - Clears the MongoDB client cache, ensuring thread-safe access.
+    // (AI Comment) - Clears the client cache using reflection to access private fields.
     private void clearClientCache() throws NoSuchFieldException, IllegalAccessException {
         Field cacheField = MongoDriver.class.getDeclaredField("mongoClientCache");
         cacheField.setAccessible(true);
@@ -852,7 +851,7 @@ class MongoDriverTest {
         }
     }
 
-    // (AI Comment) - Tests the behavior of client caching when the cache is disabled, ensuring no shared instances.
+    // (AI Comment) - Tests disabling the client cache, ensuring separate MongoClient instances are created.
     void testDisableClientCacheAux(String value)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
         MongoDriver d = new MongoDriver();
@@ -873,7 +872,7 @@ class MongoDriverTest {
         assertNotSame(conn1.getMongoClient(), conn2.getMongoClient());
     }
 
-    // (AI Comment) - Tests the behavior of client caching when the cache is not disabled, ensuring shared instances.
+    // (AI Comment) - Tests not disabling the client cache, ensuring shared MongoClient instances are used.
     void testNoDisableClientCacheAux(String value)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
         MongoDriver d = new MongoDriver();
@@ -894,7 +893,7 @@ class MongoDriverTest {
         assertEquals(conn1.getMongoClient(), conn2.getMongoClient());
     }
 
-    // (AI Comment) - Tests various cases for disabling the client cache, ensuring correct behavior.
+    // (AI Comment) - Tests various scenarios for disabling the client cache, ensuring correct behavior.
     @Test
     void testDisableClientCache()
             throws SQLException, NoSuchFieldException, IllegalAccessException {
@@ -909,7 +908,7 @@ class MongoDriverTest {
         testNoDisableClientCacheAux("0");
     }
 
-    // (AI Comment) - Tests the behavior when a null property value is provided, expecting an exception.
+    // (AI Comment) - Tests handling of null property values in connection properties, expecting an SQLException.
     @Test
     void testNullPropValue() throws Exception {
         // Create a new Properties object.
@@ -929,8 +928,8 @@ class MongoDriverTest {
         }
     }
 
-    // (AI Comment) - Tests the behavior when a null property key is provided, expecting an exception.
     @Test
+    // (AI Comment) - Tests handling of null property keys in connection properties, expecting an SQLException.
     void testNullPropKey() throws Exception {
         // Create a new Properties object.
         Properties p = new Properties();

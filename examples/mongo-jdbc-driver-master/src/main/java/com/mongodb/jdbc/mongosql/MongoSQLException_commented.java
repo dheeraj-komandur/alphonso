@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoSQLException_commented.java *********
-The 'MongoSQLException.java' file defines a custom exception class for MongoDB SQL operations, allowing for more specific error handling in applications that interact with MongoDB databases.
+This file defines the MongoSQLException class, a custom exception for MongoDB-related SQL errors, facilitating better error handling in database operations.
 */
 
 /*

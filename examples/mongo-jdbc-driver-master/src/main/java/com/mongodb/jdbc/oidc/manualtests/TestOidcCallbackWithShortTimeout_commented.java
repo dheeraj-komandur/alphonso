@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestOidcCallbackWithShortTimeout_commented.java *********
-This file contains a test class for validating the behavior of OIDC callbacks with a short timeout in the MongoDB JDBC driver. It aims to ensure that the system correctly handles timeout scenarios during user authentication.
+This file contains a test class for validating the behavior of OIDC callbacks with a short timeout in a MongoDB JDBC context. It aims to ensure that the system correctly handles timeout scenarios when user input is required.
 */
 
 /*
@@ -19,7 +19,6 @@ This file contains a test class for validating the behavior of OIDC callbacks wi
  * limitations under the License.
  */
 
-// (AI Comment) - Defines the package for manual tests related to OIDC callbacks in MongoDB JDBC.
 package com.mongodb.jdbc.oidc.manualtests;
 
 import com.mongodb.MongoCredential.OidcCallback;
@@ -30,19 +29,19 @@ import com.mongodb.jdbc.oidc.JdbcOidcCallbackContext;
 import com.mongodb.jdbc.oidc.OidcTimeoutException;
 import java.time.Duration;
 
-// (AI Comment) - Test class for validating OIDC callback behavior with a short timeout, specifically designed to trigger a timeout exception.
+// (AI Comment) - This class tests the OIDC callback functionality with a deliberately short timeout to ensure that a timeout exception is triggered when user input is required.
 public class TestOidcCallbackWithShortTimeout {
 
-    // (AI Comment) - Main method that initiates the OIDC callback process and handles expected timeout exceptions.
+    // (AI Comment) - Main method that initiates the OIDC callback test with a short timeout and handles the expected timeout exception.
     public static void main(String[] args) {
         OidcCallback oidcCallback = new JdbcOidcCallback();
 
-        // (AI Comment) - Sets up a short timeout duration for the OIDC callback context to simulate a timeout scenario.
+        // (AI Comment) - Sets a short timeout duration of 2 seconds for the OIDC callback context, which is intentionally brief to trigger a timeout during the test.
         Duration shortTimeout = Duration.ofSeconds(2); // intentionally short to trigger timeout
         OidcCallbackContext context =
                 new JdbcOidcCallbackContext(shortTimeout, 1, null, TestOidcUtils.IDP_INFO, null);
 
-        // (AI Comment) - Try-catch block to handle the OIDC callback request and manage expected timeout exceptions.
+        // (AI Comment) - Try-catch block that executes the OIDC callback and handles the expected OidcTimeoutException, logging appropriate messages based on the outcome.
         try {
             OidcCallbackResult result = oidcCallback.onRequest(context);
             // Timeout is expected when user input is required as it should take longer than 2 second.
@@ -52,7 +51,7 @@ public class TestOidcCallbackWithShortTimeout {
                             + "to trigger a timeout.");
             System.out.println(result);
         } catch (Exception e) {
-            // (AI Comment) - Handles the exception thrown during the OIDC callback, distinguishing between expected timeout and unexpected errors.
+            // (AI Comment) - Handles exceptions thrown during the OIDC callback execution, specifically checking for the OidcTimeoutException and logging the result.
             if (e.getCause() instanceof OidcTimeoutException) {
                 System.err.println(
                         "Expected OidcTimeoutException occurred: " + e.getCause().getMessage());

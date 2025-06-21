@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - RFC8252HttpServerTest_commented.java *********
-This file contains unit tests for the RFC8252HttpServer class, validating its handling of OIDC responses through various scenarios, including successful callbacks, error responses, and parameter handling.
+The 'RFC8252HttpServerTest.java' file contains unit tests for the RFC8252HttpServer class, focusing on validating the server's response to various OpenID Connect callback scenarios. It ensures that the server correctly handles valid and invalid requests, returning appropriate HTTP status codes and response data.
 */
 
 /*
@@ -30,11 +30,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-// (AI Comment) - Test class for RFC8252HttpServer, validating its behavior with various OIDC response scenarios.
+// (AI Comment) - Test class for RFC8252HttpServer, responsible for validating the server's response handling for various OIDC callback scenarios.
 class RFC8252HttpServerTest {
     private RFC8252HttpServer server;
 
-    // (AI Comment) - Sets up the RFC8252HttpServer instance before each test, ensuring a fresh server state.
+    // (AI Comment) - Sets up the RFC8252HttpServer instance before each test, ensuring the server is started for testing.
     @BeforeEach
     void setUp() throws IOException {
         server = new RFC8252HttpServer();
@@ -47,7 +47,7 @@ class RFC8252HttpServerTest {
         server.stop();
     }
 
-    // (AI Comment) - Tests the server's response to a valid OIDC callback, expecting a 200 response and correct parameters.
+    // (AI Comment) - Tests the server's response when a valid authorization code is provided, expecting a 200 response and correct OIDC response values.
     @Test
     void testAcceptedResponse() throws OidcTimeoutException, IOException, InterruptedException {
         URL url =
@@ -67,7 +67,7 @@ class RFC8252HttpServerTest {
         assertEquals("foo", oidcResponse.getState());
     }
 
-    // (AI Comment) - Tests the server's response to an error callback, expecting a 400 response and correct error details.
+    // (AI Comment) - Tests the server's response when an error is provided in the callback, expecting a 400 response and correct error details.
     @Test
     void testErrorResponse() throws OidcTimeoutException, IOException, InterruptedException {
         URL url =
@@ -86,7 +86,7 @@ class RFC8252HttpServerTest {
         assertEquals("foo", oidcResponse.getErrorDescription());
     }
 
-    // (AI Comment) - Tests the server's behavior when required parameters are missing, expecting a 404 response.
+    // (AI Comment) - Tests the server's response when no parameters are provided, expecting a 404 response and appropriate error messages.
     @Test
     void testMissingParameters() throws OidcTimeoutException, IOException, InterruptedException {
         URL url =
@@ -107,7 +107,7 @@ class RFC8252HttpServerTest {
         assert (oidcResponse.getErrorDescription().equals("Not found. Parameters: No parameters"));
     }
 
-    // (AI Comment) - Tests the server's response to unknown parameters in the redirect, expecting a 404 response.
+    // (AI Comment) - Tests the server's response when unknown parameters are included in the redirect, expecting a 404 response and error details.
     @Test
     void testRedirectUnknownParameters()
             throws OidcTimeoutException, IOException, InterruptedException {
@@ -129,8 +129,8 @@ class RFC8252HttpServerTest {
         assert (oidcResponse.getErrorDescription().equals("Not found. Parameters: foo=bar"));
     }
 
-    // (AI Comment) - Tests the server's handling of ampersands in parameter values, expecting a 200 response.
     @Test
+    // (AI Comment) - Tests the server's handling of ampersands in parameter values, expecting a 200 response and correct decoding of the state.
     void testAmpersandInParameterValue()
             throws OidcTimeoutException, IOException, InterruptedException {
         URL url =
@@ -148,8 +148,8 @@ class RFC8252HttpServerTest {
         assertEquals("foo&bar", oidcResponse.getState());
     }
 
-    // (AI Comment) - Tests the server's handling of equals signs in parameter values, expecting a 200 response.
     @Test
+    // (AI Comment) - Tests the server's handling of equals signs in parameter values, expecting a 200 response and correct decoding of the state.
     void testEqualsInParameterValue()
             throws OidcTimeoutException, IOException, InterruptedException {
         URL url =

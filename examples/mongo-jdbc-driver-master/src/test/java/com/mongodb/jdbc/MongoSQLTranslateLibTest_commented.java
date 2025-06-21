@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoSQLTranslateLibTest_commented.java *********
-This file contains unit tests for the MongoSQLTranslate library, focusing on its loading mechanisms and functionality within the MongoDB JDBC driver. It ensures that the library can be loaded correctly from both the driver path and an environment variable, while also handling invalid configurations gracefully.
+This file contains unit tests for the MongoSQLTranslate library, ensuring that the library loads correctly under various conditions and that its functionality can be verified through the runCommand endpoint.
 */
 
 /*
@@ -33,10 +33,10 @@ import java.util.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-// (AI Comment) - Test class for validating the MongoSQLTranslate library loading and functionality.
+// (AI Comment) - Test suite for the MongoSQLTranslate library, ensuring proper loading and functionality of the translation library.
 public class MongoSQLTranslateLibTest {
 
-    // (AI Comment) - Helper function to invoke the runCommand endpoint of the MongoSQLTranslate library and assert its version.
+    // (AI Comment) - Helper function to call the runCommand endpoint of the translation library, verifying that the version is not null.
     /** Helper function to call the runCommand endpoint of the translation library. */
     private static void testRunCommand() throws MongoSQLException, MongoSerializationException {
         MongoLogger mongoLogger = new MongoLogger(Logger.getLogger("Logger"), 1);
@@ -48,7 +48,7 @@ public class MongoSQLTranslateLibTest {
         assertNotNull(result.version);
     }
 
-    // (AI Comment) - Setup method to reset the MongoSQLTranslate library loading flags before each test case.
+    // (AI Comment) - Setup method that resets the mongoSqlTranslateLibraryLoaded flag and related fields before each test case to ensure a clean state.
     @BeforeEach
     void setup() throws Exception {
         // Reset the mongoSqlTranslateLibraryLoaded flag to false before each test case.
@@ -70,7 +70,7 @@ public class MongoSQLTranslateLibTest {
         mongoSqlTranslateLibraryPathField.set(null, null);
     }
 
-    // (AI Comment) - Test to ensure the MongoSQLTranslate library loads correctly from the driver path when the environment variable is not set.
+    // (AI Comment) - Test to verify that the library loads correctly from the driver path when the MONGOSQL_TRANSLATE_PATH environment variable is not set.
     @Test
     void testLibraryLoadingFromDriverPath() throws Exception {
         assertNull(
@@ -96,7 +96,7 @@ public class MongoSQLTranslateLibTest {
         testRunCommand();
     }
 
-    // (AI Comment) - Test to validate that the MongoSQLTranslate library loads correctly when the environment variable is set.
+    // (AI Comment) - Test to verify that the library loads correctly when the MONGOSQL_TRANSLATE_PATH environment variable is set.
     @Test
     void testLibraryLoadingWithEnvironmentVariable() throws Exception {
         String envPath = System.getenv(MongoDriver.MONGOSQL_TRANSLATE_PATH);
@@ -123,7 +123,7 @@ public class MongoSQLTranslateLibTest {
         testRunCommand();
     }
 
-    // (AI Comment) - Test to ensure the MongoSQLTranslate library falls back to the driver directory when an invalid environment variable is set.
+    // (AI Comment) - Test to verify that the library falls back to the driver directory when an invalid MONGOSQL_TRANSLATE_PATH is provided.
     @Test
     void testLibraryLoadingWithInvalidEnvironmentVariableFallback() throws Exception {
         String envPath = System.getenv(MongoDriver.MONGOSQL_TRANSLATE_PATH);

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - IntegrationTestUtils_commented.java *********
-IntegrationTestUtils.java provides utility functions for integration testing in the MongoDB JDBC framework, including loading test configurations from YAML files, executing tests against a database, and validating the results against expected outcomes.
+IntegrationTestUtils.java provides utility methods for executing and validating database integration tests within the MongoDB JDBC framework. It facilitates loading test configurations from YAML files, executing SQL queries, and comparing results against expected values, ensuring the integrity of database interactions.
 */
 
 /*
@@ -62,7 +62,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.inspector.TagInspector;
 import org.yaml.snakeyaml.nodes.Tag;
 
-// (AI Comment) - IntegrationTestUtils provides utility methods for running integration tests against a database, including loading test configurations and validating results.
+// (AI Comment) - IntegrationTestUtils provides utility methods for running and validating database integration tests, including loading test configurations and comparing results.
 public class IntegrationTestUtils {
     // (AI Comment) - countRows counts the number of rows in a ResultSet by iterating through it until no more rows are available.
     public static int countRows(ResultSet rs) throws SQLException {
@@ -134,7 +134,7 @@ public class IntegrationTestUtils {
         }
     }
 
-    // (AI Comment) - runTest executes a given testEntry against the database connection, optionally generating baseline files.
+    // (AI Comment) - runTest executes a test entry against a database connection, optionally generating baseline files.
     /**
      * runTest will execute the passed in testEntry. If generate is 'true' then baseline files will
      * be generated from the test configuration
@@ -266,7 +266,7 @@ public class IntegrationTestUtils {
         throw new IllegalArgumentException("function '" + functionName + "' not found");
     }
 
-    // (AI Comment) - validateResultSetMetadata checks the ResultSetMetaData against expected values defined in the TestEntry.
+    // (AI Comment) - validateResultSetMetadata checks the metadata of a ResultSet against expected values defined in a TestEntry.
     public static void validateResultSetMetadata(TestEntry test, ResultSetMetaData rsMetaData)
             throws SQLException, IllegalAccessException {
         int columnCount = rsMetaData.getColumnCount();
@@ -518,7 +518,7 @@ public class IntegrationTestUtils {
         return expectedResults;
     }
 
-    // (AI Comment) - validateResultsOrdered validates that the results from the ResultSet match the expected results in order.
+    // (AI Comment) - validateResultsOrdered validates that the results from a ResultSet match expected results in order.
     @SuppressWarnings("unchecked")
     private static void validateResultsOrdered(TestEntry testEntry, ResultSet rs)
             throws SQLException {
@@ -557,7 +557,7 @@ public class IntegrationTestUtils {
         }
     }
 
-    // (AI Comment) - validateResultsUnordered validates that the results from the ResultSet match the expected results without considering order.
+    // (AI Comment) - validateResultsUnordered validates that the results from a ResultSet match expected results without considering order.
     @SuppressWarnings("unchecked")
     private static void validateResultsUnordered(TestEntry testEntry, ResultSet rs)
             throws SQLException {
@@ -604,7 +604,7 @@ public class IntegrationTestUtils {
         }
     }
 
-    // (AI Comment) - validateRowCount checks that the actual number of rows returned matches the expected count defined in the TestEntry.
+    // (AI Comment) - validateRowCount checks that the actual row count from a ResultSet matches the expected count defined in a TestEntry.
     private static void validateRowCount(
             TestEntry testEntry, Integer actualRowCounter, ResultSet rs) throws SQLException {
         if (actualRowCounter == null) {

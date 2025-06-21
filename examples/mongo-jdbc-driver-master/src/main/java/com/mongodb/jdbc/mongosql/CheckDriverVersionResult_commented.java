@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - CheckDriverVersionResult_commented.java *********
-This file defines the CheckDriverVersionResult class, which encapsulates the result of a driver version compatibility check in the MongoDB JDBC context. It provides mechanisms for serialization and ensures that the compatibility status is always defined.
+This file defines the CheckDriverVersionResult class, which encapsulates the result of checking the compatibility of the MongoDB driver version. It provides a constructor for initialization, a method for string representation, and utilizes BSON for serialization.
 */
 
 /*
@@ -30,14 +30,14 @@ import org.bson.codecs.Codec;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-// (AI Comment) - Represents the result of a driver version check, encapsulating compatibility information.
+// (AI Comment) - Represents the result of checking the MongoDB driver version compatibility, encapsulating the compatibility status.
 public class CheckDriverVersionResult {
 
-    // (AI Comment) - Codec for serializing and deserializing CheckDriverVersionResult instances.
+    // (AI Comment) - Codec for serializing and deserializing CheckDriverVersionResult instances using BSON.
     private static final Codec<CheckDriverVersionResult> CODEC =
             MongoDriver.getCodecRegistry().get(CheckDriverVersionResult.class);
 
-    // (AI Comment) - Indicates whether the driver version is compatible.
+    // (AI Comment) - Indicates whether the driver version is compatible with the MongoDB server.
     @BsonProperty("compatible")
     public final Boolean compatible;
 
@@ -47,7 +47,7 @@ public class CheckDriverVersionResult {
         this.compatible = (compatible != null) ? compatible : false;
     }
 
-    // (AI Comment) - Returns a string representation of the CheckDriverVersionResult instance in JSON format.
+    // (AI Comment) - Returns a string representation of the CheckDriverVersionResult instance in BSON format.
     @Override
     public String toString() {
         return BsonUtils.toString(CODEC, this, JSON_WRITER_NO_INDENT_SETTINGS);

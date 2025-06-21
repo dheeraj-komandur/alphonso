@@ -42,20 +42,19 @@ public class JdbcOidcCallback implements OidcCallback {
         this.oidcAuthFlow = new OidcAuthFlow(parentLogger);
     }
 
-    // (AI Comment) - Handles OIDC callback requests by determining whether to refresh the token or perform an authorization code flow based on the presence of a refresh token.
+    // (AI Comment) - Handles OIDC callback requests by determining the flow to execute based on the presence of a refresh token.
     public OidcCallbackResult onRequest(OidcCallbackContext callbackContext) {
         String refreshToken = callbackContext.getRefreshToken();
-        // (AI Comment) - Checks if a refresh token is available and executes the appropriate authentication flow.
+        // (AI Comment) - Checks if a refresh token is available and attempts to refresh the authentication if so.
         if (refreshToken != null && !refreshToken.isEmpty()) {
             try {
                 return oidcAuthFlow.doRefresh(callbackContext);
-            // (AI Comment) - Catches RefreshFailedException and wraps it in a RuntimeException for higher-level handling.
             } catch (RefreshFailedException e) {
                 throw new RuntimeException(e);
             }
+        // (AI Comment) - Handles the case where no refresh token is available by executing the authorization code flow.
         } else {
             try {
-                // (AI Comment) - Catches OidcTimeoutException and wraps it in a RuntimeException for higher-level handling.
                 return oidcAuthFlow.doAuthCodeFlow(callbackContext);
             } catch (OidcTimeoutException e) {
                 throw new RuntimeException(e);

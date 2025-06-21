@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoSerializationException_commented.java *********
-The 'MongoSerializationException.java' file defines a custom exception for MongoDB serialization errors, providing constructors to specify error messages and underlying causes.
+The 'MongoSerializationException.java' file defines a custom exception for handling serialization errors in MongoDB operations, providing constructors for detailed error reporting.
 */
 
 /*
@@ -19,17 +19,17 @@ The 'MongoSerializationException.java' file defines a custom exception for Mongo
  * limitations under the License.
  */
 
+// (AI Comment) - Custom exception class for handling serialization errors specific to MongoDB operations, extending the base Exception class.
 package com.mongodb.jdbc;
 
-// (AI Comment) - Custom exception class for handling serialization errors specific to MongoDB operations.
 public class MongoSerializationException extends Exception {
+    // (AI Comment) - Constructor that accepts a message string to describe the exception.
     public MongoSerializationException(String message) {
         super(message);
-    // (AI Comment) - Constructor that accepts a message to describe the serialization error.
     }
 
+    // (AI Comment) - Constructor that accepts a message string and a Throwable cause for more detailed exception chaining.
     public MongoSerializationException(String message, Throwable cause) {
         super(message, cause);
-    // (AI Comment) - Constructor that accepts a message and a cause for the serialization error.
     }
 }

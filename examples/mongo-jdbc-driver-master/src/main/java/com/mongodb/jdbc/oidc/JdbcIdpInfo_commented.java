@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - JdbcIdpInfo_commented.java *********
-This file defines the JdbcIdpInfo class, which encapsulates the necessary information for a JDBC Identity Provider, including the issuer, client ID, and requested scopes. It provides methods to access these details, facilitating integration with MongoDB's authentication mechanisms.
+The 'JdbcIdpInfo.java' file defines a class that encapsulates the details of an Identity Provider (IdP) for JDBC authentication, including the issuer, an optional client ID, and the requested scopes. It provides methods to access these details, ensuring a clear and structured representation of IdP information.
 */
 
 /*
@@ -19,7 +19,7 @@ This file defines the JdbcIdpInfo class, which encapsulates the necessary inform
  * limitations under the License.
  */
 
-// (AI Comment) - Represents information for a JDBC Identity Provider (IdP) including issuer, client ID, and requested scopes.
+// (AI Comment) - Represents information about an Identity Provider (IdP) for JDBC authentication, encapsulating issuer details, client ID, and requested scopes.
 package com.mongodb.jdbc.oidc;
 
 import com.mongodb.MongoCredential;
@@ -32,7 +32,7 @@ public class JdbcIdpInfo implements MongoCredential.IdpInfo {
     @Nullable private final String clientId;
     private final List<String> requestScopes;
 
-    // (AI Comment) - Constructor that initializes the JdbcIdpInfo with issuer, client ID, and request scopes.
+    // (AI Comment) - Constructor that initializes the JdbcIdpInfo with issuer, optional client ID, and request scopes.
     public JdbcIdpInfo(String issuer, String clientId, List<String> requestScopes) {
         this.issuer = issuer;
         this.clientId = clientId;
@@ -44,7 +44,7 @@ public class JdbcIdpInfo implements MongoCredential.IdpInfo {
         return this.issuer;
     }
 
-    // (AI Comment) - Returns the client ID of the IdP, which may be null.
+    // (AI Comment) - Returns the optional client ID associated with the IdP, or null if not present.
     @Nullable
     public String getClientId() {
         return this.clientId;

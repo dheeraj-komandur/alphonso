@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoDriver_commented.java *********
-The MongoDriver.java file implements a JDBC driver for MongoDB, enabling SQL-based access to MongoDB databases. It manages connection properties, validates URIs, and handles authentication mechanisms, providing a seamless integration for Java applications requiring database connectivity.
+The MongoDriver.java file implements a JDBC driver for MongoDB, enabling SQL-based interactions with MongoDB databases. It manages connection properties, authentication mechanisms, and client caching, providing a seamless interface for Java applications to connect to MongoDB.
 */
 
 /*
@@ -155,7 +155,7 @@ public class MongoDriver implements Driver {
     private static final ReadWriteLock mongoClientCacheLock = new ReentrantReadWriteLock();
 
     public static String getVersion() {
-        // (AI Comment) - Returns the version of the MongoDB JDBC driver, either from the implementation version or constructed from major and minor version numbers.
+        // (AI Comment) - Returns the version of the MongoDriver, either from the implementation or generated from the git tag.
         return VERSION != null ? VERSION : MAJOR_VERSION + "." + MINOR_VERSION;
     }
 
@@ -199,7 +199,7 @@ public class MongoDriver implements Driver {
     }
 
     static int getClientCacheSizeForTest() {
-        // (AI Comment) - Locks the read lock to retrieve the size of the MongoClient cache for testing purposes.
+        // (AI Comment) - Locks the read lock to retrieve the size of the mongoClientCache for testing purposes.
         mongoClientCacheLock.readLock().lock();
         try {
             return mongoClientCache.size();
@@ -209,7 +209,7 @@ public class MongoDriver implements Driver {
     }
 
     static void clearClientCacheForTest() {
-        // (AI Comment) - Locks the read lock to clear the MongoClient cache for testing purposes.
+        // (AI Comment) - Locks the read lock to clear the mongoClientCache for testing purposes.
         mongoClientCacheLock.readLock().lock();
         try {
             mongoClientCache.clear();
@@ -219,7 +219,7 @@ public class MongoDriver implements Driver {
     }
 
     static {
-        // (AI Comment) - Static initializer that registers the MongoDriver with the DriverManager and initializes versioning and shutdown hooks.
+        // (AI Comment) - Static initializer that registers the MongoDriver with DriverManager and initializes versioning and library loading.
         MongoDriver unit = new MongoDriver();
         try {
             DriverManager.registerDriver(unit);
@@ -286,7 +286,6 @@ public class MongoDriver implements Driver {
     }
 
     public static CodecRegistry getCodecRegistry() {
-        // (AI Comment) - Returns the CodecRegistry used by the MongoDB JDBC driver.
         return REGISTRY;
     }
 
@@ -329,7 +328,7 @@ public class MongoDriver implements Driver {
     }
 
     @Override
-    // (AI Comment) - Implements the connect method from the Driver interface, establishing a connection to the MongoDB database.
+    // (AI Comment) - Connects to the MongoDB database using the provided URL and properties, returning a MongoConnection object.
     public Connection connect(String url, Properties info) throws SQLException {
         if (!acceptsURL(url)) {
             return null;
@@ -366,7 +365,7 @@ public class MongoDriver implements Driver {
     }
 
     public static class MongoConnectionConfig {
-        // (AI Comment) - Configuration class for MongoDB connections, holding connection string, driver info, and X.509 passphrase.
+        // (AI Comment) - Configuration class for MongoConnection, holding connection string, driver info, and x509 passphrase.
         public final ConnectionString connectionString;
         public final DriverPropertyInfo[] driverInfo;
         public final char[] x509Passphrase;
@@ -379,7 +378,7 @@ public class MongoDriver implements Driver {
     }
 
     protected MongoConnection getUnvalidatedConnection(String url, Properties info)
-            // (AI Comment) - Retrieves an unvalidated MongoConnection based on the provided URL and properties, ensuring consistency between them.
+            // (AI Comment) - Retrieves an unvalidated MongoConnection based on the provided URL and properties, ensuring consistency.
             throws SQLException {
         if (!acceptsURL(url)) {
             return null;
@@ -405,7 +404,7 @@ public class MongoDriver implements Driver {
     }
 
     /**
-     // (AI Comment) - Generates a formatted error message regarding missing properties required for a successful connection.
+     // (AI Comment) - Reports missing properties required for a successful connection, returning a formatted error message.
      * Provides feedback regarding the missing properties.
      *
      * @param missingRequiredProperties The list of required properties a connection needs to be
@@ -443,7 +442,7 @@ public class MongoDriver implements Driver {
     }
 
     private MongoConnection createConnection(
-            // (AI Comment) - Creates a MongoConnection based on the provided connection string, properties, and X.509 passphrase, utilizing caching where applicable.
+            // (AI Comment) - Creates a MongoConnection based on the provided connection string, properties, and x509 passphrase, utilizing caching.
             ConnectionString cs, Properties info, char[] x509Passphrase) throws SQLException {
         // Database from the properties must be present
         String database = info.getProperty(DATABASE.getPropertyName());
@@ -567,7 +566,7 @@ public class MongoDriver implements Driver {
     }
 
     @Override
-    // (AI Comment) - Checks if the provided URL is accepted by the driver based on its prefix.
+    // (AI Comment) - Checks if the provided URL is accepted by the MongoDriver based on its prefix.
     public boolean acceptsURL(String url) throws SQLException {
         return url.startsWith(MONGODB_URL_PREFIX) || url.startsWith(MONGODB_SRV_URL_PREFIX);
     }
@@ -602,7 +601,7 @@ public class MongoDriver implements Driver {
     }
 
     public static boolean isMongoSqlTranslateLibraryLoaded() {
-        // (AI Comment) - Returns the error encountered while loading the MongoSQL Translate library, if any.
+        // (AI Comment) - Returns the status of whether the MongoSQL Translate library has been loaded.
         return mongoSqlTranslateLibraryLoaded;
     }
 
@@ -639,7 +638,7 @@ public class MongoDriver implements Driver {
     }
 
     // getConnectionSettings constructs a valid MongoDB connection string which will be used as an input to the mongoClient.
-    // (AI Comment) - Constructs a valid MongoDB connection string based on the provided URL and properties, returning configuration details.
+    // (AI Comment) - Constructs a valid MongoDB connection string based on the provided URL and properties.
     // If there are required fields missing, those fields will be returned in DriverPropertyInfo[] with a null connectionString
     public static MongoConnectionConfig getConnectionSettings(String url, Properties info)
             throws SQLException {
@@ -733,7 +732,6 @@ public class MongoDriver implements Driver {
     }
 
     /**
-     // (AI Comment) - Parses the original URI provided by the user, augmenting it with username and password if necessary.
      * Parse the original uri provided by the user. If the parsing failed, we try to augment the URI
      * with the username and password provided in the properties. The reason behind it is that new
      * ConnectionString(xx) validates the uri as is parses it and for some authentication mechanisms
@@ -746,6 +744,7 @@ public class MongoDriver implements Driver {
      * @throws MongoConfigurationException
      */
     protected static ConnectionString buildConnectionString(String url, Properties info)
+            // (AI Comment) - Builds a connection string from the provided URL and properties, augmenting with user credentials if necessary.
             throws IllegalArgumentException, MongoConfigurationException {
         String actualURL = removePrefix(JDBC, url);
         try {
@@ -791,7 +790,7 @@ public class MongoDriver implements Driver {
     }
 
     private static interface NullCoalesce<T> {
-        // (AI Comment) - Normalizes connection options by checking consistency between properties and the URI, extracting user and password.
+        // (AI Comment) - Normalizes connection options by checking for consistency between the URI and properties.
         T coalesce(T left, T right);
     }
 
@@ -914,7 +913,7 @@ public class MongoDriver implements Driver {
     }
 
     // This is just a clean abstraction around URLEncode.
-    // (AI Comment) - Encodes a string for use in a SQL URL, ensuring proper formatting.
+    // (AI Comment) - Encodes a string for use in a SQL URL, throwing an SQLException on failure.
     private static String sqlURLEncode(String item) throws SQLException {
         try {
             return URLEncoder.encode(item, "utf-8");
@@ -925,7 +924,7 @@ public class MongoDriver implements Driver {
 
     /**
      * Return true if the given key is a JDBC specific property, false otherwise.
-     // (AI Comment) - Checks if a given key is a JDBC-specific property.
+     // (AI Comment) - Checks if a given key is a MongoDB JDBC specific property.
      *
      * @param key The key to check.
      * @return true if the given key is a JDBC specific property, false otherwise.

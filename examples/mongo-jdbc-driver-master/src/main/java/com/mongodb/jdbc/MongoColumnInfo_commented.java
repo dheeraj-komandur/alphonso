@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoColumnInfo_commented.java *********
-The 'MongoColumnInfo.java' file defines a class that encapsulates metadata for MongoDB columns, including their data source, field name, BSON type information, and nullability. It provides methods to access this metadata in a structured manner, facilitating integration with JDBC.
+The 'MongoColumnInfo.java' file defines a class that holds metadata for MongoDB columns, including their data source, field names, BSON type information, and nullability. It provides methods to access this information, facilitating the integration of MongoDB with JDBC.
 */
 
 /*
@@ -64,7 +64,7 @@ public class MongoColumnInfo {
         return bsonTypeInfo.getBsonName();
     }
 
-    // (AI Comment) - Returns the JDBC type corresponding to the BSON type information.
+    // (AI Comment) - Retrieves the JDBC type for the column based on its BSON type information.
     public int getJDBCType() {
         return bsonTypeInfo.getJdbcType();
     }

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - NoCheckStateJsonWriter_commented.java *********
-The NoCheckStateJsonWriter.java file defines a class that extends JsonWriter, allowing for the writing of JSON values without validation. It is particularly useful for scenarios involving BSON values, providing flexibility in JSON construction.
+This file contains the NoCheckStateJsonWriter class, which extends JsonWriter to allow writing JSON values without validation. It is designed for scenarios where BSON values need to be written directly, bypassing the usual state checks.
 */
 
 /*
@@ -25,14 +25,14 @@ import java.io.Writer;
 import org.bson.json.JsonWriter;
 import org.bson.json.JsonWriterSettings;
 
-// (AI Comment) - Describes the purpose and functionality of the NoCheckStateJsonWriter class, which allows writing any JSON value without validation.
+// (AI Comment) - Describes the purpose of NoCheckStateJsonWriter, which allows writing any JSON value without validation, useful for Bson Values.
 /**
  * NoCheckStateJsonWriter will allow writing of any Json value. It does not validate it is
  * constructing a valid document. Useful for writing Bson Values such as a BsonArray.
  */
 public class NoCheckStateJsonWriter extends JsonWriter {
 
-    // (AI Comment) - Constructor that initializes the NoCheckStateJsonWriter with a Writer and JsonWriterSettings.
+    // (AI Comment) - Constructor initializes the NoCheckStateJsonWriter with a Writer and JsonWriterSettings, passing them to the superclass.
     public NoCheckStateJsonWriter(Writer writer, JsonWriterSettings settings) {
         super(writer, settings);
     }

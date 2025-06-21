@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoLogger_commented.java *********
-The 'MongoLogger.java' file implements a logging utility for MongoDB JDBC operations, providing detailed logging capabilities for method entries, errors, and query diagnostics. It allows for contextual logging based on connection and statement IDs, facilitating better traceability and debugging of database interactions.
+The 'MongoLogger.java' file implements a logging utility for MongoDB operations, providing structured logging capabilities for method entries, errors, and query diagnostics. It enhances the ability to trace database interactions and diagnose issues effectively.
 */
 
 /*
@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import org.bson.BsonArray;
 import org.bson.BsonDocument;
 
-// (AI Comment) - This class provides logging functionality for MongoDB operations, allowing for detailed logging of method entries, errors, and query diagnostics.
+// (AI Comment) - This class provides logging capabilities for MongoDB operations, allowing for detailed tracking of method entries, errors, and query diagnostics.
 public class MongoLogger {
     private static final String ENTRY_PREFIX = ">> ";
 
@@ -114,7 +114,7 @@ public class MongoLogger {
      * @param sourceName Name of class that issued the logging request
      * @param callSignature The call signature, method and arguments, to log.
      */
-    // (AI Comment) - Logs method entry with a specified source name and call signature, using the FINER log level.
+    // (AI Comment) - Logs method entry with a specific call signature, using the FINER log level.
     protected void logMethodEntry(String sourceName, String callSignature) {
         if ((null != logger) && logger.isLoggable(Level.FINER)) {
             logger.logp(
@@ -125,7 +125,7 @@ public class MongoLogger {
         }
     }
 
-    // (AI Comment) - Logs an error message along with a throwable, including SQL diagnostics if the throwable is an SQLException.
+    // (AI Comment) - Logs an error message along with a throwable, including SQL diagnostics if applicable.
     protected void logError(String sourceName, String msg, Throwable thrown) {
         if ((null != logger) && logger.isLoggable(Level.SEVERE)) {
             if (thrown instanceof SQLException) {
@@ -155,7 +155,7 @@ public class MongoLogger {
      * @param level One of the message level identifiers, e.g., SEVERE
      * @param msg The string message (or a key in the message catalog)
      */
-    // (AI Comment) - Logs a message at a specified log level without any arguments, capturing the source class and method.
+    // (AI Comment) - Logs a message without arguments, forwarding it to all registered output handlers if enabled.
     public void log(Level level, String msg) {
         if ((null != logger) && logger.isLoggable(level)) {
             // Get access to caller
@@ -179,7 +179,7 @@ public class MongoLogger {
      * @param msg The string message (or a key in the message catalog)
      * @param params array of parameters to the message
      */
-    // (AI Comment) - Logs a message with an array of object arguments, capturing the source class and method.
+    // (AI Comment) - Logs a message with an array of object arguments, creating a corresponding log record.
     public void log(Level level, String msg, Object params[]) {
         if ((null != logger) && logger.isLoggable(level)) {
             // Get access to caller
@@ -211,7 +211,7 @@ public class MongoLogger {
      * @param msg The string message (or a key in the message catalog)
      * @param thrown Throwable associated with log message.
      */
-    // (AI Comment) - Logs a message with associated throwable information, capturing the source class and method.
+    // (AI Comment) - Logs a message with associated throwable information, storing it in the log record's thrown property.
     public void log(Level level, String msg, Throwable thrown) {
         if ((null != logger) && logger.isLoggable(level)) {
             // Get access to caller
@@ -254,7 +254,7 @@ public class MongoLogger {
         return queryDiagnostics;
     }
 
-    // (AI Comment) - Sets the query diagnostics object, allowing for updates to the diagnostics information.
+    // (AI Comment) - Sets the query diagnostics object, allowing for custom diagnostics to be used.
     public void setQueryDiagnostics(QueryDiagnostics queryDiagnostics) {
         this.queryDiagnostics = queryDiagnostics;
     }
@@ -274,7 +274,7 @@ public class MongoLogger {
         this.getQueryDiagnostics().setSqlQuery(sql);
     }
 
-    // (AI Comment) - Sets the pipeline in the query diagnostics, allowing for tracking of the MongoDB pipeline operations.
+    // (AI Comment) - Sets the pipeline in the query diagnostics, allowing for tracking of the MongoDB aggregation pipeline.
     public void setPipeline(List<BsonDocument> pipeline) {
         this.getQueryDiagnostics().setPipeline(new BsonArray(pipeline));
     }

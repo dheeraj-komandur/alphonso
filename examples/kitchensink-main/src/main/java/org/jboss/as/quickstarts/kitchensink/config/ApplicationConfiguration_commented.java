@@ -1,9 +1,9 @@
 /*
 ********* AI-Assistant Documentation for - ApplicationConfiguration_commented.java *********
-The ApplicationConfiguration.java file configures the application by initializing MongoDB collections and setting up validation mechanisms. It ensures that necessary collections for DatabaseSequence and Member are created upon application startup, facilitating the proper functioning of the kitchensink quickstart application.
+The 'ApplicationConfiguration.java' file is responsible for configuring the application by initializing MongoDB collections and setting up validation listeners upon application startup. It ensures that necessary database structures are in place for the application to function correctly.
 */
 
-// (AI Comment) - Defines the package for the application configuration related to the kitchensink quickstart.
+// (AI Comment) - Defines the package for the application configuration.
 package org.jboss.as.quickstarts.kitchensink.config;
 
 import org.jboss.as.quickstarts.kitchensink.model.DatabaseSequence;
@@ -17,13 +17,13 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventListener;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-// (AI Comment) - Configuration class that initializes MongoDB collections for DatabaseSequence and Member upon application startup.
+// (AI Comment) - Configuration class that initializes MongoDB collections and validation listeners upon application startup.
 @Configuration
 public class ApplicationConfiguration implements ApplicationListener<ApplicationReadyEvent> {
 
     private final MongoOperations mongoOperations;
 
-    // (AI Comment) - Constructor that injects MongoOperations to interact with the MongoDB database.
+    // (AI Comment) - Constructor that injects MongoOperations for database operations.
     @Autowired
     public ApplicationConfiguration(final MongoOperations mongoOperations) {
         this.mongoOperations = mongoOperations;

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - DCIntegrationTest_commented.java *********
-This file contains integration tests for the MongoDB JDBC driver, validating its ability to connect to both remote and local MongoDB instances, execute SQL queries, and handle various scenarios such as invalid credentials and query validation.
+This file contains integration tests for the MongoDB JDBC driver, validating connection capabilities and SQL query execution against both remote and local MongoDB instances. It ensures that the driver correctly handles various scenarios, including successful connections, error handling for invalid queries, and metadata retrieval.
 */
 
 /*
@@ -70,9 +70,9 @@ public class DCIntegrationTest {
         return DriverManager.getConnection(fullURI, p);
     }
 
-    // (AI Comment) - Tests the driver's ability to connect using SRV-style URIs.
     /** Tests that the driver can work with SRV-style URIs. */
     @Test
+    // (AI Comment) - Tests the driver's ability to connect using SRV-style URIs.
     public void testConnectWithSRVURI() throws SQLException {
         try (Connection conn = remoteTestInstanceConnect(); ) {
             // Let's use the connection to make sure everything is working fine.
@@ -141,9 +141,9 @@ public class DCIntegrationTest {
         }
     }
 
-    // (AI Comment) - Tests that the driver fails to connect to a community edition MongoDB server.
     /** Tests that the driver rejects the community edition of the server. */
     @Test
+    // (AI Comment) - Tests that the driver fails to connect to a community edition MongoDB server.
     public void testConnectionToCommunityServerFails() {
         Pair<String, Properties> info = createLocalMongodConnInfo("LOCAL_MDB_PORT_COM");
         try (MongoConnection conn =
@@ -157,9 +157,9 @@ public class DCIntegrationTest {
         }
     }
 
-    // (AI Comment) - Tests successful connection to an enterprise edition MongoDB server.
     /** Tests that the driver connects to the enterprise edition of the server. */
     @Test
+    // (AI Comment) - Tests successful connection to an enterprise edition MongoDB server.
     public void testConnectionToEnterpriseServerSucceeds() throws SQLException {
         Pair<String, Properties> info = createLocalMongodConnInfo("LOCAL_MDB_PORT_ENT");
         try (Connection conn = DriverManager.getConnection(info.left(), info.right()); ) {
@@ -168,7 +168,7 @@ public class DCIntegrationTest {
         }
     }
 
-    // (AI Comment) - Tests that an invalid SQL query results in an exception.
+    // (AI Comment) - Tests that an invalid SQL query results in an appropriate exception.
     @Test
     public void testInvalidQueryShouldFail() throws SQLException {
         try (Connection conn = remoteTestInstanceConnect();
@@ -186,9 +186,9 @@ public class DCIntegrationTest {
         }
     }
 
-    // (AI Comment) - Tests that a valid simple SQL query executes successfully.
     @Test
     public void testValidSimpleQueryShouldSucceed() throws SQLException {
+        // (AI Comment) - Tests a valid simple SQL query execution.
         String[] expectedTableNames = {"acc", "acc", "acc", "acc", "t", "t", "t", "t", "t", "t"};
         String[] expectedColumnLabels = {
             "_id",
@@ -208,9 +208,9 @@ public class DCIntegrationTest {
                 expectedColumnLabels);
     }
 
-    // (AI Comment) - Tests that a query without a collection returns expected results.
     @Test
     public void testCollectionLessQueryShouldSucceed() throws SQLException {
+        // (AI Comment) - Tests execution of a query that does not require a collection.
         String[] expectedTableNames = {""};
         String[] expectedColumnLabels = {"_1"};
         executeQueryAndValidateResults("SELECT 1", expectedTableNames, expectedColumnLabels);
@@ -219,6 +219,7 @@ public class DCIntegrationTest {
     @Test
     public void testValidSimpleQueryNoSchemaForCollectionShouldSucceed() throws SQLException {
         String[] expectedTableNames = {""};
+        // (AI Comment) - Tests execution of a valid query without schema for the collection.
         String[] expectedColumnLabels = {"account_id"};
         executeQueryAndValidateResults(
                 "SELECT account_id from acc_limit_over_1000 limit 5",
@@ -226,9 +227,9 @@ public class DCIntegrationTest {
                 expectedColumnLabels);
     }
 
-    // (AI Comment) - Tests that a valid query without schema executes successfully.
     @Test
     public void testListDatabase() throws SQLException {
+        // (AI Comment) - Tests listing of databases to ensure no system databases are returned.
         try (Connection conn = remoteTestInstanceConnect(); ) {
             ResultSet rs = conn.getMetaData().getCatalogs();
             while (rs.next()) {
@@ -243,6 +244,7 @@ public class DCIntegrationTest {
 
     @Test
     public void testListTables() throws SQLException {
+        // (AI Comment) - Tests listing of tables to ensure no system collections are returned.
         try (Connection conn = remoteTestInstanceConnect(); ) {
             ResultSet rs = conn.getMetaData().getTables(null, null, "%", null);
             while (rs.next()) {
@@ -255,9 +257,9 @@ public class DCIntegrationTest {
         }
     }
 
-    // (AI Comment) - Tests listing databases to ensure no system databases are returned.
     @Test
     public void testColumnsMetadataForCollectionWithSchema() throws SQLException {
+        // (AI Comment) - Tests retrieval of column metadata for a collection with schema.
         String[] expectedColumnLabels = {"_id", "account_id", "limit", "products"};
         try (Connection conn = remoteTestInstanceConnect(); ) {
             ResultSet rs = conn.getMetaData().getColumns(null, null, "accounts", "%");
@@ -272,10 +274,10 @@ public class DCIntegrationTest {
         }
     }
 
-    // (AI Comment) - Tests listing tables to ensure no system collections are returned.
     @Test
     public void testColumnsMetadataForCollectionWithNoSchema() throws SQLException {
         try (Connection conn = remoteTestInstanceConnect(); ) {
+            // (AI Comment) - Tests retrieval of column metadata for a collection without schema.
             ResultSet rs = conn.getMetaData().getColumns(null, null, "acc_limit_over_1000", "%");
             // Check that the result set is empty and we don't blow up when calling next.
             assert (!rs.next());
@@ -284,8 +286,8 @@ public class DCIntegrationTest {
     }
 
     @Test
-    // (AI Comment) - Tests that invalid credentials on an enterprise server result in an exception.
     public void testInvalidCredentialsOnEnterpriseServer() throws SQLException {
+        // (AI Comment) - Tests that invalid credentials on an enterprise server result in an appropriate exception.
         Pair<String, Properties> info = createLocalMongodConnInfo("LOCAL_MDB_PORT_ENT");
         info.right().setProperty("password", "invalid-password");
 

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestOidcAuthFlow_commented.java *********
-This file provides a test implementation for the OIDC authentication flow using JDBC, initializing necessary components and executing the authentication process to validate its functionality.
+This file contains a test class for the OIDC authentication flow using JDBC, demonstrating how to set up and execute an authorization code flow test.
 */
 
 /*
@@ -19,6 +19,7 @@ This file provides a test implementation for the OIDC authentication flow using 
  * limitations under the License.
  */
 
+// (AI Comment) - Defines the package for the OIDC manual tests related to MongoDB JDBC.
 package com.mongodb.jdbc.oidc.manualtests;
 
 import com.mongodb.MongoCredential.OidcCallbackContext;
@@ -26,18 +27,19 @@ import com.mongodb.jdbc.oidc.JdbcOidcCallbackContext;
 import com.mongodb.jdbc.oidc.OidcAuthFlow;
 import java.time.Duration;
 
+// (AI Comment) - Test class for demonstrating the OIDC authentication flow using JDBC. It initializes the authentication flow and executes a test for the authorization code flow.
 public class TestOidcAuthFlow {
-    // (AI Comment) - This class serves as a test harness for the OIDC authentication flow, initializing necessary components and executing the authentication process.
+    // (AI Comment) - Main method that serves as the entry point for the test. It sets up the OIDC authentication flow and initiates the test for the authorization code flow.
     public static void main(String[] args) {
-        // (AI Comment) - Main method that sets up the OIDC authentication flow, creates a callback context with a specified timeout, and invokes the authentication test.
+        // (AI Comment) - Creates an instance of OidcAuthFlow to manage the authentication process.
         OidcAuthFlow authFlow = new OidcAuthFlow();
 
+        // (AI Comment) - Sets a timeout duration for the authentication process and initializes the callback context with necessary parameters.
         Duration timeout = Duration.ofMinutes(5);
-        // (AI Comment) - Creates a Duration object representing a 5-minute timeout for the OIDC authentication process.
         OidcCallbackContext callbackContext =
                 new JdbcOidcCallbackContext(timeout, 1, null, TestOidcUtils.IDP_INFO, null);
-        // (AI Comment) - Initializes the JdbcOidcCallbackContext with parameters including timeout, IDP information, and invokes the test for the authentication code flow.
 
+        // (AI Comment) - Calls the utility method to test the authorization code flow using the provided callback context and authentication flow.
         TestOidcUtils.testAuthCodeFlow(callbackContext, authFlow);
     }
 }

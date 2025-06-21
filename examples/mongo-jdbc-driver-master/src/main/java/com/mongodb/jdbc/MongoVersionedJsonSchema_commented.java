@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoVersionedJsonSchema_commented.java *********
-This file defines the 'MongoVersionedJsonSchema' class, which represents a versioned JSON schema for MongoDB, including functionality for initialization from a version and a JSON schema.
+This file defines the 'MongoVersionedJsonSchema' class, which represents a versioned JSON schema for MongoDB, including constructors for initializing the schema with or without a version.
 */
 
 /*
@@ -34,7 +34,7 @@ public class MongoVersionedJsonSchema {
     /** Empty Json schema. */
     public MongoVersionedJsonSchema() {}
 
-    // (AI Comment) - Constructor that initializes the MongoVersionedJsonSchema with a specified version and schema, converting the provided schema to a simplified MongoDB JSON schema.
+    // (AI Comment) - Constructor that initializes the MongoVersionedJsonSchema with a specified version and schema, converting the schema to a simplified MongoDB format.
     /**
      * Deserialized json schema from a 'sqlgetschema' command.
      *

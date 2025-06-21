@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - JsonSchema_commented.java *********
-The JsonSchema.java file defines a class for deserializing JSON schema structures in MongoDB, encapsulating properties and validation criteria while providing custom equality and hashing methods.
+The 'JsonSchema.java' file defines a class that serves as a data structure for deserializing JSON schema representations in MongoDB, providing methods for equality comparison and hash code generation.
 */
 
 /*

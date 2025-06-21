@@ -1,332 +1,213 @@
-# Project Overview
+# kitchensink-main
 
-Kitchen Sink Quickstart is a fully featured Spring Boot application that demonstrates a layered architecture for member management using MongoDB. It provides both a RESTful API and an MVC-based web interface, integrates robust configuration mechanisms, and includes comprehensive integration tests powered by Testcontainers.
+A Spring Boot–based Java application from the JBoss Quickstarts demonstrating member management with MongoDB. It offers both MVC and REST interfaces, uses Spring Data for persistence, integrates validation, and includes containerized integration tests with Testcontainers.
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Build and Run](#build-and-run)
 - [Architecture](#architecture)
-  - [High-Level Architecture](#high-level-architecture)
-  - [Package Structure](#package-structure)
-- [Component Breakdown](#component-breakdown)
-  - [Configuration Components](#configuration-components)
-    - [Application Entry Point](#application-entry-point)
-    - [MongoDB Initialization](#mongodb-initialization)
-    - [Logging Resources](#logging-resources)
-    - [Test Configuration](#test-configuration)
-  - [Domain Model Components](#domain-model-components)
-    - [Member Entity](#member-entity)
-    - [Database Sequence](#database-sequence)
+  - [System Architecture](#system-architecture)
+- [Configuration](#configuration)
+  - [Application Configuration](#application-configuration)
+  - [Testcontainers MongoDB Configuration](#testcontainers-mongodb-configuration)
+- [Core Components](#core-components)
+  - [Data Model](#data-model)
   - [Data Access Layer](#data-access-layer)
-    - [MemberRepository](#memberrepository)
+  - [Producer Components](#producer-components)
   - [Service Layer](#service-layer)
-    - [MemberRegistration](#memberregistration)
-  - [Web Layer Components](#web-layer-components)
-    - [REST API](#rest-api)
+  - [Web Layer](#web-layer)
     - [MVC Controller](#mvc-controller)
-    - [Member List Producer](#member-list-producer)
-- [API Usage](#api-usage)
-  - [REST Endpoints](#rest-endpoints)
-  - [MVC UI Flow](#mvc-ui-flow)
+    - [REST Controller](#rest-controller)
+  - [Utility Components](#utility-components)
+- [Workflows](#workflows)
+  - [Member Registration Workflow](#member-registration-workflow)
 - [Testing](#testing)
   - [Integration Tests](#integration-tests)
-    - [MemberRegistrationIT](#memberregistrationit)
-  - [Remote Integration Tests](#remote-integration-tests)
-    - [RemoteMemberRegistrationIT](#remotememberregistrationit)
-- [Deployment](#deployment)
-  - [Running with Testcontainers](#running-with-testcontainers)
-  - [Production Deployment](#production-deployment)
 
 ## Overview
 
-This sample application provides a complete demonstration of a Spring Boot–based member management system, showcasing:
+This application is a kitchen-sink example showcasing how to build a Spring Boot service with MongoDB persistence. It demonstrates:
 
-- A robust startup sequence with MongoDB collection initialization.
-- Domain objects with validation constraints.
-- A repository layer for CRUD operations on MongoDB.
-- A service layer that ensures unique, sequential identifiers.
-- Both RESTful and MVC-based interfaces for client interactions.
-- Integration tests leveraging Testcontainers to guarantee environment consistency.
-
-By walking through the source, developers can learn how to structure production-grade Java applications with Spring and MongoDB.
-
-## Getting Started
-
-### Prerequisites
-
-- Java 11 (or higher)
-- Apache Maven 3.6+
-- Docker (for Testcontainers–driven integration tests)
-- A running MongoDB instance (or rely on Testcontainers during testing)
-
-### Build and Run
-
-1. Clone the repository and navigate to its root:
-
-   ```bash
-   git clone <repository>
-   cd kitchensink-main
-   ```
-
-2. Build the application:
-
-   ```bash
-   mvn clean package
-   ```
-
-3. Run the application:
-
-   ```bash
-   java -jar target/kitchensink-main.jar
-   ```
-
-   Alternatively, use the Maven plugin:
-
-   ```bash
-   mvn spring-boot:run
-   ```
+- A Spring Boot entry point with auto-configuration and servlet packaging via `Main.java`.
+- Initialization of MongoDB collections and validation hooks at startup.
+- A rich domain model (`Member` and `DatabaseSequence`) persisted through Spring Data MongoDB.
+- A service layer (`MemberRegistration`) encapsulating business logic for member creation and unique ID generation.
+- Data access via a repository interface (`MemberRepository`) and a list producer (`MemberListProducer`).
+- Dual web interfaces: an MVC controller for server-side views (`MemberController`) and a REST API (`MemberResourceRESTService`).
+- Prototype-scoped logger provisioning (`Resources`).
+- Integration tests using Testcontainers to manage an ephemeral MongoDB container.
 
 ## Architecture
 
-The application follows a layered architecture that cleanly separates concerns:
+The application follows a layered architecture:
 
-- **Configuration**: Bootstraps the application and database.  
-- **Domain Model**: Encapsulates validation and persistence annotations.  
-- **Data Access**: Abstracts MongoDB operations via Spring Data.  
-- **Service Layer**: Implements business logic and sequence generation.  
-- **Web Layer**: Exposes REST endpoints and MVC controllers.  
-- **Utilities**: Provides common beans such as loggers.  
-- **Testing**: Ensures correctness with integration and remote tests.
+- **Initialization Layer**: Bootstraps Spring Boot, creates MongoDB collections, and registers validation listeners.
+- **Domain Layer**: Defines data models representing MongoDB documents.
+- **Data Access Layer**: Exposes repository abstractions and producers to retrieve and manipulate domain data.
+- **Service Layer**: Encapsulates business logic for registering members and generating unique IDs.
+- **Web Layer**: Presents two entry points:
+  - MVC for server-rendered views.
+  - RESTful HTTP endpoints.
+- **Utility Layer**: Provides cross-cutting concerns such as logging.
 
-![KitchensinkArchitecture](AI_README_IMAGES/kitchensinkarchitecture.png)
+![SystemArchitecture](AI_README_IMAGES/systemarchitecture.png)
 
-The diagram illustrates the architecture of the Kitchensink application, highlighting the interactions between key components such as the Spring Boot entry point, configuration initialization, logging resources, domain model entities, data access layer, service layer, web layer, and MongoDB data store. It captures the flow of application startup, request handling for REST and MVC, and data persistence, providing a clear overview of how these elements collaborate to deliver functionality. The diagram serves as a visual guide for understanding the structure and behavior of the application, making it easier for developers to navigate and maintain the codebase.
+This diagram illustrates the high-level architecture of a Spring Boot application, showcasing the main components involved in the application startup and their interactions. It highlights the entry point via 'Main.java' and configuration through 'ApplicationConfiguration.java'. The domain model is represented by 'Member' and 'DatabaseSequence', while the data access layer includes 'MemberRepository' and 'MemberListProducer'. The service layer is encapsulated in 'MemberRegistration', and two web interfaces are depicted: 'MemberController' for MVC and 'MemberResourceRESTService' for RESTful interactions. Additionally, 'Resources.java' is included for logger provisioning. The diagram effectively visualizes component scanning, MongoDB interactions, and validation listener registration within the application.
 
-### Package Structure
+## Configuration
 
-The codebase is organized under `org.jboss.as.quickstarts.kitchensink` with clear subpackages:
+### Application Configuration
 
-- `config` – application and MongoDB initialization  
-- `utils` – common beans like Logger  
-- `model` – domain entities  
-- `data` – Spring Data repositories and producers  
-- `service` – business logic for registration  
-- `rest` – REST controllers  
-- `controller` – MVC controllers  
-- `test` – integration and remote integration tests  
+Located in `config/ApplicationConfiguration.java`, this class implements `ApplicationListener<ApplicationReadyEvent>` to ensure that two MongoDB collections—`DatabaseSequence` and `Member`—exist at startup, creating them if necessary. It also registers a `ValidatingMongoEventListener` to enforce bean validation on document save operations.
 
-![PackageStructure](AI_README_IMAGES/packagestructure.png)
-
-The diagram illustrates the package hierarchy of the `org.jboss.as.quickstarts.kitchensink` project, showcasing its structure and relationships among various subpackages. It highlights key components such as configuration, utility, model, data access, service, REST, and controller layers, along with their respective classes. This visual representation aids in understanding the organization of the codebase, the flow of data, and the interactions between different modules, making it easier for developers to navigate and maintain the project.
-
-## Component Breakdown
-
-### Configuration Components
-
-#### Application Entry Point
-
-Managed by `Main.java`, this class extends `SpringBootServletInitializer`. It bootstraps the Spring context and MongoDB repositories:
-
+Key methods:
 ```java
-public static void main(String[] args) {
-    try {
-        SpringApplication.run(ApplicationConfiguration.class, args);
-    } catch (Exception e) {
-        LoggerFactory.getLogger(Main.class).error("Startup failed", e);
-    }
-}
-```
-
-It links the application startup to `ApplicationConfiguration` and ensures any initialization errors are logged.
-
-#### MongoDB Initialization
-
-`ApplicationConfiguration.java` listens for `ApplicationReadyEvent` to create missing collections:
-
-- Injects `MongoOperations` for low-level DB tasks.
-- Creates `DatabaseSequence` and `Member` collections if absent.
-- Defines beans for `ValidatingMongoEventListener` and `LocalValidatorFactoryBean` to enforce validation on persisted entities.
-
-#### Logging Resources
-
-`Resources.java` defines a prototype-scoped `Logger` bean:
-
-```java
+public void onApplicationEvent(ApplicationReadyEvent event) { ... }
 @Bean
-@Scope("prototype")
-public Logger produceLogger(InjectionPoint ip) {
-    return LoggerFactory.getLogger(ip.getMember().getDeclaringClass());
+public ValidatingMongoEventListener validatingMongoEventListener(LocalValidatorFactoryBean factory) { ... }
+@Bean
+public LocalValidatorFactoryBean validator() { ... }
+```
+Dependencies: `MongoOperations` for collection checks and creation, `LocalValidatorFactoryBean` for validation.
+
+### Testcontainers MongoDB Configuration
+
+In `test/config/MongoDBConfig.java`, a static `MongoDBContainer` is initialized using Testcontainers. The container starts when the class is loaded, exposing port 27017 and setting a system property for the mapped port. This enables integration tests to run against a real MongoDB instance without external dependencies.
+
+Key snippet:
+```java
+public static MongoDBContainer mongoDBContainer;
+static {
+    mongoDBContainer = new MongoDBContainer("mongo:latest");
+    mongoDBContainer.start();
+    System.setProperty("MONGO_PORT", mongoDBContainer.getMappedPort(27017).toString());
 }
 ```
 
-This ensures each class receives a context-aware logger without manual instantiation.
+## Core Components
 
-#### Test Configuration
+### Data Model
 
-`MongoDBConfig.java` (in test sources) uses Testcontainers to start a MongoDB instance:
+- **Member** (`model/Member.java`):  
+  - Annotated with `@Document` and implements `Serializable`.  
+  - Fields: `id` (generated), `email`, `name`, `phoneNumber`.  
+  - Validation: `@NotNull`, `@Size`, `@Email`, `@Indexed(unique=true)` for email.  
+  - Accessors for each field.
 
-- Declares `public static MongoDBContainer mongoDBContainer` that launches on class load.
-- Ensures isolation and repeatability for integration tests.
-
-### Domain Model Components
-
-#### Member Entity
-
-Defined in `Member.java`, this class maps to the `member` collection:
-
-- Fields:  
-  - `@Id String id`  
-  - `@Indexed(unique=true) @Email String email`  
-  - `@NotNull @Pattern String name`  
-  - `@Size(min=10,max=15) @Pattern String phone`  
-- Implements `Serializable`.
-- Validation annotations guard against invalid data at persistence time.
-
-#### Database Sequence
-
-`DatabaseSequence.java` represents the `database_sequences` collection:
-
-- Fields:  
-  - `@Id String id`  
-  - `BigInteger sequence`  
-- Provides simple getters/setters to track and increment sequence values.
+- **DatabaseSequence** (`model/DatabaseSequence.java`):  
+  - Annotated with `@Document`.  
+  - Fields: `id` (sequence name), `sequence` (`BigInteger`).  
+  - Simple getters/setters to manage the numeric counter.
 
 ### Data Access Layer
 
-#### MemberRepository
+- **MemberRepository** (`data/MemberRepository.java`):  
+  ```java
+  public interface MemberRepository extends MongoRepository<Member, String> {
+      Optional<Member> findById(String id);
+      Optional<Member> findByEmail(String email);
+      List<Member> findAllByOrderByNameAsc();
+      void deleteMemberById(String id);
+      void deleteMemberByEmail(String email);
+  }
+  ```  
+  Leverages Spring Data MongoDB to auto-generate CRUD implementations based on method signatures.
 
-Located in `MemberRepository.java`, this interface extends `MongoRepository<Member,String>`:
+### Producer Components
 
-- Out-of-the-box CRUD via inherited methods.
-- Custom queries:  
-  - `findById(BigInteger id)`  
-  - `findByEmail(String email)`  
-  - `findAllByOrderByNameAsc()`  
-  - `deleteMemberById(BigInteger id)`  
-  - `deleteMemberByEmail(String email)`
+- **MemberListProducer** (`data/MemberListProducer.java`):  
+  - Annotated `@Component`.  
+  - Singleton bean that maintains an ordered `List<Member>`.  
+  - On initialization (`@PostConstruct`), loads all members sorted by name.  
+  - Observes member-change events to refresh the list.  
+  - Exposes `getMembers()` for data binding in MVC views.
 
 ### Service Layer
 
-#### MemberRegistration
+- **MemberRegistration** (`service/MemberRegistration.java`):  
+  - Annotated `@Service`.  
+  - Dependencies: `Logger`, `MongoOperations`, `MemberRepository`.  
+  - `register(Member member)`:  
+    - Calls `generateSequence("members_sequence")` to assign a unique ID.  
+    - Saves the `Member` via repository.  
+    - Wraps `MongoWriteException` to propagate meaningful errors.  
+  - `generateSequence(String seqName)`:  
+    - Atomically increments `DatabaseSequence` in MongoDB.  
+    - Returns `BigInteger.ONE` if no sequence exists.
 
-`MemberRegistration.java` encapsulates business logic:
-
-- Injects `MongoOperations` and `MemberRepository`.
-- `register(Member m)`:  
-  1. Calls `generateSequence("member_sequence")`  
-  2. Persists new member, handling `MongoWriteException`.  
-- `generateSequence(String seqName)`:  
-  - Atomically increments the sequence in `database_sequences` and returns the new value.
-
-### Web Layer Components
-
-#### REST API
-
-`MemberResourceRESTService.java` exposes HTTP endpoints:
-
-- `@RestController` with base `/api/members`.
-- Methods:  
-  - `listAllMembers()` – `GET /api/members`  
-  - `lookupMemberById(@PathVariable BigInteger id)` – `GET /api/members/{id}`  
-  - `createMember(@RequestBody Member m)` – `POST /api/members`  
-  - `deleteMemberById(@PathVariable BigInteger id)` – `DELETE /api/members/{id}`  
-- Private validation ensures email uniqueness, throwing appropriate HTTP statuses on conflict or not found.
+### Web Layer
 
 #### MVC Controller
 
-`MemberController.java` is a `@Controller` with `@ViewScoped` state:
+- **MemberController** (`controller/MemberController.java`):  
+  - Annotated `@Controller` and `@ViewScoped`.  
+  - Constructor-injected `MemberRegistration` and `MemberListProducer`.  
+  - `@PostConstruct refresh()`: Initializes `newMember` and reloads member list.  
+  - `register()`: Validates and invokes `registration.register(newMember)`. On success, resets form; on failure, extracts root error message via `getRootErrorMessage(Throwable e)` and displays it via `FacesMessage`.  
+  - Getters/Setters for `members` and `newMember` for JSF data binding.
 
-- Fields: `MemberRegistration`, `MemberListProducer`, `newMember`, `members`.
-- `refresh()`: Resets `newMember` and reloads member list.
-- `register()`: Validates and delegates to `memberRegistration.register(...)`, then refreshes or reports errors via `FacesContext`.
-- Utility method `getRootErrorMessage(Exception)` extracts nested exception messages.
+#### REST Controller
 
-#### Member List Producer
+- **MemberResourceRESTService** (`rest/MemberResourceRESTService.java`):  
+  - Annotated `@RestController`.  
+  - Constructor-injected `Logger`, `MemberRepository`, `MemberRegistration`.  
+  - `listAllMembers()`: `GET /members` returns all members.  
+  - `lookupMemberById(@PathVariable("id") long id)`: `GET /members/{id}` or throws `ResponseStatusException(NOT_FOUND)`.  
+  - `deleteMemberById(@PathVariable("id") long id)`: `DELETE /members/{id}` or throws `ResponseStatusException(NOT_FOUND)`.  
+  - `createMember(@RequestBody Member member)`: `POST /members`, calls `validateMember(member)`, then `registration.register(member)`.  
+  - `validateMember(Member member)`: Ensures email uniqueness via `repository.findByEmail()`.  
+  - `emailAlreadyExists(String email)`: Returns whether a duplicate exists.
 
-`MemberListProducer.java` is a `@Component` that:
+### Utility Components
 
-- Injects `MemberRepository`.
-- Populates and caches a `List<Member>` on `@PostConstruct`.
-- Observes custom events to refresh the list when members change.
+- **Resources** (`utils/Resources.java`):  
+  - Annotated `@Configuration`.  
+  - `@Bean` with `@Scope("prototype")` for `Logger produceLogger(InjectionPoint ip)`.  
+  - Dynamically resolves the declaring class to provide a class-specific `java.util.logging.Logger`.
 
-## API Usage
+## Workflows
 
-### REST Endpoints
+### Member Registration Workflow
 
-Interact with members programmatically:
+This workflow covers both MVC and REST endpoints:
 
-- List all members:
+1. **User Input**:  
+   - MVC: form backed by `MemberController.newMember`.  
+   - REST: JSON payload to `/members`.
 
-  ```bash
-  curl -X GET http://localhost:8080/api/members
-  ```
+2. **Validation**:  
+   - Controller or REST service calls `validateMember`, checking `repository.findByEmail(email)`.
 
-- Get a member by ID:
+3. **ID Generation**:  
+   - `MemberRegistration.generateSequence` queries/increments `DatabaseSequence` via `MongoOperations`.
 
-  ```bash
-  curl -X GET http://localhost:8080/api/members/{id}
-  ```
+4. **Persistence**:  
+   - `MemberRegistration.register` invokes `MemberRepository.save(member)`.
 
-- Create a new member:
+5. **Feedback & Refresh**:  
+   - MVC: displays FacesMessage and invokes `refresh()`.  
+   - REST: returns HTTP 201 with the created `Member`.
 
-  ```bash
-  curl -X POST http://localhost:8080/api/members \
-       -H "Content-Type: application/json" \
-       -d '{"name":"Alice","email":"alice@example.com","phone":"1234567890"}'
-  ```
+![MemberRegistrationFlow](AI_README_IMAGES/memberregistrationflow.png)
 
-- Delete a member:
-
-  ```bash
-  curl -X DELETE http://localhost:8080/api/members/{id}
-  ```
-
-### MVC UI Flow
-
-The JSF-based UI binds to `MemberController`:
-
-1. **View Load** triggers `refresh()` to display existing members.  
-2. **Form Submit** invokes `register()`, which persists the new member and refreshes the list.  
-3. **Error Handling** surfaces exceptions via `FacesContext` messages.
+The diagram illustrates the member registration flow in a kitchen sink application, showcasing interactions between various components across MVC and REST layers. It highlights the sequence of operations starting from user input validation in the `MemberResourceRESTService.createMember` and `MemberController.register` methods, through uniqueness checks in `MemberRepository.findByEmail()`, to ID generation in `MemberRegistration.generateSequence()`. The flow culminates in data persistence via `MemberRepository.save()`, while also addressing error handling for duplicate entries. This diagram serves as a visual representation of the registration process, clarifying the relationships and responsibilities of each component involved.
 
 ## Testing
 
 ### Integration Tests
 
-#### MemberRegistrationIT
+Two integration test suites validate end-to-end behavior:
 
-- Annotated with `@SpringBootTest` and wired to `MemberRegistration`.  
-- Uses Testcontainers–driven MongoDB to verify `register()` assigns a non-null ID.  
-- Fails the test if exceptions are thrown during persistence.
+- **MemberRegistrationIT** (`test/MemberRegistrationIT.java`):  
+  - Uses `@SpringBootTest` and Testcontainers’ `MongoDBConfig`.  
+  - Verifies that `MemberRegistration.register()` persists a member and assigns a non-null ID.
 
-### Remote Integration Tests
+- **RemoteMemberRegistrationIT** (`test/RemoteMemberRegistrationIT.java`):  
+  - Employs JUnit 5 and an HTTP client against the running Spring Boot server.  
+  - `testRegister()`: Sends a POST to `/members`, asserts HTTP 201.  
+  - `cleanUp()`: Deletes the created member to maintain a clean state.
 
-#### RemoteMemberRegistrationIT
+![IntegrationTestingArchitecture](AI_README_IMAGES/integrationtestingarchitecture.png)
 
-- Uses JUnit 5 to send real HTTP requests against `/api/members`.  
-- `testRegister()` asserts a `201 Created` response and captures the created ID.  
-- `cleanUp()` deletes the resource if created, ensuring environment cleanup.  
-- Reads `SERVER_HOST` from environment or system properties.
+The diagram illustrates the integration testing architecture for the kitchensink application, highlighting the interactions between key components. It showcases how the `MongoDBConfig` class initializes a Testcontainers MongoDB instance, providing a consistent testing environment. The `MemberRegistrationIT` class runs within a SpringBootTest context to validate the member registration service, ensuring that new members can be registered successfully. Additionally, the `RemoteMemberRegistrationIT` class issues HTTP requests against the live application, testing the REST endpoints for member registration and cleanup. This diagram effectively captures the relationships and workflows among these components, emphasizing their roles in the integration testing process.
 
-### Test Configuration
-
-`MongoDBConfig.java` ensures that a MongoDB container is available during tests, eliminating external dependencies and promoting reproducible builds.
-
-## Deployment
-
-### Running with Testcontainers
-
-Integration tests automatically start a MongoDB container, ensuring tests can run on any CI/CD agent without external dependencies.
-
-### Production Deployment
-
-- Configure the MongoDB connection in `application.properties` or environment variables.  
-- Ensure that the `member` and `database_sequences` collections exist (the application will auto-create them on startup).  
-- Deploy the fat-jar to any Java application server or use the embedded Tomcat via:
-
-  ```bash
-  java -jar target/kitchensink-main.jar
-  ```

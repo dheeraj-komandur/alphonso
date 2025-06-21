@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - OidcTimeoutException_commented.java *********
-The 'OidcTimeoutException.java' file defines a custom exception for signaling timeout errors during OpenID Connect operations, enhancing error handling in the MongoDB JDBC context.
+The 'OidcTimeoutException.java' file defines a custom exception for signaling timeout errors in OpenID Connect operations, enhancing error handling in the MongoDB JDBC implementation.
 */
 
 /*
@@ -21,7 +21,7 @@ The 'OidcTimeoutException.java' file defines a custom exception for signaling ti
 
 package com.mongodb.jdbc.oidc;
 
-// (AI Comment) - Represents an exception thrown when an OIDC operation times out, extending the base Exception class.
+// (AI Comment) - Custom exception class for handling OIDC timeout errors, extending the base Exception class.
 public class OidcTimeoutException extends Exception {
     public OidcTimeoutException(String message) {
         super(message);

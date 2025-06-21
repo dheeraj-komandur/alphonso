@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MemberListProducer_commented.java *********
-The MemberListProducer class is responsible for managing and providing access to a list of members in the kitchensink application. It retrieves members from a repository and updates the list in response to events, ensuring that the data remains current and accessible.
+This file defines the MemberListProducer class, which is responsible for managing and providing access to a list of members in the kitchensink application. It retrieves members from a repository and updates the list in response to changes, facilitating the dynamic management of member data.
 */
 
 /*
@@ -38,7 +38,7 @@ public class MemberListProducer {
     private final MemberRepository memberRepository;
     private List<Member> members;
 
-    // (AI Comment) - Constructor that initializes the MemberListProducer with a MemberRepository instance, ensuring dependency injection.
+    // (AI Comment) - Constructor that initializes the MemberListProducer with a MemberRepository instance, ensuring the repository is available for member retrieval.
     @Autowired
     public MemberListProducer(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
@@ -49,12 +49,12 @@ public class MemberListProducer {
         return members;
     }
 
-    // (AI Comment) - Handles events indicating that the member list has changed, triggering a refresh of the member list.
+    // (AI Comment) - Observes changes to the member list and triggers a retrieval of all members ordered by name when a member is added or modified.
     public void onMemberListChanged(@Observes(notifyObserver = Reception.IF_EXISTS) final Member member) {
         retrieveAllMembersOrderedByName();
     }
 
-    // (AI Comment) - Retrieves all members from the repository, ordered by name, and updates the internal members list.
+    // (AI Comment) - Retrieves all members from the repository and orders them by name, updating the internal members list.
     @PostConstruct
     public void retrieveAllMembersOrderedByName() {
         members = memberRepository.findAllByOrderByNameAsc();

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoConnection_commented.java *********
-The 'MongoConnection.java' file provides an implementation of a JDBC Connection for MongoDB, facilitating database interactions while managing connection settings, state, and logging. It supports various authentication mechanisms and ensures that the connection is valid before executing SQL commands.
+The 'MongoConnection.java' file provides an implementation of the JDBC Connection interface for MongoDB, facilitating database connectivity, authentication, and logging. It supports various authentication mechanisms and manages connection states, ensuring compliance with JDBC standards.
 */
 
 /*
@@ -57,7 +57,7 @@ import org.bson.UuidRepresentation;
 
 @AutoLoggable
 public class MongoConnection implements Connection {
-    // (AI Comment) - This class represents a MongoDB connection implementing the JDBC Connection interface, managing connection settings and state.
+    // (AI Comment) - This class represents a MongoDB connection implementing the JDBC Connection interface, managing connection settings, authentication, and logging.
     private MongoClientSettings mongoClientSettings;
     protected MongoClient mongoClient;
     protected String currentDB;
@@ -137,11 +137,13 @@ public class MongoConnection implements Connection {
     }
 
     public MongoConnection(
+            // (AI Comment) - Constructor initializing the MongoConnection with a MongoClient and connection properties.
             MongoClient mongoClient, MongoConnectionProperties connectionProperties) {
         this(mongoClient, connectionProperties, null);
     }
 
     public MongoConnection(MongoConnectionProperties connectionProperties, char[] x509Passphrase) {
+        // (AI Comment) - Constructor initializing the MongoConnection with connection properties and an optional X.509 passphrase.
         this(null, connectionProperties, x509Passphrase);
     }
 
@@ -150,7 +152,7 @@ public class MongoConnection implements Connection {
     }
 
     private void initializeConnection(MongoConnectionProperties connectionProperties) {
-        // (AI Comment) - Initializes connection properties such as URL, user, database, and logging settings from the provided connection properties.
+        // (AI Comment) - Initializes connection properties such as URL, user, database, and logging settings.
         this.url = connectionProperties.getConnectionString().getConnectionString();
         this.user = connectionProperties.getConnectionString().getUsername();
         this.currentDB = connectionProperties.getDatabase();
@@ -164,6 +166,7 @@ public class MongoConnection implements Connection {
     }
 
     private String buildAppName(MongoConnectionProperties connectionProperties) {
+        // (AI Comment) - Builds the application name for logging based on connection properties.
         StringBuilder appNameBuilder =
                 new StringBuilder(MongoDriver.NAME).append("+").append(MongoDriver.getVersion());
 
@@ -179,7 +182,7 @@ public class MongoConnection implements Connection {
     }
 
     private MongoClientSettings createMongoClientSettings(
-            // (AI Comment) - Creates MongoClientSettings based on the provided connection properties, handling authentication mechanisms like OIDC and X.509.
+            // (AI Comment) - Creates MongoClientSettings based on connection properties, handling authentication mechanisms.
             MongoConnectionProperties connectionProperties) {
         MongoClientSettings.Builder settingsBuilder =
                 MongoClientSettings.builder()
@@ -220,23 +223,28 @@ public class MongoConnection implements Connection {
     }
 
     protected MongoSQLTranslate getMongosqlTranslate() {
+        // (AI Comment) - Returns the MongoSQLTranslate instance used for SQL translation.
         return mongosqlTranslate;
     }
 
     protected MongoClusterType getClusterType() {
+        // (AI Comment) - Returns the current cluster type of the MongoDB connection.
         return clusterType;
     }
 
     protected MongoClient getMongoClient() {
+        // (AI Comment) - Returns the MongoClient instance associated with this connection.
         return mongoClient;
     }
 
     @DisableAutoLogging
+    // (AI Comment) - Returns the logger instance for this connection, with auto-logging disabled.
     public MongoLogger getLogger() {
         return logger;
     }
 
     protected int getNextStatementId() {
+        // (AI Comment) - Checks if the connection is closed and throws an SQLException if it is.
         return stmtCounter.incrementAndGet();
     }
 
@@ -247,7 +255,7 @@ public class MongoConnection implements Connection {
     }
 
     private MongoClusterType determineClusterType() {
-        // (AI Comment) - Determines the cluster type by executing a buildInfo command and analyzing the response to identify the MongoDB deployment.
+        // (AI Comment) - Determines the cluster type by executing a buildInfo command and analyzing the response.
         BsonDocument buildInfoCmd = new BsonDocument();
         buildInfoCmd.put("buildInfo", new BsonInt32(1));
 
@@ -293,7 +301,7 @@ public class MongoConnection implements Connection {
     }
 
     @Override
-    // (AI Comment) - Creates a Statement object for executing SQL commands against the MongoDB database.
+    // (AI Comment) - Creates a Statement for executing SQL commands, checking if the connection is open.
     public Statement createStatement() throws SQLException {
         checkConnection();
         try {
@@ -304,35 +312,43 @@ public class MongoConnection implements Connection {
     }
 
     protected int getDefaultConnectionValidationTimeoutSeconds() {
+        // (AI Comment) - Returns the default connection validation timeout in seconds.
         return this.mongoClientSettings.getSocketSettings().getConnectTimeout(TimeUnit.SECONDS);
     }
 
     boolean getExtJsonMode() {
+        // (AI Comment) - Returns whether the connection is in extended JSON mode.
         return extJsonMode;
     }
 
     UuidRepresentation getUuidRepresentation() {
+        // (AI Comment) - Returns the UUID representation setting for this connection.
         return uuidRepresentation;
     }
 
     String getURL() {
+        // (AI Comment) - Returns the URL of the MongoDB connection.
         return url;
     }
 
     String getUser() {
+        // (AI Comment) - Returns the username used for the MongoDB connection.
         return user;
     }
 
     protected MongoDatabase getDatabase(String DBName) {
+        // (AI Comment) - Returns the MongoDatabase instance for the specified database name.
         return mongoClient.getDatabase(DBName);
     }
 
     @Override
+    // (AI Comment) - Returns metadata about the database.
     public DatabaseMetaData getMetaData() throws SQLException {
         return new MongoDatabaseMetaData(this);
     }
 
     @Override
+    // (AI Comment) - Throws an exception indicating that native SQL is not supported.
     public String nativeSQL(String sql) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
@@ -345,6 +361,7 @@ public class MongoConnection implements Connection {
     }
 
     @Override
+    // (AI Comment) - Prepares a CallableStatement, throwing an exception if not supported.
     public PreparedStatement prepareStatement(String sql) throws SQLException {
         try {
             return new MongoPreparedStatement(sql, new MongoStatement(this, currentDB));
@@ -355,6 +372,7 @@ public class MongoConnection implements Connection {
 
     @Override
     public void setAutoCommit(boolean autoCommit) throws SQLException {
+        // (AI Comment) - Sets the auto-commit mode, which is a no-op for this driver.
         // no-op, we only check that the connection is open
         checkConnection();
         logger.log(
@@ -364,6 +382,7 @@ public class MongoConnection implements Connection {
     }
 
     @Override
+    // (AI Comment) - Returns true indicating that auto-commit is always enabled.
     public boolean getAutoCommit() throws SQLException {
         checkConnection();
         // By default, new connections are in auto-commit mode
@@ -372,6 +391,7 @@ public class MongoConnection implements Connection {
     }
 
     @Override
+    // (AI Comment) - Commits the transaction, which is a no-op for this driver.
     public void commit() throws SQLException {
         // no-op, we only check that the connection is open
         checkConnection();
@@ -379,11 +399,13 @@ public class MongoConnection implements Connection {
 
     @Override
     public void rollback() throws SQLException {
+        // (AI Comment) - Rolls back the transaction, which is a no-op for this driver.
         // no-op, we only check that the connection is open
         checkConnection();
     }
 
     @Override
+    // (AI Comment) - Closes the connection and cleans up resources, including logging handlers.
     public void close() {
         if (isClosed()) {
             return;
@@ -408,16 +430,19 @@ public class MongoConnection implements Connection {
     }
 
     @Override
+    // (AI Comment) - Checks if the connection is closed.
     public boolean isClosed() {
         return isClosed;
     }
 
     @Override
+    // (AI Comment) - Sets the connection to read-only mode, which is a no-op.
     public void setReadOnly(boolean readOnly) throws SQLException {
         checkConnection();
     }
 
     @Override
+    // (AI Comment) - Returns true indicating that the connection is read-only.
     public boolean isReadOnly() throws SQLException {
         checkConnection();
         return true;
@@ -425,39 +450,46 @@ public class MongoConnection implements Connection {
 
     @Override
     public void setCatalog(String catalog) throws SQLException {
+        // (AI Comment) - Sets the current database for the connection.
         checkConnection();
         currentDB = catalog;
     }
 
     @Override
+    // (AI Comment) - Returns the current database name.
     public String getCatalog() throws SQLException {
         checkConnection();
         return currentDB;
     }
 
     @Override
+    // (AI Comment) - Sets the transaction isolation level, which is a no-op.
     public void setTransactionIsolation(int level) throws SQLException {
         checkConnection();
     }
 
     @Override
     public int getTransactionIsolation() throws SQLException {
+        // (AI Comment) - Returns the transaction isolation level, which is always TRANSACTION_NONE.
         checkConnection();
         return Connection.TRANSACTION_NONE;
     }
 
     @Override
+    // (AI Comment) - Returns any warnings, which are not supported.
     public SQLWarning getWarnings() throws SQLException {
         checkConnection();
         return null;
     }
 
     @Override
+    // (AI Comment) - Clears any warnings, which is a no-op.
     public void clearWarnings() throws SQLException {
         checkConnection();
     }
 
     // --------------------------JDBC 2.0-----------------------------
+    // (AI Comment) - Creates a Statement with specified result set type and concurrency, throwing an exception if not supported.
     @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency)
             throws SQLException {
@@ -471,6 +503,7 @@ public class MongoConnection implements Connection {
     }
 
     @Override
+    // (AI Comment) - Prepares a statement with specified result set type and concurrency, throwing an exception if not supported.
     public PreparedStatement prepareStatement(
             String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
         if (resultSetType == ResultSet.TYPE_FORWARD_ONLY
@@ -483,6 +516,7 @@ public class MongoConnection implements Connection {
     }
 
     @Override
+    // (AI Comment) - Prepares a CallableStatement with specified parameters, throwing an exception if not supported.
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency)
             throws SQLException {
         throw new SQLFeatureNotSupportedException(
@@ -490,6 +524,7 @@ public class MongoConnection implements Connection {
     }
 
     @Override
+    // (AI Comment) - Creates an array of a specified type, throwing an exception if not supported.
     public java.util.Map<String, Class<?>> getTypeMap() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
@@ -498,6 +533,7 @@ public class MongoConnection implements Connection {
     @Override
     public void setTypeMap(java.util.Map<String, Class<?>> map) throws SQLException {
         throw new SQLFeatureNotSupportedException(
+                // (AI Comment) - Creates a struct of a specified type, throwing an exception if not supported.
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
@@ -612,7 +648,7 @@ public class MongoConnection implements Connection {
     }
 
     class ConnValidation implements Callable<Void> {
-        // (AI Comment) - Validates the connection by determining the cluster type and executing a simple query to ensure connectivity.
+        // (AI Comment) - Validates the connection by determining the cluster type and executing a test query.
         @Override
         public Void call() throws SQLException, MongoSQLException, MongoSerializationException {
             MongoClusterType actualClusterType = determineClusterType();
@@ -688,6 +724,7 @@ public class MongoConnection implements Connection {
     }
 
     /**
+     // (AI Comment) - Executes a dummy query to test the connection with a specified timeout.
      * Executes a dummy query to test the connection.
      *
      * @param timeout The query timeout.
@@ -720,6 +757,7 @@ public class MongoConnection implements Connection {
     }
 
     @Override
+    // (AI Comment) - Checks if the connection is valid by testing it with a timeout.
     public boolean isValid(int timeout) throws SQLException {
         try {
             testConnection(timeout);
@@ -765,6 +803,7 @@ public class MongoConnection implements Connection {
     }
 
     // --------------------------JDBC 4.1 -----------------------------
+    // (AI Comment) - Sets the schema for the connection, which is ignored if schemas are not supported.
 
     @Override
     public void setSchema(String schema) throws SQLException {
@@ -773,6 +812,7 @@ public class MongoConnection implements Connection {
     }
 
     @Override
+    // (AI Comment) - Returns the schema for the connection, which is ignored if schemas are not supported.
     public String getSchema() throws SQLException {
         // JDBC standard says this function is ignored if schemas are not supported.
         // So we do not want to check the connection.
@@ -780,18 +820,21 @@ public class MongoConnection implements Connection {
     }
 
     @Override
+    // (AI Comment) - Aborts the connection, throwing an exception if not supported.
     public void abort(Executor executor) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
+    // (AI Comment) - Sets the network timeout for the connection, throwing an exception if not supported.
     public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     @Override
+    // (AI Comment) - Returns the network timeout for the connection, throwing an exception if not supported.
     public int getNetworkTimeout() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
@@ -800,28 +843,32 @@ public class MongoConnection implements Connection {
     // JDBC 4.3
 
     public void beginRequest() throws SQLException {
+        // (AI Comment) - Begins a request, throwing an exception if not supported.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     public void endRequest() throws SQLException {
+        // (AI Comment) - Ends a request, throwing an exception if not supported.
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
     // java.sql.Wrapper impl
+    // (AI Comment) - Checks if this connection is a wrapper for a specified interface.
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return iface.isInstance(this);
     }
 
     @SuppressWarnings("unchecked")
+    // (AI Comment) - Unwraps this connection to the specified interface type.
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return (T) this;
     }
 
     private void initConnectionLogger(
-            // (AI Comment) - Initializes the connection logger with specified logging settings, differentiating connections by their hash codes.
+            // (AI Comment) - Initializes the connection logger with specified parameters, handling multiple connections and logging settings.
             Integer connection_id, Integer connectionHashCode, Level logLevel, File logDir) {
         // Adding the connection hashcode as part of the logger name to differentiate the connections when the driver
         // is loaded multiple times from different classloader (there will then be multiple connections #1, #2, etc..).

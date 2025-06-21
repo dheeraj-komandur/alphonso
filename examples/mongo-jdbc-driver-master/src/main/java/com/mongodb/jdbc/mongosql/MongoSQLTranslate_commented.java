@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoSQLTranslate_commented.java *********
-The 'MongoSQLTranslate.java' file provides functionalities for translating SQL commands into MongoDB commands, executing them, and handling their responses. It includes methods for checking driver compatibility, retrieving library versions, and managing schema information for collections.
+The 'MongoSQLTranslate.java' file provides a class that translates SQL commands into MongoDB commands, executes them, and handles the responses. It includes methods for checking driver compatibility, retrieving library versions, and managing schema information for collections, making it essential for integrating SQL-based applications with MongoDB.
 */
 
 /*
@@ -73,7 +73,7 @@ public class MongoSQLTranslate {
      *     deserialization.
      * @throws MongoSQLException If an error occurs during command execution.
      */
-    // (AI Comment) - Executes a command using JNI and returns the response as a specified POJO type.
+    // (AI Comment) - Executes a command using JNI and returns the response as a specified POJO type, handling serialization exceptions.
     public <T> T runCommand(BsonDocument command, Class<T> responseClass)
             throws MongoSerializationException, MongoSQLException {
 
@@ -106,7 +106,7 @@ public class MongoSQLTranslate {
      * @throws MongoSerializationException If an error occurs during serialization or
      *     deserialization.
      */
-    // (AI Comment) - Retrieves the version of the mongosqltranslate library.
+    // (AI Comment) - Retrieves the version of the mongosqltranslate library, logging the version information.
     public GetMongosqlTranslateVersionResult getMongosqlTranslateVersion()
             throws MongoSQLException, MongoSerializationException {
         BsonDocument command =
@@ -128,7 +128,7 @@ public class MongoSQLTranslate {
      * @throws MongoSerializationException If an error occurs during serialization or
      *     deserialization.
      */
-    // (AI Comment) - Checks if the JDBC driver version is compatible with the mongosqltranslate library.
+    // (AI Comment) - Checks if the JDBC driver version is compatible with the mongosqltranslate library, logging the compatibility status.
     public CheckDriverVersionResult checkDriverVersion()
             throws MongoSQLException, MongoSerializationException {
         BsonDocument options =
@@ -157,7 +157,7 @@ public class MongoSQLTranslate {
      * @throws MongoSerializationException If an error occurs during serialization or
      *     deserialization.
      */
-    // (AI Comment) - Executes a translate command based on the provided SQL and returns the response.
+    // (AI Comment) - Translates a given SQL query into a MongoDB command and returns the result.
     public TranslateResult translate(String sql, String dbName, BsonDocument schemaCatalog)
             throws MongoSQLException, MongoSerializationException {
 
@@ -185,7 +185,7 @@ public class MongoSQLTranslate {
      * @throws MongoSerializationException If an error occurs during serialization or
      *     deserialization.
      */
-    // (AI Comment) - Retrieves the namespaces involved in the given SQL query.
+    // (AI Comment) - Retrieves the namespaces involved in a given SQL query, returning the result as a structured object.
     public GetNamespacesResult getNamespaces(String dbName, String sql)
             throws MongoSQLException, MongoSerializationException {
         BsonDocument options =
@@ -206,7 +206,7 @@ public class MongoSQLTranslate {
      * @return the schema catalog for all the specified collections. The catalog document format is
      *     : { "dbName": { "collection1" : "Schema1", "collection2" : "Schema2", ... }}
      */
-    // (AI Comment) - Builds a catalog document containing the schema information for specified collections.
+    // (AI Comment) - Builds a catalog document containing schema information for specified collections, handling cases with no collections.
     public BsonDocument buildCatalogDocument(
             MongoDatabase mongoDatabase,
             String dbName,
@@ -336,7 +336,7 @@ public class MongoSQLTranslate {
      * @throws MongoSerializationException If an error occurs during serialization or
      *     deserialization.
      */
-    // (AI Comment) - Retrieves the schema of a specific collection from the MongoDB database.
+    // (AI Comment) - Retrieves the schema of a specific collection from the MongoDB database, returning the schema result.
     public MongoJsonSchemaResult getSchema(MongoDatabase mongoDatabase, String collectionName)
             throws MongoSerializationException, MongoSQLException {
 

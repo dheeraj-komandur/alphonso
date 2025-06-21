@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MemberController_commented.java *********
-The MemberController class is responsible for managing member registrations in a Java EE application. It handles user input, validates member details, interacts with the member registration service, and provides feedback to the user through the UI.
+The 'MemberController.java' file is responsible for managing member registrations in a Java EE application. It handles the registration process, validates user input, and interacts with services to retrieve and manage member data. The controller ensures that user feedback is provided through messages, maintaining a clear separation of concerns in the MVC architecture.
 */
 
 /*
@@ -19,6 +19,7 @@ The MemberController class is responsible for managing member registrations in a
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// (AI Comment) - Defines the package for the MemberController class, which handles member registration and management.
 package org.jboss.as.quickstarts.kitchensink.controller;
 
 import jakarta.annotation.PostConstruct;
@@ -33,16 +34,16 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
+// (AI Comment) - The MemberController class is responsible for managing member registration and retrieval, utilizing services for member data.
 @Controller
 @ViewScoped
-// (AI Comment) - The MemberController class manages member registration and retrieval, handling user input and interactions with the member registration service.
 public class MemberController {
     private final MemberRegistration memberRegistration;
     private final MemberListProducer memberListProducer;
     private Member newMember;
     private List<Member> members;
 
-    // (AI Comment) - Constructor that initializes the MemberRegistration and MemberListProducer dependencies via dependency injection.
+    // (AI Comment) - Constructor that initializes the MemberRegistration and MemberListProducer services used for member operations.
     @Autowired
     public MemberController(MemberRegistration memberRegistration, MemberListProducer memberListProducer) {
         this.memberRegistration = memberRegistration;
@@ -57,7 +58,7 @@ public class MemberController {
         members = memberListProducer.getMembers();
     }
 
-    // (AI Comment) - Registers a new member, validates input, and handles success or error messages using FacesContext.
+    // (AI Comment) - Registers a new member, validates input, and handles success or error messages based on the registration outcome.
     public void register() throws Exception {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         if (newMember.getName().isEmpty() || newMember.getEmail().isEmpty() || newMember.getPhoneNumber().isEmpty()) {
@@ -75,7 +76,7 @@ public class MemberController {
         }
     }
 
-    // (AI Comment) - Retrieves the root error message from an exception, traversing the cause chain if necessary.
+    // (AI Comment) - Retrieves the root error message from an exception, traversing the cause chain to find the most specific message.
     private String getRootErrorMessage(Exception e) {
         String errorMessage = "Registration failed";
         if (e == null) {
@@ -91,22 +92,22 @@ public class MemberController {
         return errorMessage;
     }
 
-    // (AI Comment) - Getter for the list of members.
+    // (AI Comment) - Getter method for the list of members.
     public List<Member> getMembers() {
         return members;
     }
 
-    // (AI Comment) - Setter for the list of members.
+    // (AI Comment) - Setter method for the list of members.
     public void setMembers(List<Member> members) {
         this.members = members;
     }
 
-    // (AI Comment) - Getter for the new member instance.
+    // (AI Comment) - Getter method for the new member being registered.
     public Member getNewMember() {
         return newMember;
     }
 
-    // (AI Comment) - Setter for the new member instance.
+    // (AI Comment) - Setter method for the new member being registered.
     public void setNewMember(Member newMember) {
         this.newMember = newMember;
     }

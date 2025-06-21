@@ -28,18 +28,17 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-// (AI Comment) - Implements a custom log formatter for MongoDB logging, extending the Formatter class to define a specific log message format.
+// (AI Comment) - Implements a custom log formatter for MongoDB JDBC, extending the Formatter class to format log messages with a specific pattern.
 public class MongoSimpleFormatter extends Formatter {
     private final String format = "[%1$tF %1$tT.%1$tL] [%4$s] %2$s: %5$s %6$s %n";
     private final Date date = new Date();
 
-    // (AI Comment) - Overrides the format method to customize the log output, including timestamp, source, and exception stack trace if present.
+    // (AI Comment) - Overrides the format method to customize the log message format, including timestamp, source, and exception stack trace if present.
     @Override
     public String format(LogRecord record) {
-        // (AI Comment) - Sets the date object to the timestamp of the log record.
+        // (AI Comment) - Sets the date based on the log record's timestamp and constructs the source string from the class and method names if available.
         date.setTime(record.getMillis());
         String source;
-        // (AI Comment) - Determines the source of the log message, preferring the source class and method names if available.
         if (record.getSourceClassName() != null) {
             source = record.getSourceClassName();
             if (record.getSourceMethodName() != null) {
@@ -50,7 +49,7 @@ public class MongoSimpleFormatter extends Formatter {
         }
         String message = formatMessage(record);
         String throwable = "";
-        // (AI Comment) - Handles the case where an exception was thrown, capturing its stack trace for logging.
+        // (AI Comment) - Checks if the log record contains a throwable and captures its stack trace for inclusion in the formatted log message.
         if (record.getThrown() != null) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -59,7 +58,7 @@ public class MongoSimpleFormatter extends Formatter {
             pw.close();
             throwable = sw.toString();
         }
-        // (AI Comment) - Formats the final log message string using the defined format, including all relevant details.
+        // (AI Comment) - Formats the final log message string using the specified format pattern and the extracted components.
         return String.format(
                 format,
                 date,

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - Main_commented.java *********
-The 'Main.java' file is the entry point for a Spring Boot application that integrates with MongoDB. It initializes the application context and configures the necessary repositories, ensuring that the application can start and log any errors encountered during the startup process.
+The Main class initializes a Spring Boot application, configuring it to use MongoDB for data storage and handling application startup errors.
 */
 
 // (AI Comment) - Main class serves as the entry point for the Spring Boot application, initializing the application context and configuring MongoDB repositories.
@@ -22,7 +22,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 public class Main extends SpringBootServletInitializer {
     // (AI Comment) - Main method that launches the Spring Boot application, handling exceptions during startup and logging errors.
     public static void main(String[] args) {
-        // (AI Comment) - Try-catch block to manage exceptions during application startup, ensuring that any errors are logged appropriately.
+        // (AI Comment) - Try-catch block to manage exceptions that may occur during application startup, logging any errors encountered.
         try {
             SpringApplication.run(ApplicationConfiguration.class, args);
         } catch (Exception e) {

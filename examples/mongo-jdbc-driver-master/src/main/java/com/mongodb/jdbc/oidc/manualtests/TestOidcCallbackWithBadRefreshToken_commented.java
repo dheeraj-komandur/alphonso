@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestOidcCallbackWithBadRefreshToken_commented.java *********
-The file contains a test class that verifies the behavior of the OIDC callback when a bad refresh token is provided, ensuring that the expected exception is thrown and handled correctly.
+The 'TestOidcCallbackWithBadRefreshToken.java' file contains a test class that verifies the behavior of the OIDC callback when an invalid refresh token is provided. It aims to ensure that the system correctly raises a RefreshFailedException, thereby validating the error handling capabilities of the OIDC callback mechanism.
 */
 
 /*
@@ -31,22 +31,21 @@ import javax.security.auth.RefreshFailedException;
 // (AI Comment) - This class tests the behavior of the OIDC callback when provided with a bad refresh token, expecting a RefreshFailedException.
 public class TestOidcCallbackWithBadRefreshToken {
 
-    // (AI Comment) - Main method that initializes the OIDC callback and simulates a request with a bad refresh token.
+    // (AI Comment) - Main method that initializes the OIDC callback and tests it with a bad refresh token, handling expected exceptions.
     public static void main(String[] args) {
         OidcCallback oidcCallback = new JdbcOidcCallback();
 
-        // (AI Comment) - Defines a bad refresh token and creates an OIDC callback context with it.
         String badRefreshToken = "bad-refresh-token";
         OidcCallbackContext context =
                 new JdbcOidcCallbackContext(null, 1, badRefreshToken, TestOidcUtils.IDP_INFO, null);
 
-        // (AI Comment) - Attempts to invoke the OIDC callback with the context, handling expected exceptions.
+        // (AI Comment) - Try-catch block to handle the callback request and manage exceptions, specifically looking for RefreshFailedException.
         try {
             OidcCallbackResult result = oidcCallback.onRequest(context);
             System.out.println("This should not print, bad refresh token expected to fail.");
             System.out.println(result);
         } catch (Exception e) {
-            // (AI Comment) - Catches exceptions thrown during the callback invocation, specifically checking for RefreshFailedException.
+            // (AI Comment) - Conditional block to differentiate between expected RefreshFailedException and unexpected errors.
             if (e.getCause() instanceof RefreshFailedException) {
                 System.err.println(
                         "Expected RefreshFailedException occurred: " + e.getCause().getMessage());

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoStatementTest_commented.java *********
-The 'MongoStatementTest.java' file contains unit tests for the 'MongoStatement' class, validating its behavior and interactions with the MongoDB database. It ensures that methods function correctly, handle exceptions appropriately, and manage resources effectively, contributing to the overall reliability of the MongoDB JDBC driver.
+This file contains unit tests for the MongoStatement class, ensuring its methods function correctly with respect to database interactions, exception handling, and resource management. It utilizes Mockito for mocking dependencies and JUnit for structuring the tests.
 */
 
 /*
@@ -54,7 +54,7 @@ import org.mockito.quality.Strictness;
 class MongoStatementTest extends MongoMock {
     private static MongoStatement mongoStatement;
 
-    // (AI Comment) - Static block to initialize MongoStatement with a mock connection and database before any tests run.
+    // (AI Comment) - Static block to initialize MongoStatement with a mock connection and database, handling potential SQL exceptions.
     static {
         try {
             mongoStatement = new MongoStatement(mongoConnection, database);
@@ -63,13 +63,13 @@ class MongoStatementTest extends MongoMock {
         }
     }
 
-    // (AI Comment) - Initializes mock objects before all tests are executed.
+    // (AI Comment) - Initializes mock objects before all tests are run.
     @BeforeAll
     protected void initMocks() {
         MockitoAnnotations.initMocks(this);
     }
 
-    // (AI Comment) - Sets up the test environment by resetting mock objects and initializing MongoStatement before each test.
+    // (AI Comment) - Sets up the test environment before each test, resetting mock objects and initializing MongoStatement.
     // Since MongoConnection cannot be created with its constructor, we have to use InjectionMocks Annotation and
     // create it during initiation. In order to reuse the same object for each test, we need to reset it before each test case.
     @BeforeEach
@@ -93,7 +93,7 @@ class MongoStatementTest extends MongoMock {
         testExceptionAfterConnectionClosed(ti::test);
     }
 
-    // (AI Comment) - Interface to facilitate testing with a lambda expression for SQL exception handling.
+    // (AI Comment) - Interface to facilitate testing with a lambda expression for SQL operations.
     // to replace lambda as input in the testExceptionAfterConnectionClosed
     interface TestInterface {
         void test() throws SQLException;
@@ -168,7 +168,7 @@ class MongoStatementTest extends MongoMock {
         assertTrue(rs.isLast());
     }
 
-    // (AI Comment) - Tests the behavior of closing an empty statement and verifies that subsequent close calls are no-ops.
+    // (AI Comment) - Tests the behavior of closing an empty statement, ensuring it can be closed multiple times without error.
     @Test
     void testCloseForEmptyStatement() throws SQLException {
         assertFalse(mongoStatement.isClosed());
@@ -180,7 +180,7 @@ class MongoStatementTest extends MongoMock {
         assertTrue(mongoStatement.isClosed());
     }
 
-    // (AI Comment) - Tests the closing behavior of an executed statement and ensures that the result set is also closed.
+    // (AI Comment) - Tests closing an executed statement and verifies that the result set is also closed.
     @Test
     void testCloseForExecutedStatement() throws SQLException {
         when(mongoCursor.hasNext()).thenReturn(true);
@@ -199,7 +199,7 @@ class MongoStatementTest extends MongoMock {
         assertTrue(mongoStatement.isClosed());
     }
 
-    // (AI Comment) - Tests the closing behavior when the statement is marked for closure on completion, ensuring proper resource management.
+    // (AI Comment) - Tests closing a statement on completion, ensuring it closes the statement when the result set is closed.
     @Test
     void testCloseOnCompletion() throws SQLException {
         when(mongoCursor.hasNext()).thenReturn(true);
@@ -220,7 +220,7 @@ class MongoStatementTest extends MongoMock {
         assertTrue(mongoStatement.isClosed());
     }
 
-    // (AI Comment) - Tests the retrieval of the maximum field size, ensuring it returns the expected default value.
+    // (AI Comment) - Tests getting the maximum field size from the statement, ensuring proper exception handling.
     @Test
     void testGetMaxFieldSize() throws SQLException {
         assertEquals(0, mongoStatement.getMaxFieldSize());
@@ -228,11 +228,11 @@ class MongoStatementTest extends MongoMock {
     }
 
     @Test
+    // (AI Comment) - Tests setting the maximum field size, verifying that no exceptions are thrown.
     void testSetMaxFieldoSize() throws SQLException {
         testNoop(() -> mongoStatement.setMaxFieldSize(0));
     }
 
-    // (AI Comment) - Tests setting the maximum field size, ensuring no exceptions are thrown.
     @Test
     void testgetMaxRows() throws SQLException {
         assertEquals(0, mongoStatement.getMaxRows());
@@ -243,8 +243,8 @@ class MongoStatementTest extends MongoMock {
     void testSetMaxRows() throws SQLException {
         testNoop(() -> mongoStatement.setMaxRows(0));
     }
-    // (AI Comment) - Tests retrieval of the maximum rows, ensuring it returns the expected default value.
 
+    // (AI Comment) - Tests getting the maximum rows from the statement, ensuring proper exception handling.
     @Test
     void testSetEscapeProcessing() throws SQLException {
         testNoop(() -> mongoStatement.setEscapeProcessing(true));
@@ -254,18 +254,17 @@ class MongoStatementTest extends MongoMock {
     void testSetGetQueryTimeout() throws SQLException {
         int timeout = 123;
         mongoStatement.setQueryTimeout(timeout);
-        // (AI Comment) - Tests setting the maximum rows, ensuring no exceptions are thrown.
         assertEquals(timeout, mongoStatement.getQueryTimeout());
 
         testExceptionAfterConnectionClosed(() -> mongoStatement.setQueryTimeout(timeout));
         testExceptionAfterConnectionClosed(() -> mongoStatement.getQueryTimeout());
     }
 
+    // (AI Comment) - Tests clearing warnings on the statement, verifying that no exceptions are thrown.
     @Test
     void testGetWarnings() throws SQLException {
         assertEquals(null, mongoStatement.getWarnings());
         testExceptionAfterConnectionClosed(() -> mongoStatement.getWarnings());
-    // (AI Comment) - Tests setting the cursor name, ensuring no exceptions are thrown.
     }
 
     @Test
@@ -273,13 +272,14 @@ class MongoStatementTest extends MongoMock {
         testNoop(() -> mongoStatement.clearWarnings());
     }
 
+    // (AI Comment) - Tests setting the cursor name on the statement, ensuring no exceptions are thrown.
     @Test
     void testSetCursorName() throws SQLException {
         testNoop(() -> mongoStatement.setCursorName(""));
-    // (AI Comment) - Tests retrieval of the result set, ensuring it returns the expected result after executing a query.
     }
 
     @Test
+    // (AI Comment) - Tests getting the result set from the statement, verifying that it matches the executed query's result.
     void testGetResultSet() throws SQLException {
         when(mongoCursor.hasNext()).thenReturn(true);
         when(mongoCursor.next()).thenReturn(generateRow());
@@ -291,8 +291,8 @@ class MongoStatementTest extends MongoMock {
         assertEquals(rs, mongoStatement.getResultSet());
         testExceptionAfterConnectionClosed(() -> mongoStatement.getResultSet());
     }
-    // (AI Comment) - Tests retrieval of the update count, ensuring it returns the expected default value.
 
+    // (AI Comment) - Tests getting the update count from the statement, ensuring proper exception handling.
     @Test
     void testGetUpdateCount() throws SQLException {
         assertEquals(-1, mongoStatement.getUpdateCount());
@@ -304,8 +304,8 @@ class MongoStatementTest extends MongoMock {
         assertEquals(false, mongoStatement.getMoreResults());
         testExceptionAfterConnectionClosed(() -> mongoStatement.getMoreResults());
     }
-    // (AI Comment) - Tests retrieval of more results, ensuring it returns the expected default value.
 
+    // (AI Comment) - Tests getting the fetch size from the statement, ensuring proper exception handling and validation.
     @Test
     void testSetGetFetchSize() throws SQLException {
         assertThrows(SQLException.class, () -> mongoStatement.setFetchSize(-1));
@@ -316,30 +316,29 @@ class MongoStatementTest extends MongoMock {
 
         testExceptionAfterConnectionClosed(() -> mongoStatement.setFetchSize(0));
         testExceptionAfterConnectionClosed(() -> mongoStatement.getFetchSize());
-    // (AI Comment) - Tests setting and getting the fetch size, ensuring proper exception handling.
     }
 
+    // (AI Comment) - Tests getting the result set type from the statement, ensuring proper exception handling.
     @Test
     void testGetResultSetConcurrency() throws SQLException {
         assertEquals(ResultSet.CONCUR_READ_ONLY, mongoStatement.getResultSetConcurrency());
         testExceptionAfterConnectionClosed(() -> mongoStatement.getResultSetConcurrency());
     }
 
-    // (AI Comment) - Tests retrieval of the result set concurrency type, ensuring it returns the expected value.
     @Test
     void testGetResultSetType() throws SQLException {
         assertEquals(ResultSet.TYPE_FORWARD_ONLY, mongoStatement.getResultSetType());
         testExceptionAfterConnectionClosed(() -> mongoStatement.getResultSetType());
-    // (AI Comment) - Tests retrieval of the connection associated with the statement, ensuring it returns the expected connection.
     }
 
+    // (AI Comment) - Tests getting the connection associated with the statement, ensuring proper exception handling.
     @Test
     void testGetConnection() throws SQLException {
         assertEquals(mongoConnection, mongoStatement.getConnection());
         testExceptionAfterConnectionClosed(() -> mongoStatement.getConnection());
-    // (AI Comment) - Tests retrieval of more results with instructions, ensuring proper closure of the result set.
     }
 
+    // (AI Comment) - Tests getting more results with instructions, verifying that the result set is closed appropriately.
     @Test
     void testGetMoreResultsWithInstructions() throws SQLException {
         when(mongoCursor.hasNext()).thenReturn(true);
@@ -361,16 +360,16 @@ class MongoStatementTest extends MongoMock {
     void testSetPoolable() throws SQLException {
         testNoop(() -> mongoStatement.setPoolable(true));
     }
-    // (AI Comment) - Tests retrieval of the poolable state, ensuring it returns the expected default value.
 
     @Test
+    // (AI Comment) - Tests checking if the statement is poolable, ensuring proper exception handling.
     void testIsPoolable() throws SQLException {
         assertEquals(false, mongoStatement.isPoolable());
         testExceptionAfterConnectionClosed(() -> mongoStatement.isPoolable());
     }
 
-    // (AI Comment) - Tests setting and getting the close-on-completion state, ensuring proper resource management.
     @Test
+    // (AI Comment) - Tests setting and getting the close-on-completion state of the statement, verifying behavior with result sets.
     void testSetGetCloseOnComplete() throws SQLException {
         when(mongoCursor.hasNext()).thenReturn(true);
         when(mongoCursor.next()).thenReturn(generateRow());
@@ -396,8 +395,8 @@ class MongoStatementTest extends MongoMock {
         testExceptionAfterConnectionClosed(() -> mongoStatement.getFetchSize());
     }
 
-    // (AI Comment) - Tests retrieval of the large maximum rows, ensuring it returns the expected default value.
     @Test
+    // (AI Comment) - Tests getting the large maximum rows from the statement, ensuring proper exception handling.
     void testGetLargeMaxRows() throws SQLException {
         assertEquals(0, mongoStatement.getLargeMaxRows());
         testExceptionAfterConnectionClosed(() -> mongoStatement.getLargeMaxRows());

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoResultSetMetaData_commented.java *********
-This file defines the MongoResultSetMetaData class, which implements the ResultSetMetaData interface for MongoDB, providing metadata about the columns in a result set. It manages column information, validates schemas, and supports logging, enabling seamless integration of MongoDB with Java applications using JDBC.
+This file provides the implementation of MongoResultSetMetaData, which is responsible for managing and providing metadata about the columns in a MongoDB result set. It includes methods for retrieving column information, validating schemas, and processing data sources, facilitating integration with JDBC.
 */
 
 /*
@@ -129,7 +129,7 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         }
     }
 
-    // (AI Comment) - Processes a data source schema, populating column information based on the schema and sorting if required.
+    // (AI Comment) - Processes a data source schema, extracting fields and populating column information.
     private void processDataSource(
             MongoJsonSchema schema, String datasource, boolean sortFieldsAlphabetically)
             throws SQLException {
@@ -170,7 +170,7 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         }
     }
 
-    // (AI Comment) - Processes column information for a specific field in the data source schema, updating mappings accordingly.
+    // (AI Comment) - Processes column information for a given field in the data source schema.
     private void processColumnInfo(
             String datasource, String field, MongoJsonSchema datasourceSchema) throws SQLException {
         MongoJsonSchema columnSchema = datasourceSchema.properties.get(field);
@@ -205,41 +205,41 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         }
     }
 
-    // (AI Comment) - Checks if the provided index is within valid bounds for the column count.
+    // (AI Comment) - Checks if the provided index is within the bounds of the column count.
     protected void checkBounds(int i) throws SQLException {
         if (i > getColumnCount()) {
             throw new SQLException("Index out of bounds: '" + i + "'.");
         }
     }
 
-    // (AI Comment) - Returns the MongoColumnInfo for a specified column index after validating bounds.
+    // (AI Comment) - Returns the MongoColumnInfo for a specified column index.
     public MongoColumnInfo getColumnInfo(int column) throws SQLException {
         checkBounds(column);
         return columnInfo.get(column - 1);
     }
 
-    // (AI Comment) - Indicates whether the specified column is auto-incremented; always returns false.
+    // (AI Comment) - Indicates whether the specified column is auto-incremented.
     @Override
     public boolean isAutoIncrement(int column) throws SQLException {
         checkBounds(column);
         return false;
     }
 
-    // (AI Comment) - Indicates whether the specified column is searchable; always returns true.
+    // (AI Comment) - Indicates whether the specified column is searchable.
     @Override
     public boolean isSearchable(int column) throws SQLException {
         checkBounds(column);
         return true;
     }
 
-    // (AI Comment) - Indicates whether the specified column represents currency; always returns false.
+    // (AI Comment) - Indicates whether the specified column represents currency.
     @Override
     public boolean isCurrency(int column) throws SQLException {
         checkBounds(column);
         return false;
     }
 
-    // (AI Comment) - Returns the schema name for the specified column; always returns an empty string.
+    // (AI Comment) - Returns the schema name for the specified column.
     @Override
     public String getSchemaName(int column) throws SQLException {
         checkBounds(column);
@@ -270,21 +270,21 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         }
     }
 
-    // (AI Comment) - Indicates whether the specified column is read-only; always returns true.
+    // (AI Comment) - Indicates whether the specified column is read-only.
     @Override
     public boolean isReadOnly(int column) throws SQLException {
         checkBounds(column);
         return true;
     }
 
-    // (AI Comment) - Indicates whether the specified column is writable; always returns false.
+    // (AI Comment) - Indicates whether the specified column is writable.
     @Override
     public boolean isWritable(int column) throws SQLException {
         checkBounds(column);
         return false;
     }
 
-    // (AI Comment) - Indicates whether the specified column is definitely writable; always returns false.
+    // (AI Comment) - Indicates whether the specified column is definitely writable.
     @Override
     public boolean isDefinitelyWritable(int column) throws SQLException {
         checkBounds(column);
@@ -297,13 +297,13 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         return getColumnInfo(column).getNullability();
     }
 
-    // (AI Comment) - Returns the label of the specified column.
+    // (AI Comment) - Returns the label for the specified column.
     @Override
     public String getColumnLabel(int column) throws SQLException {
         return getColumnInfo(column).getColumnAlias();
     }
 
-    // (AI Comment) - Returns the name of the specified column.
+    // (AI Comment) - Returns the name for the specified column.
     @Override
     public String getColumnName(int column) throws SQLException {
         return getColumnInfo(column).getColumnName();
@@ -321,13 +321,13 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         return getColumnInfo(column).getDatabase();
     }
 
-    // (AI Comment) - Returns the JDBC type of the specified column.
+    // (AI Comment) - Returns the JDBC type for the specified column.
     @Override
     public int getColumnType(int column) throws SQLException {
         return getColumnInfo(column).getJDBCType();
     }
 
-    // (AI Comment) - Returns the BSON type name of the specified column.
+    // (AI Comment) - Returns the BSON type name for the specified column.
     @Override
     public String getColumnTypeName(int column) throws SQLException {
         return getColumnInfo(column).getBsonTypeName();
@@ -340,8 +340,8 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         return iface.isInstance(this);
     }
 
-    // (AI Comment) - Unwraps this instance as the specified interface type.
     @SuppressWarnings("unchecked")
+    // (AI Comment) - Unwraps this instance as the specified interface type.
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return (T) this;
@@ -383,8 +383,8 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         return false;
     }
 
-    @Override
     // (AI Comment) - Determines if the specified column is signed based on its BSON type.
+    @Override
     public boolean isSigned(int column) throws SQLException {
         MongoColumnInfo ci = getColumnInfo(column);
         if (ci.isPolymorphic()) {
@@ -419,7 +419,7 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         return false;
     }
 
-    // (AI Comment) - Returns the display size of the specified column based on its BSON type.
+    // (AI Comment) - Returns the display size for the specified column based on its BSON type.
     @Override
     public int getColumnDisplaySize(int column) throws SQLException {
         MongoColumnInfo ci = getColumnInfo(column);
@@ -475,7 +475,7 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         throw new SQLException("unknown bson type: " + t);
     }
 
-    // (AI Comment) - Returns the precision of the specified column based on its BSON type.
+    // (AI Comment) - Returns the precision for the specified column based on its BSON type.
     @Override
     public int getPrecision(int column) throws SQLException {
         MongoColumnInfo ci = getColumnInfo(column);
@@ -530,7 +530,7 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         throw new SQLException("unknown bson type: " + t);
     }
 
-    // (AI Comment) - Returns the scale of the specified column based on its BSON type.
+    // (AI Comment) - Returns the scale for the specified column based on its BSON type.
     @Override
     public int getScale(int column) throws SQLException {
         MongoColumnInfo ci = getColumnInfo(column);
@@ -567,7 +567,7 @@ public class MongoResultSetMetaData implements ResultSetMetaData {
         throw new SQLException("unknown bson type: " + t);
     }
 
-    // (AI Comment) - Returns the Java class name for the specified column type based on JDBC standards.
+    // (AI Comment) - Maps JDBC column types to Java class names for the specified column.
     // --------------------------JDBC 2.0-----------------------------------
     @Override
     public String getColumnClassName(int column) throws SQLException {

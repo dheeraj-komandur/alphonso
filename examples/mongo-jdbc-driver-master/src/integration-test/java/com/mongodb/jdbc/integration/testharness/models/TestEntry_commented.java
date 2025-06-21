@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestEntry_commented.java *********
-The 'TestEntry.java' file defines a data model for integration tests in the MongoDB JDBC framework, encapsulating attributes related to test cases, including SQL queries, expected results, and metadata for validation.
+The TestEntry class is designed to represent a single test case for database integration tests, encapsulating various attributes such as SQL queries, expected results, and metadata. It serves as a data model to facilitate the organization and execution of integration tests within the MongoDB JDBC framework.
 */
 
 /*
@@ -28,15 +28,15 @@ import java.util.Map;
 public class TestEntry {
     // (AI Comment) - A description of the test case.
     public String description;
-    // (AI Comment) - The database name associated with the test case.
+    // (AI Comment) - The database name to be used in the test.
     public String db;
-    // (AI Comment) - The SQL query to be executed in the test.
+    // (AI Comment) - The SQL query to be executed during the test.
     public String sql;
-    // (AI Comment) - A list of meta functions related to the test case.
+    // (AI Comment) - A list of meta functions associated with the test.
     public List<Object> meta_function;
     // (AI Comment) - Reason for skipping the test, if applicable.
     public String skip_reason;
-    // (AI Comment) - Expected number of rows returned by the query.
+    // (AI Comment) - Expected number of rows returned by the SQL query.
     public Integer row_count;
     // (AI Comment) - Indicates if the row count should be greater than or equal to the expected value.
     public Boolean row_count_gte;
@@ -44,7 +44,7 @@ public class TestEntry {
     public Boolean ordered;
     // (AI Comment) - Names of columns that are expected to have duplicate values.
     public List<String> duplicated_columns_names;
-    // (AI Comment) - Expected results of the test case.
+    // (AI Comment) - Expected results of the SQL query.
     public List<Object> expected_result;
     // (AI Comment) - Expected results in extended JSON format.
     public List<Map<String, Object>> expected_result_extended_json;
@@ -74,7 +74,7 @@ public class TestEntry {
     public List<Boolean> expected_is_currency;
     // (AI Comment) - Indicates if the column is expected to be definitely writable.
     public List<Boolean> expected_is_definitely_writable;
-    // (AI Comment) - Indicates the expected nullability of the column.
+    // (AI Comment) - Expected nullability of the column.
     public List<String> expected_is_nullable;
     // (AI Comment) - Indicates if the column is expected to be read-only.
     public List<Boolean> expected_is_read_only;

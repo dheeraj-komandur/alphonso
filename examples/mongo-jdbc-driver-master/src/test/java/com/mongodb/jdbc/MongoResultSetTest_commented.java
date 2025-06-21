@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoResultSetTest_commented.java *********
-This file contains unit tests for the 'MongoResultSet' class, validating its behavior and ensuring correct handling of various data types and operations within a MongoDB context.
+This file contains unit tests for the MongoResultSet class, ensuring its correct behavior in handling various data types and scenarios when interacting with MongoDB. It validates the functionality of data retrieval methods, exception handling, and the behavior of result sets under different conditions.
 */
 
 /*
@@ -66,7 +66,7 @@ import org.mockito.quality.Strictness;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MockitoSettings(strictness = Strictness.WARN)
-// (AI Comment) - Test class for MongoResultSet, extending MongoMock, to validate the behavior of MongoDB result set operations.
+// (AI Comment) - Test class for MongoResultSet, extending MongoMock, to validate the behavior of MongoDB result sets in various scenarios.
 class MongoResultSetTest extends MongoMock {
     @Mock MongoCursor<BsonDocument> cursor;
     MongoResultSet mockResultSet;
@@ -81,7 +81,7 @@ class MongoResultSetTest extends MongoMock {
     private static MongoStatement mongoStatement;
     private static MongoJsonSchema schema;
 
-    // (AI Comment) - Static initialization block to set up various MongoResultSet instances and their metadata for testing.
+    // (AI Comment) - Static initialization block to set up various MongoResultSet instances and their associated metadata for testing.
     static {
         try {
             schema = generateMongoJsonSchema();
@@ -203,7 +203,7 @@ class MongoResultSetTest extends MongoMock {
         MongoMock.resetMockObjs();
     }
 
-    // (AI Comment) - Tests the behavior of binary getters in MongoResultSet, ensuring correct exceptions are thrown for invalid operations.
+    // (AI Comment) - Tests the behavior of binary getters in MongoResultSet, ensuring correct exceptions are thrown for unsupported types.
     @Test
     void testBinaryGetters() throws Exception {
         // Binary cannot be gotten through anything other than getString, getBlob, and getBinaryStream, currently.
@@ -326,7 +326,7 @@ class MongoResultSetTest extends MongoMock {
                 });
     }
 
-    // (AI Comment) - Tests retrieval of UUID values from MongoResultSet, validating standard and legacy UUID formats.
+    // (AI Comment) - Tests retrieval of UUID values from the MongoResultSet, validating standard and legacy UUID formats.
     @Test
     void testGetUuidValues() throws Exception {
         // Test standard UUID
@@ -413,7 +413,7 @@ class MongoResultSetTest extends MongoMock {
                 1, mongoResultSet.getUnicodeStream(STRING_COL_LABEL).read(new byte[100], 0, 100));
     }
 
-    // (AI Comment) - Tests retrieval of string values for all BSON types, ensuring correct handling of various data formats.
+    // (AI Comment) - Tests retrieval of string values for all BSON types, ensuring correct handling of extended JSON representations.
     @Test
     public void testGetStringAllTypes() throws Exception {
         // non-null types
@@ -502,9 +502,9 @@ class MongoResultSetTest extends MongoMock {
         // but we do not want to return quotes as part of the String.
         assertEquals("str", mongoResultSetAllTypes.getObject(ALL_STRING_COL_LABEL).toString());
 
-        // (AI Comment) - Tests that the string representation of objects matches expected values for various BSON types.
         // Note that the Java driver still outputs the legacy representation for DBPointer, as
         // opposed to the new standard representation: { $dbPointer: { $ref: <namespace>, $id: <oid> } }.
+        // (AI Comment) - Tests that the getObject method returns the expected Java object for each BSON type.
         // This is sufficient for our purposes, though.
         assertEquals(
                 "{\"$ref\": \"db2\", \"$id\": " + ALL_OBJECT_ID_COL_VAL + "}",
@@ -566,6 +566,7 @@ class MongoResultSetTest extends MongoMock {
                 mongoResultSet.getObject(ARRAY_COL_LABEL).toString());
     }
 
+    // (AI Comment) - Tests the retrieval of arithmetic values from MongoResultSet, ensuring correct handling of various numeric types.
     @Test
     public void testGetObjectToStringMatchesGetString() throws Exception {
         // Assert that getObject().toString() matches getString() for BSON types
@@ -605,14 +606,12 @@ class MongoResultSetTest extends MongoMock {
                 mongoResultSetAllTypes.getObject(ALL_MAX_KEY_COL_LABEL).toString());
     }
 
-    // (AI Comment) - Tests retrieval of cursor name from MongoResultSet, ensuring correct name is returned.
     @Test
     void testGetCursorName() throws Exception {
         mongoStatement.setCursorName("test");
         assertEquals("test", mongoResultSet.getCursorName());
     }
 
-    // (AI Comment) - Tests retrieval of arithmetic values from MongoResultSet, validating expected outputs for various numeric types.
     @Test
     void testGetArithmeticValues() throws Exception {
         // Test Double values are as expected
@@ -620,6 +619,7 @@ class MongoResultSetTest extends MongoMock {
         assertEquals(2.4, mongoResultSet.getDouble(DOUBLE_COL_LABEL));
         assertThrows(
                 SQLException.class,
+                // (AI Comment) - Tests retrieval of boolean values from MongoResultSet, validating expected outputs for different BSON types.
                 () -> {
                     mongoResultSet.getDouble(STRING_COL_LABEL);
                 });
@@ -686,7 +686,7 @@ class MongoResultSetTest extends MongoMock {
         assertEquals(true, mongoResultSet.getBoolean(ANY_OF_INT_STRING_COL));
     }
 
-    // (AI Comment) - Tests retrieval of timestamp values from MongoResultSet, ensuring correct handling of nulls and exceptions.
+    // (AI Comment) - Tests retrieval of timestamp values from MongoResultSet, ensuring correct handling of various scenarios.
     @Test
     void testGetTimestampValues() throws Exception {
 
@@ -721,7 +721,7 @@ class MongoResultSetTest extends MongoMock {
         assertEquals(new Timestamp(3L), mongoResultSet.getTimestamp(ANY_OF_INT_STRING_COL));
     }
 
-    // (AI Comment) - Tests the getObject method of MongoResultSet, ensuring correct object retrieval for various BSON types.
+    // (AI Comment) - Tests the getObject method for various BSON types, ensuring correct behavior for both index and label versions.
     @Test
     void testGetObject() throws Exception {
         // test that the index and label versions of getObject have matching results
@@ -769,7 +769,7 @@ class MongoResultSetTest extends MongoMock {
         assertArrayEquals(binary, (byte[]) mongoResultSet.getObject(BINARY_COL_LABEL));
     }
 
-    // (AI Comment) - Tests behavior of closed result sets in MongoResultSet, ensuring exceptions are thrown for invalid operations.
+    // (AI Comment) - Tests the behavior of closed result sets, ensuring appropriate exceptions are thrown when accessing closed result sets.
     @SuppressWarnings("deprecation")
     @Test
     void closedResultSets() throws Exception {
@@ -1123,7 +1123,7 @@ class MongoResultSetTest extends MongoMock {
                 });
     }
 
-    // (AI Comment) - Tests behavior when no rows are available in the cursor, ensuring correct exceptions are thrown.
+    // (AI Comment) - Tests the behavior of MongoResultSet when no rows are available, ensuring correct exception handling.
     @Test
     void throwExceptionWhenNotAvailable() throws Exception {
 
@@ -1153,7 +1153,7 @@ class MongoResultSetTest extends MongoMock {
                 });
     }
 
-    // (AI Comment) - Tests retrieval of the next row when available in the cursor, ensuring correct behavior and exception handling.
+    // (AI Comment) - Tests the behavior of MongoResultSet when rows are available, ensuring correct retrieval of data.
     @Test
     void returnNextRowWhenAvailable() throws Exception {
         BsonDocument valuesDoc = new BsonDocument();
@@ -1182,7 +1182,7 @@ class MongoResultSetTest extends MongoMock {
         assertFalse(mockResultSet.isLast());
     }
 
-    // (AI Comment) - Tests behavior of an empty result set, ensuring correct handling of metadata and exceptions.
+    // (AI Comment) - Tests the behavior of MongoResultSet when it is empty, ensuring correct handling of metadata and exceptions.
     @Test
     void testEmptyResultSet() throws SQLException {
 
@@ -1223,7 +1223,7 @@ class MongoResultSetTest extends MongoMock {
                 });
     }
 
-    // (AI Comment) - Tests behavior of an empty result set when metadata is called first, ensuring correct handling of exceptions.
+    // (AI Comment) - Tests the behavior of MongoResultSet when metadata is called first on an empty result set.
     @Test
     void testEmptyResultSetWhenGetMetadataCalledFirst() throws SQLException {
         String colName = "a";

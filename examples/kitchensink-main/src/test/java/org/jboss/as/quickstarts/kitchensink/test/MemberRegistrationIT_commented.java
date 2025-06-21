@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MemberRegistrationIT_commented.java *********
-This file contains integration tests for the MemberRegistration service in the kitchensink application, ensuring that new members can be registered and persisted correctly.
+This file contains integration tests for the MemberRegistration service in the kitchensink application, ensuring that members can be registered correctly and that the service behaves as expected.
 */
 
 /*
@@ -38,10 +38,10 @@ import java.util.logging.Logger;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+// (AI Comment) - This class contains integration tests for the MemberRegistration service, ensuring that member registration functionality works as expected.
 @RunWith(SpringRunner.class)
 @Testcontainers
 @SpringBootTest(classes = {Main.class, MongoDBConfig.class})
-// (AI Comment) - Integration test class for MemberRegistration, verifying member registration functionality.
 public class MemberRegistrationIT {
     @Autowired
     MemberRegistration memberRegistration;
@@ -49,14 +49,14 @@ public class MemberRegistrationIT {
     @Autowired
     Logger log;
 
-    // (AI Comment) - Tests the registration of a new member, ensuring that the member is persisted and has a generated ID.
+    // (AI Comment) - Tests the registration of a new member by creating a Member instance, invoking the registration service, and asserting that the member ID is generated.
     @Test
     public void testRegister() {
         Member newMember = new Member();
         newMember.setName("Jane Doe");
         newMember.setEmail("jane@mailinator.com");
         newMember.setPhoneNumber("2125551234");
-        // (AI Comment) - Handles exceptions during member registration and fails the test if an exception occurs.
+        // (AI Comment) - Attempts to register the new member and handles any exceptions that may occur during the registration process.
         try {
             memberRegistration.register(newMember);
             assertNotNull(newMember.getId());

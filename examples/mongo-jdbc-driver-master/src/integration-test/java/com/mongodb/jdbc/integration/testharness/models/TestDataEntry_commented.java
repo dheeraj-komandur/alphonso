@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestDataEntry_commented.java *********
-The 'TestDataEntry.java' file defines a data model for integration testing with MongoDB, encapsulating essential attributes such as database name, collection name, view name, documents, schema, and indexes.
+This file defines the 'TestDataEntry' class, which is used to represent a test data entry for MongoDB integration tests. It encapsulates essential attributes such as database, collection, view, documents, schema, and indexes, facilitating the management of test data.
 */
 
 /*
@@ -26,18 +26,18 @@ import java.util.Map;
 
 // (AI Comment) - Represents a data entry for testing, encapsulating database, collection, view, documents, schema, and indexes.
 public class TestDataEntry {
-    // (AI Comment) - The name of the database associated with the test data entry.
+    // (AI Comment) - The name of the database associated with this test data entry.
     public String db;
-    // (AI Comment) - The name of the collection associated with the test data entry.
+    // (AI Comment) - The name of the collection associated with this test data entry.
     public String collection;
-    // (AI Comment) - The name of the view associated with the test data entry.
+    // (AI Comment) - The name of the view associated with this test data entry.
     public String view;
-    // (AI Comment) - A list of documents represented as maps, containing the main test data.
+    // (AI Comment) - A list of documents represented as maps, containing the main data for this entry.
     public List<Map<String, Object>> docs;
-    // (AI Comment) - A list of documents represented as maps, containing extended JSON test data.
+    // (AI Comment) - A list of documents in extended JSON format for this entry.
     public List<Map<String, Object>> docsExtJson;
-    // (AI Comment) - A map representing the schema of the test data entry.
+    // (AI Comment) - A map representing the schema of the documents in this entry.
     public Map<String, Object> schema;
-    // (AI Comment) - A list of non-unique indexes represented as maps, associated with the test data entry.
+    // (AI Comment) - A list of non-unique indexes associated with this test data entry.
     public List<Map<String, Object>> nonuniqueIndexes;
 }

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoBsonValue_commented.java *********
-The 'MongoBsonValue.java' file defines the MongoBsonValue class, which wraps a BsonValue to provide an extended JSON representation. It is responsible for converting BSON types to their JSON equivalents, particularly focusing on UUID handling and ensuring compatibility with MongoDB's BSON type system.
+The 'MongoBsonValue.java' file defines the MongoBsonValue class, which wraps a BsonValue to provide an extended JSON representation. It handles various BSON types and formats them appropriately for JSON output, ensuring compatibility with MongoDB's BSON type system.
 */
 
 /*
@@ -44,7 +44,7 @@ import org.bson.json.JsonWriterSettings;
  * parties. The driver explains this is to keep the BSON type system closed. Therefore, this class
  * does not extend BsonValue, instead it contains a BsonValue member.
  */
-// (AI Comment) - MongoBsonValue is a wrapper for BsonValue that overrides toString() to produce an extended JSON representation of a BsonValue instead of the default output.
+// (AI Comment) - MongoBsonValue is a wrapper for BsonValue that overrides toString() to produce an extended JSON representation instead of the default output.
 public class MongoBsonValue {
     private JsonWriterSettings JSON_WRITER_SETTINGS;
     static final EncoderContext ENCODER_CONTEXT = EncoderContext.builder().build();
@@ -61,7 +61,7 @@ public class MongoBsonValue {
         this.extJsonMode = isExtended;
         this.uuidRepresentation = uuidRepresentation;
     }
-    // (AI Comment) - Constructor initializes the MongoBsonValue with a BsonValue, a flag for extended JSON mode, and a UUID representation.
+    // (AI Comment) - Constructor initializes the MongoBsonValue with a BsonValue, extended JSON mode flag, and UUID representation.
 
     public void setJsonWriterSettings(boolean isExtended) {
         this.JSON_WRITER_SETTINGS =
@@ -151,7 +151,6 @@ public class MongoBsonValue {
     // If the BSON binary type is UUID_STANDARD, it directly converts it to a UUID.
     // Otherwise, it uses the specified or default UUID representation to decode the binary data.
     private String formatUuid(BsonBinary binary) {
-        // (AI Comment) - Formats a BSON binary object into a JSON string representation of a UUID, handling both standard and legacy UUID types.
         UUID uuid;
         byte binaryType = binary.getType();
         if (binaryType == BsonBinarySubType.UUID_STANDARD.getValue()) {
@@ -174,6 +173,7 @@ public class MongoBsonValue {
                             binary.getData(), binary.getType(), representationToUse);
         }
         return String.format("{\"$uuid\":\"%s\"}", uuid.toString());
+    // (AI Comment) - Formats a BSON binary object into a JSON string representation of a UUID, handling both standard and legacy UUID types.
     }
 
     private String toExtendedJson(BsonValue v) {
@@ -182,7 +182,7 @@ public class MongoBsonValue {
         w.flush();
         return w.toString();
     }
-    // (AI Comment) - Converts a BsonValue to its extended JSON representation using a StringWriter and the BsonValueCodec.
+    // (AI Comment) - Converts the wrapped BsonValue to its extended JSON representation using a JSON writer.
 
     @Override
     public int hashCode() {

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MemberRegistration_commented.java *********
-The 'MemberRegistration.java' file defines a service class responsible for registering new members in a MongoDB database. It manages the generation of unique identifiers for members and handles database interactions, ensuring that member data is correctly inserted and managed.
+The 'MemberRegistration.java' file defines a service for registering members in a MongoDB database. It handles the generation of unique identifiers for members and manages interactions with the database through the MemberRepository and MongoOperations interfaces.
 */
 
 /*

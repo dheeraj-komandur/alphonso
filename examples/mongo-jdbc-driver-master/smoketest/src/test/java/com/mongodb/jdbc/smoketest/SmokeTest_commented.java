@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - SmokeTest_commented.java *********
-The SmokeTest class is responsible for validating MongoDB connections and executing basic queries to ensure that the database setup is functioning correctly. It establishes connections based on environment variables, performs metadata checks, and executes queries, asserting that results are returned as expected.
+The SmokeTest class is designed to validate MongoDB connections and query execution through JUnit tests. It establishes connections based on environment variables, performs metadata retrieval, and executes sample queries to ensure the database is functioning as expected.
 */
 
 package com.mongodb.jdbc.smoketest;
@@ -32,8 +32,8 @@ public class SmokeTest {
     // Connection and simple query to use for sanity check.
     private Map<Connection, String> connections = new HashMap<>();
 
+    // (AI Comment) - Establishes a connection to the ADF instance using provided URL and database name, utilizing environment variables for authentication.
     public static Connection getADFInstanceConnection(String url, String db)
-            // (AI Comment) - Establishes a connection to the ADF instance using provided URL and database name, utilizing environment variables for authentication.
             throws SQLException {
         Properties p = new java.util.Properties();
         p.setProperty("user", System.getenv("ADF_TEST_LOCAL_USER"));
@@ -44,8 +44,8 @@ public class SmokeTest {
         return DriverManager.getConnection(URL, p);
     }
 
+    // (AI Comment) - Establishes a direct connection to a remote MongoDB instance using environment variables for authentication and connection details.
     private Connection getDirectRemoteInstanceConnection() throws SQLException {
-        // (AI Comment) - Establishes a direct connection to a remote MongoDB instance, using environment variables for connection details.
         String mongoHost = System.getenv("SRV_TEST_HOST");
         String mongoURI =
                 "mongodb+srv://"
@@ -66,8 +66,8 @@ public class SmokeTest {
         return DriverManager.getConnection(fullURI, p);
     }
 
+    // (AI Comment) - Sets up connections for testing based on the build type, handling both EAP and non-EAP scenarios with appropriate error handling.
     @BeforeEach
-    // (AI Comment) - Sets up connections before each test, handling both ADF and direct remote connections based on the build type.
     public void setupConnection() throws SQLException {
         String buildType = System.getenv("BUILD_TYPE");
         boolean isEapBuild = "eap".equalsIgnoreCase(buildType);
@@ -96,16 +96,16 @@ public class SmokeTest {
         }
     }
 
-    @AfterEach
     // (AI Comment) - Cleans up connections after each test to prevent resource leaks.
+    @AfterEach
     protected void cleanupTest() throws SQLException {
         for (Connection conn : connections.keySet()) {
             conn.close();
         }
     }
 
+    // (AI Comment) - Tests database metadata retrieval for each established connection, printing driver details and checking column metadata.
     @Test
-    // (AI Comment) - Tests database metadata retrieval for each established connection, ensuring the driver information is logged.
     public void databaseMetadataTest() throws SQLException {
         System.out.println("Running databaseMetadataTest");
         for (Connection conn : connections.keySet()) {
@@ -118,8 +118,8 @@ public class SmokeTest {
         }
     }
 
+    // (AI Comment) - Executes a query for each connection and verifies that rows are returned, ensuring the query functionality works as expected.
     @Test
-    // (AI Comment) - Executes a query for each connection and checks the returned rows to validate query execution.
     public  void queryTest() throws SQLException {
         System.out.println("Running queryTest");
         for (Map.Entry<Connection, String> entry : connections.entrySet()) {
@@ -130,8 +130,8 @@ public class SmokeTest {
         }
     }
 
+    // (AI Comment) - Checks the number of rows returned from a ResultSet and asserts that at least one row is present.
     public static void rowsReturnedCheck(ResultSet rs) throws SQLException {
-        // (AI Comment) - Checks the number of rows returned from a ResultSet and asserts that at least one row is present.
         int actualCount = 0;
         while (rs.next()) {
             actualCount++;

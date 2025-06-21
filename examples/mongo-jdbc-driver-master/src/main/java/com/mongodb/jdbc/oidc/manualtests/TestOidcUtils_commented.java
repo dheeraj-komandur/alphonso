@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestOidcUtils_commented.java *********
-The 'TestOidcUtils.java' file provides utility functions for testing OIDC authentication flows in the MongoDB JDBC context, including constants for issuer and client ID, and a method to execute the authentication code flow.
+The TestOidcUtils.java file provides utility methods and constants for testing OpenID Connect (OIDC) authentication flows in the context of MongoDB JDBC. It includes a method to execute the authentication code flow and handle results, facilitating the testing process for developers.
 */
 
 /*
@@ -33,23 +33,24 @@ import java.util.List;
 // (AI Comment) - TestOidcUtils class provides utility methods for testing OIDC authentication flows, including constants for issuer and client ID.
 public class TestOidcUtils {
 
-    // (AI Comment) - OIDC issuer URL and client ID constants used for authentication.
+    // (AI Comment) - Client ID used for OIDC authentication.
+    // (AI Comment) - OIDC issuer URL for authentication.
     public static String OIDC_ISSUER = "https://mongodb-dev.okta.com/oauth2/ausqrxbcr53xakaRR357";
     public static String OIDC_CLIENT_ID = "0oarvap2r7PmNIBsS357";
     public static final List<String> OPENID_SCOPE = Collections.singletonList("openid");
 
-    // (AI Comment) - IDP_INFO constant holds the identity provider information for OIDC authentication.
+    // (AI Comment) - IDP_INFO holds the configuration for the OIDC identity provider.
     public static final IdpInfo IDP_INFO =
             new JdbcIdpInfo(OIDC_ISSUER, OIDC_CLIENT_ID, OPENID_SCOPE);
 
-    // (AI Comment) - testAuthCodeFlow method executes the OIDC authentication code flow and handles the result, including error handling.
+    // (AI Comment) - testAuthCodeFlow method executes the OIDC authentication code flow and returns the result, handling exceptions and logging output.
     public static OidcCallbackResult testAuthCodeFlow(
             OidcCallbackContext callbackContext, OidcAuthFlow authFlow) {
 
-        // (AI Comment) - Try-catch block for executing the authentication flow and handling exceptions.
+        // (AI Comment) - Try-catch block for handling exceptions during the authentication flow.
         try {
-            // (AI Comment) - Executes the authentication code flow and processes the result, printing tokens if successful.
             OidcCallbackResult result = authFlow.doAuthCodeFlow(callbackContext);
+            // (AI Comment) - Checks if the authentication result is valid and logs the access and refresh tokens.
             if (result != null) {
                 System.out.println("Access Token: " + result.getAccessToken());
                 System.out.println("Refresh Token: " + result.getRefreshToken());

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - AuthX509IntegrationTest_commented.java *********
-This file contains integration tests for MongoDB JDBC's X.509 authentication, validating connection behavior under various configurations and ensuring proper error handling.
+This file contains integration tests for MongoDB's X.509 authentication, ensuring that the connection logic behaves correctly with various configurations of certificate paths and passphrases.
 */
 
 /*
@@ -19,7 +19,6 @@ This file contains integration tests for MongoDB JDBC's X.509 authentication, va
  * limitations under the License.
  */
 
-// (AI Comment) - Defines the package for integration tests related to MongoDB JDBC.
 package com.mongodb.jdbc.integration;
 
 import static com.mongodb.jdbc.MongoConnection.MONGODB_JDBC_X509_CLIENT_CERT_PATH;
@@ -32,14 +31,14 @@ import java.sql.*;
 import java.util.Properties;
 import org.junit.jupiter.api.Test;
 
-// (AI Comment) - AuthX509IntegrationTest class contains tests for X.509 authentication in MongoDB JDBC.
+// (AI Comment) - This class contains integration tests for MongoDB authentication using X.509 certificates, ensuring correct behavior when using properties and environment variables.
 public class AuthX509IntegrationTest {
 
     private static final String LOCAL_PORT_ENV_VAR = "LOCAL_MDB_PORT_ENT";
     private static final String PASSWORD_ENV_VAR = "ADF_TEST_LOCAL_PWD";
     private static final String X509_CERT_PATH_PROPERTY = "x509PemPath";
 
-    // (AI Comment) - Establishes a database connection using X.509 certificate authentication, requiring a PEM path and optional passphrase.
+    // (AI Comment) - Establishes a connection to MongoDB using X.509 certificate authentication, requiring a PEM file path and an optional passphrase.
     private static Connection connectWithX509(String pemPath, String passphrase)
             throws SQLException {
         String mongoPort = System.getenv(LOCAL_PORT_ENV_VAR);
@@ -63,7 +62,7 @@ public class AuthX509IntegrationTest {
         return DriverManager.getConnection(uri, properties);
     }
 
-    // (AI Comment) - Tests that the x509PemPath property takes precedence over the X509_CLIENT_CERT_PATH environment variable, expecting a FileNotFoundException.
+    // (AI Comment) - Tests that when x509PemPath property is set, it takes precedence over the X509_CLIENT_CERT_PATH environment variable. Should fail with FileNotFound.
     /**
      * Tests that when x509PemPath property is set, it takes precedence over the
      * X509_CLIENT_CERT_PATH environment variable. The X509_CLIENT_CERT_PATH points to a valid file,
@@ -102,7 +101,6 @@ public class AuthX509IntegrationTest {
                 "Expected FileNotFoundException, but got: " + cause.getClass().getName());
     }
 
-    // (AI Comment) - Tests successful connection using a PEM file without a passphrase.
     /** Tests that PEM file without passphrase connects */
     @Test
     public void testPropertySetCorrectly() throws SQLException {
@@ -113,8 +111,9 @@ public class AuthX509IntegrationTest {
             connection.getMetaData().getDriverVersion();
         }
     }
+    // (AI Comment) - Tests that a PEM file without a passphrase connects successfully to MongoDB.
 
-    // (AI Comment) - Tests successful connection using a PEM file encrypted with a passphrase.
+    // (AI Comment) - Tests that a PEM file encrypted with a passphrase connects successfully to MongoDB.
     /** Tests that PEM file encrypted with passphrase connects */
     @Test
     public void testEncryptedCertWithPassphrase() throws SQLException {
@@ -128,7 +127,7 @@ public class AuthX509IntegrationTest {
         }
     }
 
-    // (AI Comment) - Tests that an incorrect passphrase results in a GeneralSecurityException.
+    // (AI Comment) - Tests that an incorrect passphrase fails with a GeneralSecurityException when attempting to connect.
     /** Tests that an incorrect passphrase fails with exception */
     @Test
     public void testEncryptedCertWithIncorrectPassphraseFails() {
@@ -149,7 +148,7 @@ public class AuthX509IntegrationTest {
                 "Expected GeneralSecurityException, but got: " + cause.getClass().getName());
     }
 
-    // (AI Comment) - Tests that without the x509PemPath property, the X509_CLIENT_CERT_PATH environment variable is used for a successful connection.
+    // (AI Comment) - Tests that without the x509PemPath property set, the X509_CLIENT_CERT_PATH will be used and successfully connects.
     /**
      * Tests that without the x509PemPath property set, the X509_CLIENT_CERT_PATH will be used and
      * successfully connects

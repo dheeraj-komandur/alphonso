@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoStatement_commented.java *********
-The 'MongoStatement.java' file provides an implementation of the JDBC Statement interface for MongoDB, allowing SQL queries to be executed against a MongoDB database. It manages database connections, result sets, and query execution while ensuring compliance with JDBC standards.
+The 'MongoStatement.java' file provides an implementation of the JDBC Statement interface for MongoDB, enabling SQL query execution and result set management while integrating with MongoDB's database operations.
 */
 
 /*
@@ -91,7 +91,7 @@ public class MongoStatement implements Statement {
         return logger.getQueryDiagnostics();
     }
 
-    // (AI Comment) - Constructs a BSON document representing the SQL query for MongoDB execution.
+    // (AI Comment) - Constructs a BsonDocument representing the SQL query for MongoDB execution.
     protected BsonDocument constructQueryDocument(String sql) {
         BsonDocument stage = new BsonDocument();
         BsonDocument sqlDoc = new BsonDocument();
@@ -107,7 +107,7 @@ public class MongoStatement implements Statement {
         }
     }
 
-    // (AI Comment) - Constructs a BSON document for retrieving the result schema of a SQL query.
+    // (AI Comment) - Constructs a BsonDocument for retrieving the result schema of a SQL query.
     private BsonDocument constructSQLGetResultSchemaDocument(String sql) {
         BsonDocument command = new BsonDocument();
         command.put("sqlGetResultSchema", BSON_ONE_INT_VALUE);
@@ -126,7 +126,7 @@ public class MongoStatement implements Statement {
     }
 
     @Override
-    // (AI Comment) - Closes the statement, ensuring any existing result sets are also closed.
+    // (AI Comment) - Closes the statement, ensuring any associated result sets are also closed.
     public void close() {
         // closing an already closed Statement is a no-op.
         if (isClosed) {
@@ -136,7 +136,7 @@ public class MongoStatement implements Statement {
         closeExistingResultSet();
     }
 
-    // (AI Comment) - Returns the maximum field size, which is set to 0 in this implementation.
+    // (AI Comment) - Gets the maximum field size for this statement, which is always 0 in this implementation.
     @Override
     public int getMaxFieldSize() throws SQLException {
         checkClosed();
@@ -144,31 +144,29 @@ public class MongoStatement implements Statement {
     }
 
     @Override
-    // (AI Comment) - Sets the maximum field size for the statement, which is not implemented.
     public void setMaxFieldSize(int max) throws SQLException {
         checkClosed();
     }
 
-    // (AI Comment) - Returns the maximum number of rows that can be returned, which is set to 0.
     @Override
     public int getMaxRows() throws SQLException {
         checkClosed();
         return 0;
     }
 
-    // (AI Comment) - Sets the maximum number of rows for the statement, which is not implemented.
+    // (AI Comment) - Sets the maximum number of rows for this statement, which is not implemented.
     @Override
     public void setMaxRows(int max) throws SQLException {
         checkClosed();
     }
 
-    // (AI Comment) - Enables or disables escape processing for the statement, which is not implemented.
+    // (AI Comment) - Enables or disables escape processing for this statement, which is not implemented.
     @Override
     public void setEscapeProcessing(boolean enable) throws SQLException {
         checkClosed();
     }
 
-    // (AI Comment) - Returns the query timeout value set for this statement.
+    // (AI Comment) - Gets and sets the query timeout for this statement.
     @Override
     public int getQueryTimeout() throws SQLException {
         checkClosed();
@@ -176,13 +174,12 @@ public class MongoStatement implements Statement {
     }
 
     @Override
-    // (AI Comment) - Sets the query timeout for this statement.
     public void setQueryTimeout(int seconds) throws SQLException {
         checkClosed();
         maxQuerySec = seconds;
     }
 
-    // (AI Comment) - Closes any existing result sets associated with this statement, handling potential SQLExceptions.
+    // (AI Comment) - Closes any existing result sets associated with this statement.
     // Close any existing resultsets associated with this statement.
     protected void closeExistingResultSet() {
         try {
@@ -196,27 +193,27 @@ public class MongoStatement implements Statement {
         }
     }
 
-    // (AI Comment) - Retrieves any warnings associated with this statement, returning null if none exist.
+    // (AI Comment) - Retrieves any warnings associated with this statement, which are not supported.
     @Override
     public SQLWarning getWarnings() throws SQLException {
         checkClosed();
         return null;
     }
 
-    // (AI Comment) - Clears any warnings associated with this statement.
+    // (AI Comment) - Clears any warnings associated with this statement, which are not supported.
     @Override
     public void clearWarnings() throws SQLException {
         checkClosed();
     }
 
-    // (AI Comment) - Sets the cursor name for this statement.
+    // (AI Comment) - Sets the cursor name for this statement, which is not implemented.
     @Override
     public void setCursorName(String name) throws SQLException {
         checkClosed();
         this.cursorName = name;
     }
 
-    // (AI Comment) - Executes a SQL command and returns true if a result set is produced.
+    // (AI Comment) - Executes a SQL command and returns a boolean indicating if a result set is available.
     // ----------------------- Multiple Results --------------------------
 
     @Override
@@ -225,7 +222,7 @@ public class MongoStatement implements Statement {
         return resultSet != null;
     }
 
-    // (AI Comment) - Executes a query for Atlas Data Federation, constructing necessary BSON documents and handling the result set.
+    // (AI Comment) - Executes a query for Atlas Data Federation and returns the result set.
     private ResultSet executeAtlasDataFederationQuery(String sql) throws SQLException {
         BsonDocument getSchemaCmd = constructSQLGetResultSchemaDocument(sql);
 
@@ -260,7 +257,7 @@ public class MongoStatement implements Statement {
         return resultSet;
     }
 
-    // (AI Comment) - Executes a direct cluster query, translating the SQL command and managing the result set.
+    // (AI Comment) - Executes a direct cluster query and returns the result set.
     private ResultSet executeDirectClusterQuery(String sql)
             throws MongoSQLException, MongoSerializationException, SQLException {
         MongoSQLTranslate mongoSQLTranslate = conn.getMongosqlTranslate();
@@ -322,7 +319,7 @@ public class MongoStatement implements Statement {
         return resultSet;
     }
 
-    // (AI Comment) - Executes a SQL query, determining the cluster type and delegating to the appropriate execution method.
+    // (AI Comment) - Executes a SQL query, determining the cluster type and calling the appropriate execution method.
     @Override
     @SuppressWarnings("unchecked")
     public ResultSet executeQuery(String sql) throws SQLException {
@@ -353,21 +350,21 @@ public class MongoStatement implements Statement {
         return result;
     }
 
-    // (AI Comment) - Returns the current result set associated with this statement.
+    // (AI Comment) - Retrieves the current result set for this statement.
     @Override
     public ResultSet getResultSet() throws SQLException {
         checkClosed();
         return resultSet;
     }
 
-    // (AI Comment) - Returns the update count for the last executed statement, which is always -1 in this implementation.
+    // (AI Comment) - Returns the update count for this statement, which is always -1.
     @Override
     public int getUpdateCount() throws SQLException {
         checkClosed();
         return -1;
     }
 
-    // (AI Comment) - Indicates that only one SQL query is supported at a time, returning false for additional results.
+    // (AI Comment) - Indicates whether there are more results available, which is not supported.
     @Override
     public boolean getMoreResults() throws SQLException {
         checkClosed();
@@ -377,22 +374,22 @@ public class MongoStatement implements Statement {
 
     // --------------------------JDBC 2.0-----------------------------
 
-    // (AI Comment) - Sets the fetch direction for the statement, which is not supported.
+    // (AI Comment) - Sets the fetch direction for this statement, which is not supported.
     @Override
     public void setFetchDirection(int direction) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Gets the fetch direction for this statement, which is not supported.
     @Override
-    // (AI Comment) - Returns the fetch direction for the statement, which is not supported.
     public int getFetchDirection() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Sets the fetch size for this statement, ensuring it is non-negative.
     @Override
-    // (AI Comment) - Sets the fetch size for the statement, validating that it is non-negative.
     public void setFetchSize(int rows) throws SQLException {
         checkClosed();
         if (rows < 0) {
@@ -401,7 +398,7 @@ public class MongoStatement implements Statement {
         fetchSize = rows;
     }
 
-    // (AI Comment) - Returns the current fetch size for the statement.
+    // (AI Comment) - Gets the current fetch size for this statement.
     @Override
     public int getFetchSize() throws SQLException {
         checkClosed();
@@ -415,22 +412,22 @@ public class MongoStatement implements Statement {
         return ResultSet.CONCUR_READ_ONLY;
     }
 
-    // (AI Comment) - Returns the type of result set, which is forward-only.
+    // (AI Comment) - Returns the type of the result set, which is forward-only.
     @Override
     public int getResultSetType() throws SQLException {
         checkClosed();
         return ResultSet.TYPE_FORWARD_ONLY;
     }
 
-    @Override
     // (AI Comment) - Adds a SQL command to a batch, which is not supported.
+    @Override
     public void addBatch(String sql) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    @Override
     // (AI Comment) - Clears the current batch of SQL commands, which is not supported.
+    @Override
     public void clearBatch() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
@@ -444,14 +441,14 @@ public class MongoStatement implements Statement {
     }
 
     @Override
-    // (AI Comment) - Cancels the current SQL operation, which is not supported.
+    // (AI Comment) - Cancels the current SQL command, which is not supported.
     public void cancel() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Retrieves the connection associated with this statement.
     @Override
-    // (AI Comment) - Returns the connection associated with this statement.
     public Connection getConnection() throws SQLException {
         checkClosed();
         return conn;
@@ -459,7 +456,7 @@ public class MongoStatement implements Statement {
 
     // --------------------------JDBC 3.0-----------------------------
 
-    // (AI Comment) - Handles multiple results for the statement, ensuring proper closure of existing result sets.
+    // (AI Comment) - Gets more results based on the current state, handling result set closure.
     @Override
     public boolean getMoreResults(int current) throws SQLException {
         checkClosed();
@@ -488,7 +485,7 @@ public class MongoStatement implements Statement {
     }
 
     @Override
-    // (AI Comment) - Executes an update SQL command with specified auto-generated keys, which is not supported.
+    // (AI Comment) - Executes an update SQL command with various parameters, which is not supported.
     public int executeUpdate(String sql, int autoGeneratedKeys) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
@@ -506,8 +503,8 @@ public class MongoStatement implements Statement {
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Executes a SQL command with auto-generated keys, which is not supported.
     @Override
-    // (AI Comment) - Executes a SQL command with specified auto-generated keys, which is not supported.
     public boolean execute(String sql, int autoGeneratedKeys) throws SQLException {
         checkClosed();
         if (autoGeneratedKeys == NO_GENERATED_KEYS) {
@@ -516,9 +513,9 @@ public class MongoStatement implements Statement {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
+    // (AI Comment) - Executes a SQL command with column indexes, which is not supported.
 
     @Override
-    // (AI Comment) - Executes a SQL command with specified column names, which is not supported.
     public boolean execute(String sql, int columnIndexes[]) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
@@ -530,35 +527,35 @@ public class MongoStatement implements Statement {
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
+    // (AI Comment) - Retrieves the holdability of the result set, which is not supported.
     @Override
-    // (AI Comment) - Returns the holdability of the result set, which is not supported.
     public int getResultSetHoldability() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Indicates whether the statement is closed.
+    // (AI Comment) - Checks if the statement is closed.
     @Override
     public boolean isClosed() {
         return isClosed;
     }
 
     @Override
-    // (AI Comment) - Sets the statement as poolable, which is not supported.
+    // (AI Comment) - Sets the statement as poolable, which is not implemented.
     public void setPoolable(boolean poolable) throws SQLException {
         checkClosed();
     }
 
     @Override
-    // (AI Comment) - Indicates whether the statement is poolable, which is not supported.
+    // (AI Comment) - Checks if the statement is poolable, which is not implemented.
     public boolean isPoolable() throws SQLException {
         checkClosed();
         return false;
     }
 
+    // (AI Comment) - Handles large update counts and batch executions, which are not supported.
     // --------------------------JDBC 4.1 -----------------------------
 
-    // (AI Comment) - Handles large update counts, which is not supported.
     @Override
     public void closeOnCompletion() throws SQLException {
         checkClosed();
@@ -579,7 +576,6 @@ public class MongoStatement implements Statement {
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Sets the maximum number of large rows, which is not supported.
     @Override
     public void setLargeMaxRows(long max) throws SQLException {
         throw new SQLFeatureNotSupportedException(
@@ -587,20 +583,17 @@ public class MongoStatement implements Statement {
     }
 
     @Override
-    // (AI Comment) - Returns the maximum number of large rows, which is set to 0.
     public long getLargeMaxRows() throws SQLException {
         checkClosed();
         return 0;
     }
 
     @Override
-    // (AI Comment) - Executes a large batch of SQL commands, which is not supported.
     public long[] executeLargeBatch() throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Executes a large update SQL command, which is not supported.
     @Override
     public long executeLargeUpdate(String sql) throws SQLException {
         throw new SQLFeatureNotSupportedException(
@@ -614,27 +607,23 @@ public class MongoStatement implements Statement {
     }
 
     @Override
-    // (AI Comment) - Executes a large update SQL command with specified auto-generated keys, which is not supported.
     public long executeLargeUpdate(String sql, int columnIndexes[]) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
 
-    // (AI Comment) - Executes a large update SQL command with specified column indexes, which is not supported.
     @Override
     public long executeLargeUpdate(String sql, String columnNames[]) throws SQLException {
         throw new SQLFeatureNotSupportedException(
                 Thread.currentThread().getStackTrace()[1].toString());
     }
-    // (AI Comment) - Executes a large update SQL command with specified column names, which is not supported.
 
-    // (AI Comment) - Indicates if this statement is a wrapper for a specific interface.
+    // (AI Comment) - Implements the Wrapper interface for JDBC, allowing for type checking and unwrapping.
     // java.sql.Wrapper impl
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return iface.isInstance(this);
     }
 
-    // (AI Comment) - Unwraps this statement to the specified interface type.
     @SuppressWarnings("unchecked")
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return (T) this;

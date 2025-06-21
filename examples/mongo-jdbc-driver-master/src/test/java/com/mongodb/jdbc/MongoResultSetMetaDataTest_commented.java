@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoResultSetMetaDataTest_commented.java *********
-This file contains unit tests for the 'MongoResultSetMetaData' class, ensuring its methods function correctly and return expected results. It validates various properties of the result set metadata, including column counts, names, types, and nullability, using the JUnit testing framework.
+This file contains unit tests for the 'MongoResultSetMetaData' class, validating its behavior and ensuring it correctly handles various metadata operations related to MongoDB. The tests cover aspects such as column count, names, labels, types, and properties, ensuring the integrity and reliability of the metadata handling functionality.
 */
 
 /*
@@ -19,7 +19,7 @@ This file contains unit tests for the 'MongoResultSetMetaData' class, ensuring i
  * limitations under the License.
  */
 
-// (AI Comment) - Defines the package for MongoDB JDBC related classes.
+// (AI Comment) - This class tests the functionality of MongoResultSetMetaData, ensuring it behaves correctly with various metadata operations.
 package com.mongodb.jdbc;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,13 +38,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-// (AI Comment) - Test class for MongoResultSetMetaData, extending MongoMock to utilize mock functionalities.
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MongoResultSetMetaDataTest extends MongoMock {
     private static MongoResultSetMetaData resultSetMetaData;
 
-    // (AI Comment) - Static block to initialize MongoResultSetMetaData with a generated schema and other parameters.
+    // (AI Comment) - Static block initializes the MongoResultSetMetaData instance with a generated schema and other parameters for testing.
     static {
         try {
             resultSetMetaData =
@@ -60,19 +59,19 @@ class MongoResultSetMetaDataTest extends MongoMock {
         }
     }
 
-    // (AI Comment) - Initializes mocks before all tests are run.
+    // (AI Comment) - Initializes mocks before all tests are run, ensuring proper setup for Mockito.
     @BeforeAll
     void initMocks() {
         MockitoAnnotations.initMocks(this);
     }
 
-    // (AI Comment) - Tests the getColumnCount method to ensure it returns the correct number of columns.
+    // (AI Comment) - Tests the getColumnCount method to verify it returns the correct number of columns.
     @Test
     void testGetColumnCount() throws SQLException {
         assertEquals(12, MongoResultSetMetaDataTest.resultSetMetaData.getColumnCount());
     }
 
-    // (AI Comment) - Tests the order of metadata fields based on sorting options, verifying expected column names.
+    // (AI Comment) - Tests the order of metadata fields, verifying sorting behavior based on the sortFieldsAlphabetically flag.
     @Test
     void testMetadataFieldsOrder() throws SQLException {
 
@@ -174,14 +173,14 @@ class MongoResultSetMetaDataTest extends MongoMock {
         }
     }
 
-    // (AI Comment) - Tests retrieval of catalog and schema names, expecting empty strings.
+    // (AI Comment) - Tests retrieval of catalog and schema names, ensuring they return empty strings for specified columns.
     @Test
     void testGetCatalogAndSchemaName() throws SQLException {
         assertEquals("", resultSetMetaData.getCatalogName(DOUBLE_COL));
         assertEquals("", resultSetMetaData.getSchemaName(DOUBLE_COL));
     }
 
-    // (AI Comment) - Tests retrieval of column names for various columns, ensuring correct mappings.
+    // (AI Comment) - Tests the getColumnName method for various columns to ensure correct names are returned.
     @Test
     void testGetColumnName() throws SQLException {
         assertEquals(DOUBLE_COL_LABEL, resultSetMetaData.getColumnName(DOUBLE_COL));
@@ -199,7 +198,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals(FOO_DUP_COL_LABEL, resultSetMetaData.getColumnName(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests retrieval of column labels, ensuring they match expected values.
+    // (AI Comment) - Tests the getColumnLabel method for various columns to ensure correct labels are returned.
     @Test
     void testGetColumnLabel() throws SQLException {
         assertEquals(DOUBLE_COL_LABEL, resultSetMetaData.getColumnLabel(DOUBLE_COL));
@@ -217,7 +216,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals(FOO_DUP_COL_LABEL, resultSetMetaData.getColumnName(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests retrieval of table names for various columns, expecting specific values.
+    // (AI Comment) - Tests the getTableName method for various columns to ensure correct table names are returned.
     @Test
     void testGetTableName() throws SQLException {
         assertEquals("", resultSetMetaData.getTableName(DOUBLE_COL));
@@ -233,7 +232,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals("foo", resultSetMetaData.getTableName(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests case sensitivity of columns, verifying expected boolean results.
+    // (AI Comment) - Tests the isCaseSensitive method for various columns to verify case sensitivity behavior.
     @Test
     void testIsCaseSensitive() throws SQLException {
         assertEquals(false, resultSetMetaData.isCaseSensitive(DOUBLE_COL));
@@ -249,7 +248,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals(false, resultSetMetaData.isCaseSensitive(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests nullability of columns, ensuring correct nullable states are returned.
+    // (AI Comment) - Tests the isNullable method for various columns to ensure correct nullability is reported.
     @Test
     void testIsNullable() throws SQLException {
         assertEquals(ResultSetMetaData.columnNullable, resultSetMetaData.isNullable(DOUBLE_COL));
@@ -268,7 +267,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals(ResultSetMetaData.columnNoNulls, resultSetMetaData.isNullable(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests signed status of columns, verifying expected boolean results.
+    // (AI Comment) - Tests the isSigned method for various columns to verify if they are signed.
     @Test
     void testIsSigned() throws SQLException {
         assertEquals(true, resultSetMetaData.isSigned(DOUBLE_COL));
@@ -284,7 +283,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals(true, resultSetMetaData.isSigned(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests retrieval of column display sizes, ensuring correct values are returned.
+    // (AI Comment) - Tests the getColumnDisplaySize method for various columns to ensure correct display sizes are returned.
     @Test
     void testGetColumnDisplaySize() throws SQLException {
         assertEquals(15, resultSetMetaData.getColumnDisplaySize(DOUBLE_COL));
@@ -300,7 +299,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals(10, resultSetMetaData.getColumnDisplaySize(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests retrieval of column precision, ensuring correct values are returned.
+    // (AI Comment) - Tests the getPrecision method for various columns to ensure correct precision values are returned.
     @Test
     void testGetPrecision() throws SQLException {
         assertEquals(15, resultSetMetaData.getPrecision(DOUBLE_COL));
@@ -316,7 +315,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals(10, resultSetMetaData.getPrecision(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests retrieval of column scale, ensuring correct values are returned.
+    // (AI Comment) - Tests the getScale method for various columns to ensure correct scale values are returned.
     @Test
     void testGetScale() throws SQLException {
         assertEquals(15, resultSetMetaData.getScale(DOUBLE_COL));
@@ -332,7 +331,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals(0, resultSetMetaData.getScale(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests retrieval of column types, ensuring correct SQL types are returned.
+    // (AI Comment) - Tests the getColumnType method for various columns to ensure correct SQL types are returned.
     @Test
     void testGetColumnType() throws SQLException {
         assertEquals(Types.DOUBLE, resultSetMetaData.getColumnType(DOUBLE_COL));
@@ -348,7 +347,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals(Types.INTEGER, resultSetMetaData.getColumnType(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests retrieval of column class names, ensuring correct class names are returned.
+    // (AI Comment) - Tests the getColumnTypeClassName method for various columns to ensure correct class names are returned.
     @Test
     void testGetColumnTypeClassName() throws SQLException {
         assertEquals(double.class.getName(), resultSetMetaData.getColumnClassName(DOUBLE_COL));
@@ -366,7 +365,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals(int.class.getName(), resultSetMetaData.getColumnClassName(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests retrieval of column type names, ensuring correct type names are returned.
+    // (AI Comment) - Tests the getColumnTypeName method for various columns to ensure correct type names are returned.
     @Test
     void testGetColumnTypeName() throws SQLException {
         assertEquals("double", resultSetMetaData.getColumnTypeName(DOUBLE_COL));
@@ -382,7 +381,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertEquals("int", resultSetMetaData.getColumnTypeName(FOO_DUP_COL));
     }
 
-    // (AI Comment) - Tests retrieval of data source names, ensuring correct values are returned and handles duplicates.
+    // (AI Comment) - Tests the getDatasource method for various columns, including checks for exceptions on duplicated column names.
     @Test
     void testGetDatasource() throws Exception {
         assertEquals("", resultSetMetaData.getDatasource(DOUBLE_COL_LABEL));
@@ -398,7 +397,7 @@ class MongoResultSetMetaDataTest extends MongoMock {
         assertThrows(Exception.class, () -> resultSetMetaData.getDatasource(BOT_DUP_COL_LABEL));
     }
 
-    // (AI Comment) - Tests behavior when select order is empty, ensuring correct column counts are returned.
+    // (AI Comment) - Tests behavior when the select order is empty, ensuring correct column counts are returned.
     @Test
     void testEmptySelectOrder() throws SQLException {
         MongoJsonSchema schema = generateMongoJsonSchema();

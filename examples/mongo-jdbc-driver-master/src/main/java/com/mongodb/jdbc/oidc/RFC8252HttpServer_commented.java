@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - RFC8252HttpServer_commented.java *********
-This file defines the RFC8252HttpServer class, which implements an OIDC server that manages the authorization code flow as per RFC 8252. It sets up HTTP endpoints for handling callbacks and redirects, processes incoming requests, and utilizes a template engine for generating HTML responses.
+This file implements an OIDC server that manages the authorization code flow as per RFC 8252. It provides endpoints for handling callbacks and redirections, processes incoming HTTP requests, and renders HTML responses based on the OIDC flow outcomes.
 */
 
 /*
@@ -43,7 +43,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-// (AI Comment) - This class implements an OIDC server based on RFC 8252, handling authorization code flow with HTTP endpoints.
+// (AI Comment) - This class implements an OIDC server based on RFC 8252, handling authorization code flow and providing HTTP endpoints for callback and redirection.
 /**
  * The RFC8252HttpServer class implements an OIDC (OpenID Connect) server based on RFC 8252. It
  * handles the OIDC authorization code flow by providing endpoints for the callback and redirection.
@@ -87,7 +87,7 @@ public class RFC8252HttpServer {
         oidcResponseQueue = new LinkedBlockingQueue<>();
     }
 
-    // (AI Comment) - Starts the HTTP server and sets up contexts and handlers for OIDC endpoints.
+    // (AI Comment) - Starts the HTTP server, sets up contexts for callback and redirect endpoints, and begins listening for requests.
     /**
      * Starts the HTTP server and sets up the necessary contexts and handlers.
      *
@@ -116,7 +116,7 @@ public class RFC8252HttpServer {
     }
 
     /**
-     // (AI Comment) - Retrieves an OIDC response from the queue with a specified timeout.
+     // (AI Comment) - Retrieves an OIDC response from the queue with a specified timeout, throwing an exception if no response is available.
      * Attempts to retrieve an OIDC response from the queue, waiting up to the specified timeout. If
      * no response is available within the timeout period, an InterruptedException is thrown.
      *
@@ -163,6 +163,7 @@ public class RFC8252HttpServer {
     /** HTTP handler for handling the callback and redirect endpoints. */
     private class CallbackHandler implements HttpHandler {
 
+        // (AI Comment) - Processes incoming HTTP exchanges, handling OIDC responses and errors, and sending appropriate HTML responses.
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             Map<String, String> queryParams = parseQueryParams(exchange);
@@ -222,6 +223,7 @@ public class RFC8252HttpServer {
     /** HTTP handler for handling the accepted endpoint. */
     private class AcceptedHandler implements HttpHandler {
         @Override
+        // (AI Comment) - Processes the accepted endpoint request and sends an HTML response.
         public void handle(HttpExchange exchange) throws IOException {
             Context context = new Context();
             context.setVariable(PRODUCT_DOCS_LINK_KEY, PRODUCT_DOCS_LINK);
@@ -231,7 +233,7 @@ public class RFC8252HttpServer {
         }
     }
 
-    // (AI Comment) - Parses query parameters from the HTTP exchange into a map.
+    // (AI Comment) - Parses query parameters from the HTTP exchange and returns them as a map.
     /**
      * Parses the query parameters from the HTTP exchange.
      *
@@ -261,7 +263,7 @@ public class RFC8252HttpServer {
         return queryParams;
     }
 
-    // (AI Comment) - Puts the OIDC response into the queue, handling full queue scenarios.
+    // (AI Comment) - Attempts to put an OIDC response into the queue, handling errors if the queue is full.
     /**
      * Puts the OIDC response into the blocking queue. If the queue is full, an error response is
      * sent to the client and the HttpExchange is closed.
@@ -284,7 +286,7 @@ public class RFC8252HttpServer {
         }
     }
 
-    // (AI Comment) - Sends an HTTP response with specified content and status code.
+    // (AI Comment) - Sends an HTTP response with the specified content and status code, handling any I/O errors.
     /**
      * Sends an HTTP response with the specified content and status code.
      *

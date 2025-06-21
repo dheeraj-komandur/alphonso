@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - DataLoader_commented.java *********
-The DataLoader class is designed to facilitate the loading of integration test data into a MongoDB database from YAML files. It manages the connection to the database, reads test data, and ensures that collections and schemas are correctly set up for testing purposes.
+The 'DataLoader.java' file is designed to facilitate the loading of integration test data into a MongoDB database. It reads YAML files containing test data, manages database collections and schemas, and provides functionality to drop existing collections before loading new data. The file is essential for setting up the test environment for integration tests.
 */
 
 /*
@@ -55,7 +55,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.inspector.TagInspector;
 import org.yaml.snakeyaml.nodes.Tag;
 
-// (AI Comment) - Handles loading and managing test data for integration tests with MongoDB, including reading YAML files, inserting data, and managing collections.
+// (AI Comment) - Handles loading and managing test data for integration tests with MongoDB, including reading YAML files, inserting data, and managing schemas.
 public class DataLoader {
     public static final String TEST_DATA_DIRECTORY = "resources/integration_test/testdata";
     public static final String LOCAL_MDB_URL =
@@ -89,7 +89,7 @@ public class DataLoader {
     private ConnectionString mdbUri;
     private ConnectionString adfUri;
 
-    // (AI Comment) - Initializes the DataLoader with the specified data directory and sets up MongoDB connection URIs.
+    // (AI Comment) - Initializes the DataLoader with the specified data directory and sets up MongoDB connection strings.
     public DataLoader(String dataDirectory) throws IOException {
         this.datasets = new ArrayList<>();
         this.collections = new HashSet<>();
@@ -144,7 +144,7 @@ public class DataLoader {
         }
     }
 
-    // (AI Comment) - Sets the schema for a specified collection in the MongoDB database using a JSON schema.
+    // (AI Comment) - Sets the schema for a specified collection in the MongoDB database.
     private void setSchema(String database, String collection, Map<String, Object> jsonSchema) {
         System.out.println("Set schema for  " + database + "." + collection);
         BsonDocument command = new BsonDocument();
@@ -181,7 +181,7 @@ public class DataLoader {
         }
     }
 
-    // (AI Comment) - Loads integration test data from files into the MongoDB database, handling exceptions and ensuring data integrity.
+    // (AI Comment) - Loads integration test data files into the MongoDB database, handling exceptions and ensuring data integrity.
     /**
      * Loads integration test data files from dataDirectory to database in specified url
      *
@@ -215,7 +215,7 @@ public class DataLoader {
         }
     }
 
-    // (AI Comment) - Loads a collection with data specified in the TestDataEntry, including handling extended JSON format.
+    // (AI Comment) - Loads a collection with data provided in the TestDataEntry, including handling documents and indexes.
     /**
      * Loads a collection with the information provided in the TestDataEntry.
      *

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - RemoteMemberRegistrationIT_commented.java *********
-The 'RemoteMemberRegistrationIT.java' file contains integration tests for the member registration functionality of a web service, validating the creation and cleanup of member records through HTTP requests.
+This file contains integration tests for the member registration feature of a kitchen sink application, ensuring that members can be successfully created and cleaned up through HTTP requests.
 */
 
 /*
@@ -37,7 +37,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.logging.Logger;
 
-// (AI Comment) - This class contains integration tests for remote member registration, ensuring that members can be created and cleaned up correctly via the HTTP API.
+// (AI Comment) - This class contains integration tests for remote member registration, ensuring that members can be created and cleaned up via HTTP requests.
 public class RemoteMemberRegistrationIT {
 
     private static final Logger log = Logger.getLogger(RemoteMemberRegistrationIT.class.getName());

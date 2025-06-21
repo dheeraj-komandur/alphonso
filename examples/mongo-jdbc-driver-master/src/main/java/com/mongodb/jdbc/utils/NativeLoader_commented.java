@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - NativeLoader_commented.java *********
-The 'NativeLoader.java' file provides functionality for loading native libraries from JAR files using JNI, ensuring compatibility across different operating systems and architectures. It manages temporary storage for these libraries and includes error handling for various edge cases.
+The 'NativeLoader.java' file provides functionality for loading native libraries from JAR archives in a platform-independent manner, utilizing JNI. It manages library loading, temporary file creation, and ensures compatibility with various operating systems and architectures.
 */
 
 /*
@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.SystemUtils;
 
-// (AI Comment) - Describes the purpose of the NativeLoader class, which assists in loading dynamic libraries stored in JAR archives using JNI.
+// (AI Comment) - Describes the NativeLoader class, which assists in loading dynamic libraries from JAR archives using JNI.
 /**
  * A helper based on the NativeUtils library of Adam Heinrich:
  *
@@ -73,7 +73,7 @@ public class NativeLoader {
     /** Private constructor - this class will never be instanced. */
     private NativeLoader() {}
 
-    // (AI Comment) - Normalizes the operating system name based on the current system, throwing an exception for unsupported OS types.
+    // (AI Comment) - Normalizes the operating system name for library loading, throwing an exception for unsupported OS.
     private static String normalizeOS() throws MongoException {
         if (SystemUtils.IS_OS_LINUX) {
             return LINUX;
@@ -87,7 +87,7 @@ public class NativeLoader {
         throw new MongoException("Unsupported OS : " + SystemUtils.OS_NAME);
     }
 
-    // (AI Comment) - Normalizes the architecture type based on the current system, throwing an exception for unsupported architectures.
+    // (AI Comment) - Normalizes the architecture type for library loading, throwing an exception for unsupported architectures.
     private static String normalizeArch() throws MongoException {
         String arch = SystemUtils.OS_ARCH.toLowerCase();
         if (X86_64_ARCH_PATTERN.matcher(arch).matches()) {
@@ -100,7 +100,7 @@ public class NativeLoader {
         throw new MongoException("Unsupported architecture : " + arch);
     }
 
-    // (AI Comment) - Loads a library from the current JAR archive, copying it to a temporary directory and returning its path.
+    // (AI Comment) - Loads a library from the current JAR archive, handling temporary file creation and loading via JNI.
     /**
      * Loads library from current JAR archive.
      *
@@ -176,7 +176,7 @@ public class NativeLoader {
         throw new FileNotFoundException("Resource " + resourcePath + " was not found inside JAR.");
     }
 
-    // (AI Comment) - Checks if the file system is POSIX compliant, which affects how temporary files are handled.
+    // (AI Comment) - Checks if the file system is POSIX compliant, which affects how libraries are managed post-loading.
     private static boolean isPosixCompliant() {
         try {
             return FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
@@ -186,7 +186,7 @@ public class NativeLoader {
         }
     }
 
-    // (AI Comment) - Creates a temporary directory for use by the Java runtime, ensuring it is unique and properly created.
+    // (AI Comment) - Creates a temporary directory for storing native libraries, ensuring it is unique and valid.
     /**
      * Creates a temporary directory under the file system path of a temporary directory for use by
      * the java runtime. The path will look like {java.io.tmpdir}/{prefix}{nanoTime}

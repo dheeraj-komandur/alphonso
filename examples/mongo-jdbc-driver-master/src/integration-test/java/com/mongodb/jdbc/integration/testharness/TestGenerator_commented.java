@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestGenerator_commented.java *********
-The 'TestGenerator.java' file is responsible for generating YAML files that define baseline test cases for MongoDB integration tests. It extracts metadata from SQL ResultSets and formats this information into a structured format suitable for testing, facilitating automated testing of database interactions.
+The 'TestGenerator.java' file is responsible for generating baseline test files in YAML format for MongoDB integration tests. It captures expected results and metadata from SQL queries, facilitating automated testing and validation of database interactions.
 */
 
 /*
@@ -41,11 +41,11 @@ import java.util.Map;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-// (AI Comment) - This class generates baseline test files for MongoDB integration tests based on provided test entries and result sets. It handles file creation, metadata extraction, and YAML formatting.
+// (AI Comment) - This class generates baseline test files for MongoDB integration tests based on provided test entries and result sets. It handles the creation of YAML files that describe expected results and metadata.
 public class TestGenerator {
     private static final String GENERATED_TEST_DIR = "resources/generated_test";
 
-    // (AI Comment) - Generates baseline test files using the provided TestEntry and ResultSet. It extracts metadata and formats the output into YAML.
+    // (AI Comment) - Generates baseline test files from a TestEntry and a ResultSet, capturing expected metadata and results in a structured YAML format.
     public static void generateBaselineTestFiles(TestEntry testEntry, ResultSet rs)
             throws IOException, SQLException, IllegalAccessException {
 
@@ -85,7 +85,7 @@ public class TestGenerator {
         String fileName =
                 new SimpleDateFormat("'" + description + "'MMddHHmmss'.yaml'").format(new Date());
         ArrayList<List<Object>> result = new ArrayList<>();
-        // (AI Comment) - Iterates through the ResultSet to collect data rows into a list for expected results.
+        // (AI Comment) - Iterates through the ResultSet to collect all rows of data into a list for expected results.
         while (rs.next()) {
             List<Object> row = new ArrayList<>();
             for (int i = 1; i <= resultSetMetadata.getColumnCount(); i++) {
@@ -94,7 +94,7 @@ public class TestGenerator {
             result.add(row);
         }
 
-        // (AI Comment) - Generates expected result set metadata by extracting various properties from the ResultSetMetaData.
+        // (AI Comment) - Populates expected metadata lists by iterating through the ResultSetMetaData to gather information about each column.
         // generating expected resultset metadata
         for (int i = 1; i <= resultSetMetadata.getColumnCount(); i++) {
             expectedSqlType.add(TestTypeInfo.typesIntToString(resultSetMetadata.getColumnType(i)));
@@ -158,14 +158,14 @@ public class TestGenerator {
         yaml.dump(tests, writer);
     }
 
-    // (AI Comment) - Main method to execute integration tests by loading test configurations and running tests against a database connection.
+    // (AI Comment) - Main method that initializes the integration test framework, loads test configurations, and executes tests for each TestEntry.
     public static void main(String[] args)
             throws SQLException, IOException, InvocationTargetException, IllegalAccessException {
         ADFIntegrationTest integrationTest = new ADFIntegrationTest();
         List<TestEntry> tests =
                 IntegrationTestUtils.loadTestConfigs(ADFIntegrationTest.TEST_DIRECTORY);
         for (TestEntry testEntry : tests) {
-            // (AI Comment) - Iterates through loaded test entries, establishing a connection for each and executing the corresponding test if not skipped.
+            // (AI Comment) - Establishes a database connection for each test entry and runs the corresponding test, skipping any tests marked with a reason.
             try (Connection conn = integrationTest.getBasicConnection(testEntry.db, null)) {
                 if (testEntry.skip_reason != null) {
                     continue;

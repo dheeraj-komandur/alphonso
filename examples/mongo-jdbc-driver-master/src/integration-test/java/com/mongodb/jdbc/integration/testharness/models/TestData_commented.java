@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TestData_commented.java *********
-The TestData.java file defines a simple data model for holding a list of test data entries used in the MongoDB JDBC integration test harness.
+The 'TestData.java' file defines a model class for holding a collection of test data entries, which are utilized in integration testing scenarios for MongoDB JDBC interactions.
 */
 
 /*
@@ -18,15 +18,13 @@ The TestData.java file defines a simple data model for holding a list of test da
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// (AI Comment) - This file contains the copyright notice and licensing information for the TestData class.
 
 package com.mongodb.jdbc.integration.testharness.models;
-// (AI Comment) - Defines the package for the TestData class, which is part of the MongoDB JDBC integration test harness models.
 
 import java.util.List;
 
+// (AI Comment) - Represents a collection of test data entries used for integration testing.
 public class TestData {
-    // (AI Comment) - Represents a data model for test entries, containing a list of TestDataEntry objects.
+    // (AI Comment) - Holds a list of TestDataEntry objects representing individual entries in the dataset.
     public List<TestDataEntry> dataset;
-// (AI Comment) - Holds a list of TestDataEntry instances that represent individual test data entries.
 }

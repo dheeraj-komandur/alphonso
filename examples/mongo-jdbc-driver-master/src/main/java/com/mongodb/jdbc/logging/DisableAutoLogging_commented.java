@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - DisableAutoLogging_commented.java *********
-This file defines the 'DisableAutoLogging' annotation, which is used to exclude specific methods or classes from automatic logging in the MongoDB JDBC driver. It is part of the logging framework that enhances the logging capabilities by allowing selective logging control.
+This file defines the 'DisableAutoLogging' annotation, which is used to mark methods and classes that should be excluded from automatic logging in the MongoDB JDBC driver. It facilitates selective logging by working in conjunction with the LoggingAspect.
 */
 
 /*
@@ -18,10 +18,10 @@ This file defines the 'DisableAutoLogging' annotation, which is used to exclude 
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// (AI Comment) - This file contains the copyright notice and licensing information for the MongoDB JDBC logging package.
+// (AI Comment) - This section contains the copyright notice and licensing information for the file.
 
 package com.mongodb.jdbc.logging;
-// (AI Comment) - Defines the package for logging-related annotations in the MongoDB JDBC driver.
+// (AI Comment) - Defines the package for logging-related functionality in the MongoDB JDBC driver.
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -29,11 +29,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- // (AI Comment) - Annotation to mark methods or classes that should not be automatically logged by the LoggingAspect.
+ // (AI Comment) - Defines an annotation to mark methods or classes that should not be automatically logged by the LoggingAspect.
  * Annotation for identifying all methods which should be excluded from autologging the method
  * entry. Used in conjunction with LoggingAspect to provide auto-logging of public methods entry.
  */
 @Retention(RetentionPolicy.CLASS)
-// (AI Comment) - Specifies that this annotation should be retained in the class file and can be applied to types and methods.
+// (AI Comment) - Specifies that this annotation is retained in the class file and can be applied to types and methods.
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface DisableAutoLogging {}

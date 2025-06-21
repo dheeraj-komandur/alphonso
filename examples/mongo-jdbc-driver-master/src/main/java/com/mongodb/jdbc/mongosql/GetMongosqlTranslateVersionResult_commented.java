@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - GetMongosqlTranslateVersionResult_commented.java *********
-This file defines the GetMongosqlTranslateVersionResult class, which encapsulates the version information returned from a MongoSQL translation request. It provides mechanisms for BSON serialization and deserialization, ensuring that the version data can be easily processed within the MongoDB ecosystem.
+This file defines the GetMongosqlTranslateVersionResult class, which encapsulates the version information returned from a MongoSQL translation request. It provides mechanisms for BSON serialization and a string representation in JSON format.
 */
 
 /*
@@ -41,13 +41,13 @@ public class GetMongosqlTranslateVersionResult {
     @BsonProperty("version")
     public final String version;
 
-    // (AI Comment) - Constructor that initializes the version field from a BSON property.
+    // (AI Comment) - Constructor that initializes the version field with the provided value.
     @BsonCreator
     public GetMongosqlTranslateVersionResult(@BsonProperty("version") String version) {
         this.version = version;
     }
 
-    // (AI Comment) - Returns a string representation of the GetMongosqlTranslateVersionResult instance in BSON format.
+    // (AI Comment) - Returns a string representation of the GetMongosqlTranslateVersionResult instance in JSON format.
     @Override
     public String toString() {
         return BsonUtils.toString(CODEC, this, JSON_WRITER_NO_INDENT_SETTINGS);

@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - BsonUtils_commented.java *********
-The 'BsonUtils.java' file provides utility methods for BSON serialization and deserialization, enabling conversion between BSON documents and byte arrays. It also includes methods for converting objects to their string representations in JSON format. This class is essential for applications that interact with MongoDB, facilitating data interchange in BSON and JSON formats.
+The 'BsonUtils.java' file provides utility functions for serializing and deserializing BSON documents, facilitating the conversion between BSON and byte arrays, as well as between BSON and JSON string representations. It is essential for applications that interact with MongoDB, ensuring efficient data handling.
 */
 
 /*
@@ -39,11 +39,9 @@ import org.bson.json.JsonWriterSettings;
 // (AI Comment) - Utility class for BSON serialization and deserialization.
 /** Utility class for BSON serialization and deserialization. */
 public class BsonUtils {
-    // (AI Comment) - Settings for JSON writer with relaxed output mode and indentation.
     public static final JsonWriterSettings JSON_WRITER_SETTINGS =
             JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).indent(true).build();
 
-    // (AI Comment) - Settings for JSON writer with relaxed output mode without indentation.
     public static final JsonWriterSettings JSON_WRITER_NO_INDENT_SETTINGS =
             JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).indent(false).build();
 

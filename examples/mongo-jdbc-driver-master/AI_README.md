@@ -1,301 +1,189 @@
-# MongoDB JDBC Driver
+# mongo-jdbc-driver-master
 
-A production-grade JDBC driver for MongoDB that enables SQL-based interactions with MongoDB databases. It provides comprehensive support for connection management, SQL translation, schema mapping, authentication (including X.509 and OIDC), logging, and a full suite of unit, integration, and manual tests.
+A production-grade JDBC driver for MongoDB, enabling Java applications to interact with MongoDB clusters through standard SQL APIs. Features include SQL-to-Mongo translation, schema mapping, advanced authentication (OIDC, X.509), detailed logging, and a comprehensive testing framework.
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [Quick Start](#quick-start)
-  - [Demo Application](#demo-application)
-  - [Smoke Tests](#smoke-tests)
-- [Architecture](#architecture)
-  - [Module Structure](#module-structure)
-  - [High-Level Data Flow](#high-level-data-flow)
-- [Core Components](#core-components)
-  - [MongoDriver and Connection](#mongodriver-and-connection)
-  - [Statement and PreparedStatement](#statement-and-preparedstatement)
-  - [ResultSet and Metadata](#resultset-and-metadata)
-  - [SQL Translation Engine](#sql-translation-engine)
-  - [Schema Mapping](#schema-mapping)
-- [Authentication and Security](#authentication-and-security)
-  - [X.509 Authentication](#x509-authentication)
-  - [OIDC Authentication Flow](#oidc-authentication-flow)
-- [Logging Infrastructure](#logging-infrastructure)
-- [Utilities](#utilities)
-  - [BSON and JSON Utilities](#bson-and-json-utilities)
-  - [Native Library Loader](#native-library-loader)
-- [Testing](#testing)
-  - [Unit Tests](#unit-tests)
-  - [Integration Tests](#integration-tests)
-    - [Test Harness](#test-harness)
-    - [Environment-Specific Tests](#environment-specific-tests)
-- [Manual OIDC Tests](#manual-oidc-tests)
+- [Architecture](#architecture)  
+  - [High-Level Module Diagram](#high-level-module-diagram)
+- [Core Components](#core-components)  
+  - [Driver Entry Point: MongoDriver](#driver-entry-point-mongodriver)  
+  - [Connection Management: MongoConnection and MongoConnectionProperties](#connection-management-mongoconnection-and-mongoconnectionproperties)  
+  - [Statement API: MongoStatement and MongoPreparedStatement](#statement-api-mongostatement-and-mongopreparedstatement)  
+  - [Result Set Handling: MongoResultSet and MongoResultSetMetaData](#result-set-handling-mongoresultset-and-mongoresultsetmetadata)  
+  - [Database Metadata: MongoDatabaseMetaData and MongoColumnInfo](#database-metadata-mongodatabasemetadata-and-mongocolumninfo)  
+  - [SQL Translation Engine: MongoSQLTranslate](#sql-translation-engine-mongosqltranslate)  
+  - [Authentication](#authentication)  
+    - [OIDC Flow](#oidc-flow)  
+    - [X.509 Authentication](#x509-authentication)  
+  - [Logging Infrastructure](#logging-infrastructure)  
+  - [Utility Classes](#utility-classes)
+- [Demo Module](#demo-module)
+- [Testing](#testing)  
+  - [Unit Tests](#unit-tests)  
+  - [Integration Tests](#integration-tests)  
+  - [Integration Test Harness](#integration-test-harness)
 
 ## Overview
 
-The MongoDB JDBC Driver bridges SQL-based applications with MongoDB, translating SQL commands into MongoDB operations and mapping BSON schemas to relational metadata. Key features include:
-
-- Full JDBC compliance: Driver, Connection, Statement, PreparedStatement, ResultSet, DatabaseMetaData, ResultSetMetaData.
-- SQL translation engine for leveraging MongoDB’s aggregation framework.
-- Transparent JSON schema mapping and BSON-to-SQL type conversions.
-- Pluggable authentication: connection string credentials, X.509 certificates, and OpenID Connect (OIDC).
-- Rich logging via annotations and custom formatters.
-- Demonstration and smoke-test applications.
-- Comprehensive unit, integration, and manual test suites.
-
-## Quick Start
-
-### Demo Application
-
-A simple console app illustrating basic usage:
-
-```java
-public class Main {
-  public static void main(String[] args) throws Exception {
-    String url = "jdbc:mongodb://localhost:27017/testdb";
-    try (Connection conn = DriverManager.getConnection(url)) {
-      DatabaseMetaData md = conn.getMetaData();
-      System.out.println("Driver name: " + md.getDriverName());
-      // Further SQL queries...
-    }
-  }
-  // displayResultSet(ResultSet rs) { … }
-}
-```
-
-Located at `mongo-jdbc-driver-master\demo\src\main\java\com\mongodb\jdbc\demo\Main.java`, it demonstrates:
-
-- JDBC `DriverManager` registration.
-- Connection setup via URL and optional properties.
-- Retrieving and printing metadata.
-
-### Smoke Tests
-
-The smoke-test suite (`SmokeTest.java`) validates basic connectivity and query execution against local and remote MongoDB instances. Key methods:
-
-- `getADFInstanceConnection()`
-- `getDirectRemoteInstanceConnection()`
-- `databaseMetadataTest()`
-- `queryTest()`
-
-Run via your IDE or Maven test phase to ensure environment readiness.
+The MongoDB JDBC Driver implements the `java.sql` interfaces to allow seamless SQL operations against MongoDB databases. It translates SQL queries into MongoDB commands, materializes results as JDBC `ResultSet` objects, and exposes database metadata. Built-in support for OpenID Connect and X.509 authentication ensures enterprise-grade security, while a flexible logging subsystem provides observability. A demo application and a comprehensive suite of unit and integration tests facilitate rapid development and validation.
 
 ## Architecture
 
-### Module Structure
+At a high level, the driver consists of modules for driver registration, connection management, SQL translation, statement execution, result set processing, metadata exposure, authentication, logging, and utilities.
 
-A high-level view of packaging and relationships across the repository:
+![ArchitectureDiagram](AI_README_IMAGES/architecturediagram.png)
 
-![ModuleStructure](AI_README_IMAGES/modulestructure.png)
-
-The diagram provides a module-level overview of a Java application that connects to a MongoDB database using JDBC. It illustrates the relationships between key components, including the entry point in Main.java, the MongoDB driver in MongoDriver.java, utility functions in BsonUtils.java, and the OIDC authentication flow in OidcAuthFlow.java. Each component is represented with its primary responsibilities, showcasing how they interact to facilitate database connections, data serialization, and secure authentication. This visual representation aids in understanding the architecture and flow of the application, making it easier to identify dependencies and functionalities.
-
-The codebase is organized into:
-
-- `demo/`: A simple application.
-- `smoketest/`: Environment verification.
-- `src/main/java/com/mongodb/jdbc/`: Core driver implementation.
-- `src/integration-test/java/com/mongodb/jdbc/integration/`: Integration testing harness and test cases.
-- `src/test/java/com/mongodb/jdbc/`: Unit tests.
-- `src/main/java/com/mongodb/jdbc/oidc/`: OIDC authentication flow.
-- `src/main/java/com/mongodb/jdbc/logging/`: Logging annotations and utilities.
-- `src/main/java/com/mongodb/jdbc/utils/`: Low-level utilities.
-
-### High-Level Data Flow
-
-Sequence of an SQL query from application to MongoDB and back:
-
-![HighLevelDataFlow](AI_README_IMAGES/highleveldataflow.png)
-
-The diagram illustrates the data flow within a MongoDB JDBC driver application, showcasing how various components interact to execute SQL queries. It begins with the application initiating a SQL query through the MongoDriver, which creates a MongoConnection. The MongoConnection then utilizes MongoStatement to execute the SQL commands, fetching results via MongoResultSet. Additionally, MongoSQLTranslate translates SQL commands into MongoDB operations, ensuring seamless communication with the MongoDB server. This flow highlights the relationships and responsibilities of each component in the context of SQL execution and data retrieval.
-
-1. **`MongoDriver.connect()`** registers and creates a **`MongoConnection`**.
-2. **`MongoConnection.createStatement()`** or **`prepareStatement()`** produces **`MongoStatement`** / **`MongoPreparedStatement`**.
-3. Statement execution invokes **`MongoSQLTranslate`** to convert SQL ↔ Mongo commands.
-4. **`MongoResultSet`** wraps a BSON cursor, exposing JDBC `ResultSet` API.
-5. Metadata classes (`MongoDatabaseMetaData`, `MongoResultSetMetaData`) adapt BSON schemas to JDBC metadata.
+The diagram illustrates the high-level architecture of the MongoDB JDBC driver, showcasing the primary modules and their interactions. It highlights how the JDBC API interfaces with the MongoDriver to establish connections via MongoConnection. The flow of query execution is depicted through MongoStatement and MongoPreparedStatement, which utilize MongoSQLTranslate for SQL to MongoDB command translation. The diagram also includes components for result handling, such as MongoResultSet and MongoResultSetMetaData, alongside authentication modules like OidcAuthFlow and X509Authentication. Additionally, it features the logging subsystem and utility classes that support BSON handling and native library loading, providing a comprehensive overview of the system's architecture.
 
 ## Core Components
 
-### MongoDriver and Connection
+### Driver Entry Point: MongoDriver
 
-- **MongoDriver.java**  
-  - Implements `java.sql.Driver`.  
-  - Singleton registration with `DriverManager`.  
-  - Factory for `MongoConnection` objects.  
-  - Normalizes properties, error handling, version checks.
+The `MongoDriver` class implements `java.sql.Driver` and registers with `DriverManager`. It parses JDBC URLs, maps properties to a `MongoConnectionConfig`, handles authentication parameters, and maintains a cache of `MongoClient` instances for reuse.
 
-- **MongoConnectionProperties.java**  
-  - Immutable holder for connection settings (URI, database, logging flags).  
-  - Generates cache key for property reuse.
+Key methods:
 
-- **MongoConnection.java**  
-  - Implements `java.sql.Connection`.  
-  - Manages `MongoClientSettings`, cluster type detection (Atlas/Enterprise/Community).  
-  - Validates connectivity, maintains IDs for connection and statements.  
-  - Logging via `MongoLogger`.
+```java
+public Connection connect(String url, Properties props) throws SQLException
+public boolean acceptsURL(String url) throws SQLException
+```
 
-### Statement and PreparedStatement
+The driver uses the `MongoJDBCProperty` enum to validate connection options and ensures thread-safe client caching via synchronized maps.
 
-- **MongoStatement.java**  
-  - Implements `java.sql.Statement`.  
-  - Executes SQL strings via delegated MongoDB operations.  
-  - Handles fetch size, timeouts, and result set lifecycle.  
-  - Unsupported JDBC methods throw `SQLFeatureNotSupportedException`.
+### Connection Management: MongoConnection and MongoConnectionProperties
 
-- **MongoPreparedStatement.java**  
-  - Implements `java.sql.PreparedStatement`, delegates to `MongoStatement`.  
-  - Parameter binding stubbed; logs unsupported operations.  
-  - Key methods: `executeQuery()`, `executeUpdate()`, `setString(int, String)`, etc.
+`MongoConnection` implements `java.sql.Connection`, managing authentication handshakes (including OIDC and X.509), session settings (auto-commit, read-only), and lifecycle (open/close). It delegates query execution to statements and offers internal validation via test queries.
 
-### ResultSet and Metadata
+`MongoConnectionProperties` encapsulates all connection attributes:
 
-- **MongoResultSet.java**  
-  - Implements `java.sql.ResultSet`.  
-  - Wraps a BSON cursor; maintains current row, row number, closed state.  
-  - Converts BSON types → Java types (e.g., `getString()`, `getTimestamp()`).
-  
-- **MongoResultSetMetaData.java**  
-  - Implements `ResultSetMetaData`.  
-  - Maps column labels, types, nullability from BSON schema.
+- `connectionString`, `database`
+- Logging level and directory
+- Extended JSON mode
+- X.509 PEM path
+- Unique key generation for caching
 
-- **MongoDatabaseMetaData.java**  
-  - Implements `DatabaseMetaData`.  
-  - Exposes tables, columns, procedures, and privileges as SQL metadata views.
+Its getters ensure controlled access and immutability of configuration once constructed.
 
-### SQL Translation Engine
+### Statement API: MongoStatement and MongoPreparedStatement
 
-- **MongoSQLTranslate.java**  
-  - Annotated with `@AutoLoggable` for entry logging.  
-  - Methods: `runCommand(BsonDocument)`, `getMongosqlTranslateVersion()`, `buildCatalogDocument(...)`.  
-  - Bridges SQL to MongoDB commands, handles codec serialization.
+- **MongoStatement** implements `java.sql.Statement`, determining the cluster type (standalone, replica set, sharded) and selecting the execution strategy. It handles fetch sizes, query timeouts, and resource management.
+- **MongoPreparedStatement** implements `java.sql.PreparedStatement`, wrapping a `MongoStatement` to support precompiled SQL. Unsupported JDBC methods throw `SQLFeatureNotSupportedException`. Method entries are logged via the `@AutoLoggable` annotation.
 
-### Schema Mapping
+Example:
 
-- **BsonTypeInfo.java**  
-  - Enum mapping BSON types → JDBC types, precision, scale, byte length.
+```java
+public ResultSet executeQuery(String sql) throws SQLException
+```
 
-- **MongoJsonSchema.java** & **MongoVersionedJsonSchema.java**  
-  - Convert JSON schema ↔ MongoDB schema, flatten `anyOf`, simplify nested structures.
+### Result Set Handling: MongoResultSet and MongoResultSetMetaData
 
-- **JsonSchema.java**  
-  - POJO for JSON schema deserialization, overrides `equals`/`hashCode`.
+- **MongoResultSet** implements `java.sql.ResultSet`, iterating a MongoDB cursor, converting BSON types to Java types (BigDecimal, byte[], Date/Time), and handling nullability and row boundaries.
+- **MongoResultSetMetaData** implements `ResultSetMetaData`, exposing column count, labels, types, and case sensitivity. It reads schema information and select-order definitions to reflect accurate metadata.
 
-- **MongoColumnInfo.java**  
-  - Immutable metadata for a single column: data source, field name, `BsonTypeInfo`, nullability.
+### Database Metadata: MongoDatabaseMetaData and MongoColumnInfo
 
-## Authentication and Security
+`MongoDatabaseMetaData` implements `java.sql.DatabaseMetaData`, exposing SQL keywords, procedures, table types, and schema details via BSON-backed result sets. It constructs metadata rows using helper methods and propagates SQL exceptions properly.
 
-### X.509 Authentication
+`MongoColumnInfo` is an immutable, thread-safe class mapping a MongoDB field to JDBC metadata, providing:
 
-- **X509Authentication.java**  
-  - Configures SSL/TLS using PEM certificates via Bouncy Castle.  
-  - Methods: `configureX509Authentication(MongoClientSettings.Builder, String pemPath, char[] passphrase)`, `createSSLContext(PemReader...)`.
+- Column label and name
+- JDBC type and nullability
+- BSON type via `BsonTypeInfo`
 
-### OIDC Authentication Flow
+### SQL Translation Engine: MongoSQLTranslate
 
-- **OidcAuthFlow.java**  
-  - Implements OAuth2/OpenID Connect code flow, token refresh.  
-  - Builds authorization URL, opens browser, listens for callback.
+Annotated with `@AutoLoggable`, `MongoSQLTranslate` converts SQL commands to MongoDB CRUD and aggregation pipelines. It provides:
 
-- **JdbcOidcCallback.java** & **JdbcOidcCallbackContext.java**  
-  - `OidcCallback` implementation for JDBC use.  
-  - Processes refresh tokens vs. auth code flows.
+- `runCommand(String sql, Properties props)`: Invokes native or Java-based translation.
+- `translateSQL(String sql)`: Returns a `TranslateResult` containing target database, collection, pipeline, schema, and select order.
+- Version checks and library loading via JNI.
 
-- **JdbcIdpInfo.java**  
-  - Implements `MongoCredential.IdpInfo`: issuer, clientId, scopes.
+### Authentication
 
-- **OidcResponse.java**, **OidcTimeoutException.java**  
-  - Data structures and exceptions for callback server.
+#### OIDC Flow
 
-- **RFC8252HttpServer.java**  
-  - Minimal HTTP server per RFC8252 for callback capture.
+The `OidcAuthFlow` class orchestrates OpenID Connect authorization code and token-refresh flows. It generates scopes, builds authorization URLs, and exchanges codes for tokens. A lightweight HTTP server (`RFC8252HttpServer`) listens for callbacks and populates `OidcCallbackContext` and `OidcResponse`. `JdbcOidcCallback` integrates with JDBC connections to supply OIDC credentials seamlessly.
 
-## Logging Infrastructure
+![OidcAuthFlowDiagram](AI_README_IMAGES/oidcauthflowdiagram.png)
 
-- **AutoLoggable.java** / **DisableAutoLogging.java**  
-  - Annotations to mark classes/methods for automatic entry logging via `LoggingAspect`.
+The OidcAuthFlowDiagram illustrates the sequence of operations involved in the OpenID Connect (OIDC) authentication flow. It begins with the client invoking the `doAuthCodeFlow` method from the `OidcAuthFlow` class, which initiates the `RFC8252HttpServer`. The user is then redirected to the Identity Provider for authentication. Upon successful authentication, an authorization code is received via a JDBC callback, which is subsequently exchanged for access and refresh tokens. Finally, the flow concludes with the return of an `OidcCallbackResult`. This diagram effectively captures the interactions between the key components involved in the OIDC process, providing a clear visual representation of the workflow.
 
-- **MongoLogger.java**  
-  - Contextual logger managing connection/statement IDs, method entry/error logs.
+#### X.509 Authentication
 
-- **MongoSimpleFormatter.java**  
-  - Custom `Formatter` for human-readable log entries: timestamp, level, source, exceptions.
+`X509Authentication` configures SSL contexts from PEM files, extracting private keys and certificates via Bouncy Castle, and integrates with `MongoClientSettings` for certificate-based authentication. It verifies file integrity and initializes `KeyManager` arrays for secure connections.
 
-- **QueryDiagnostics.java**  
-  - DTO capturing executed SQL, pipeline, schema, metadata for diagnostic logging.
+### Logging Infrastructure
 
-## Utilities
+The driver uses aspect-oriented logging:
 
-### BSON and JSON Utilities
+- `@AutoLoggable` marks methods for entry/exit logging.
+- `DisableAutoLogging` suppresses logging for specific classes or methods.
+- `MongoLogger` wraps `java.util.logging.Logger` to emit structured logs, including connection and statement identifiers.
+- `MongoSimpleFormatter` formats log records with timestamps, levels, source, and stack traces.
+- `QueryDiagnostics` holds per-query BSON diagnostics and pipeline information.
 
-- **BsonUtils.java**  
-  - Serialize/deserialize `BsonDocument` ↔ byte[]; convert objects via `Codec<T>` to JSON strings.  
-  - Settings: relaxed JSON writer, indentation control.
+### Utility Classes
 
-- **MongoBsonValue.java**  
-  - Wrapper for MongoDB `BsonValue` to output extended JSON.
+Stateless helpers streamline common tasks:
 
-- **SortableBsonDocument.java**  
-  - Extends `BsonDocument`, implements `Comparable` based on sort specifications.
+- `BsonUtils`: Serialize/deserialize `BsonDocument` to byte arrays and back.
+- `NativeLoader`: Extract and load JNI libraries for translation engines.
+- `Pair<L,R>`: Generic two-value container with proper `equals`/`hashCode`.
+- `SortableBsonDocument`: Extends `BsonDocument` to implement `Comparable` for ordered results.
+- `BsonExplicitCursor`: Implements `MongoCursor` over in-memory `BsonDocument` lists for testing.
+- `TestTypeInfo`: Reflection-based SQL type name/int conversions for test assertions.
 
-- **Pair.java**  
-  - Generic tuple class for two related values.
+## Demo Module
 
-### Native Library Loader
+The `demo` module showcases basic usage:
 
-- **NativeLoader.java**  
-  - Loads JNI libraries bundled inside JARs.  
-  - Handles OS/arch normalization, creates a temp directory, avoids duplicate loads.
+- **Main.java**:  
+  Demonstrates establishing a JDBC connection and executing a query:
+  ```java
+  Connection conn = DriverManager.getConnection(url, props);
+  ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM test.collection");
+  displayResultSet(rs);
+  ```
+- **PrintUtils.java**: Formats `ResultSetMetaData` and rows into console tables.
+- **TestUtils.java**: Abstract base for tests, managing setup/teardown and metadata retrieval.
+- **MongoSQLTestUtils.java**: Overrides connection logic for test environments, validating connectivity via a simple query.
 
 ## Testing
 
 ### Unit Tests
 
-Organized under `src/test/java/com/mongodb/jdbc/`:
+A suite of JUnit tests ensures correctness of individual components:
 
-- **Connection**: `MongoConnectionTest.java`
-- **Driver**: `MongoDriverTest.java`
-- **Database Metadata**: `MongoDatabaseMetaDataTest.java`
-- **ResultSet & Metadata**: `MongoResultSetTest.java`, `MongoResultSetMetaDataTest.java`
-- **Statements**: `MongoStatementTest.java`
-- **SQL Translation**: `MongoSQLTranslateLibTest.java`
-- **Utils**: `BsonUtilsTest.java`, `TestConnectionString.java`
-- **JSON Schema**: `MongoJsonSchemaTest.java`
-- **OIDC Server**: `RFC8252HttpServerTest.java`
-- **BSON Type Info**: `BsonTypeInfoTest.java`
+- **Type and Serialization**: `BsonTypeInfoTest`, `BsonUtilsTest`  
+- **Connection and Configuration**: `MongoConnectionTest`, `TestConnectionString`  
+- **Metadata**: `MongoDatabaseMetaDataTest`, `MongoResultSetMetaDataTest`  
+- **Driver Registration**: `MongoDriverTest`, `MongoSQLTranslateLibTest`  
+- **Result Sets and Statements**: `MongoResultSetTest`, `MongoStatementTest`  
+- **JSON Schema**: `MongoJsonSchemaTest`  
+- **OIDC HTTP Server**: `RFC8252HttpServerTest`  
 
-Each test suite uses JUnit (and Mockito where needed) to assert correct behavior, exception handling, and edge cases.
+Mocks (`MongoMock`) and Mockito facilitate isolated testing of behavior and edge cases.
 
 ### Integration Tests
 
-#### Test Harness
+Validates end-to-end scenarios:
 
-Under `src/integration-test/java/com/mongodb/jdbc/integration/testharness/`:
+- **SmokeTest**: Quick verification of connection, metadata, and simple queries.  
+- **ADFIntegrationTest**, **DCIntegrationTest**: Extensive tests for UUID handling, concurrency, and cluster configurations.  
+- **AuthX509IntegrationTest**: Verifies X.509 authentication success and failure cases under real certificates.
 
-- **DataLoader.java**: Loads YAML-based test data into MongoDB.
-- **IntegrationTestUtils.java**: Runs metadata and SQL tests against connections.
-- **TestGenerator.java**: Generates baseline YAML test files from live queries.
-- **Models**: `TestTypeInfo`, `TestData`, `TestDataEntry`, `TestEntry`, `Tests` define test configurations and expected results.
+### Integration Test Harness
 
-#### Environment-Specific Tests
+Automates data loading, test execution, and result validation using YAML-based definitions:
 
-Under `src/integration-test/java/com/mongodb/jdbc/integration/`:
+- **DataLoader.java**: Reads YAML models (`TestDataEntry`) and populates MongoDB collections, generating schemas and indexes.  
+- **IntegrationTestUtils.java**: Recursively loads test configs (`Tests`), executes SQL queries or metadata commands, and validates results via `validateResultsOrdered` and `validateResultSetMetadata`.  
+- **TestGenerator.java**: Generates baseline YAML files by capturing actual query results and metadata, populating `TestEntry` objects.  
+- **TestTypeInfo.java**: Converts SQL type names to integer constants for assertion comparisons.
 
-- **ADFIntegrationTest.java**: Tests against Azure Data Factory instances.
-- **AuthX509IntegrationTest.java**: Validates X.509 auth scenarios.
-- **DCIntegrationTest.java**: Tests data-center and remote cluster configurations.
+![IntegrationTestHarness](AI_README_IMAGES/integrationtestharness.png)
 
-## Manual OIDC Tests
+This diagram illustrates the workflow of the Integration Test Harness for the MongoDB JDBC framework. It showcases how `IntegrationTestUtils` loads YAML test definitions, while `DataLoader` populates MongoDB with test data. The tests invoke `runTest`, executing queries via the driver and comparing `ResultSet` or metadata against expected outcomes. Additionally, `TestGenerator` is responsible for bootstrapping new test definitions from existing results. The diagram effectively captures the interactions and dependencies among these components, providing a clear overview of the integration testing process.
 
-Standalone utilities under `src/main/java/com/mongodb/jdbc/oidc/manualtests/`:
-
-- **TestOidcAuthFlow.java**
-- **TestOidcAuthFlowAndRefresh.java**
-- **TestOidcCallback.java**
-- **TestOidcCallbackWithBadRefreshToken.java**
-- **TestOidcCallbackWithShortTimeout.java**
-- **TestRFC8252Server.java**
-- **TestOidcUtils.java**
-
-These classes demonstrate and validate OIDC authentication flows, callback handling, and error scenarios with minimal dependencies—ideal for manual verification.

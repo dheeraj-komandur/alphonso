@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - BsonExplicitCursor_commented.java *********
-The 'BsonExplicitCursor.java' file defines the BsonExplicitCursor class, which implements the MongoCursor interface to facilitate the creation of a cursor from a static list of BSON documents. This is particularly useful for testing purposes or scenarios where static results are needed.
+The BsonExplicitCursor class provides a MongoCursor implementation that allows for the iteration over a predefined list of BSON documents, primarily for testing purposes. It includes methods for document retrieval and cursor management, with a focus on simplicity and static results.
 */
 
 /*
@@ -28,33 +28,34 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bson.BsonDocument;
 
-// (AI Comment) - BsonExplicitCursor allows for creating an instance of MongoCursor from an explicit list of BSON docs. Useful for testing or for any place static results are necessary.
+// (AI Comment) - BsonExplicitCursor provides a way to create a MongoCursor from a predefined list of BSON documents, facilitating testing and static result scenarios.
 /**
  * BsonExplicitCursor allows for creating an instance of MongoCursor from an explicit list of BSON
  * docs. Useful for testing or for any place static results are necessary.
  */
-// (AI Comment) - The constructor initializes the cursor with a list of BSON documents.
+// (AI Comment) - Defines an empty cursor instance for cases where no documents are available.
 public class BsonExplicitCursor implements MongoCursor<BsonDocument> {
     private List<BsonDocument> docs;
     private int rowNum = 0;
 
     public static final BsonExplicitCursor EMPTY_CURSOR = new BsonExplicitCursor(new ArrayList<>());
 
+    // (AI Comment) - Constructor initializes the cursor with a list of BSON documents.
     public BsonExplicitCursor(List<BsonDocument> docs) {
         this.docs = docs;
     }
 
-    // (AI Comment) - Closes the cursor. No operation is performed as this is a static cursor.
+    // (AI Comment) - Closes the cursor; no resources to release in this implementation.
     @Override
     public void close() {}
 
-    // (AI Comment) - Returns the server address as a static value, indicating a local server.
+    // (AI Comment) - Returns the server address associated with this cursor, hardcoded to localhost.
     @Override
     public ServerAddress getServerAddress() {
         return new ServerAddress("127.0.0.1");
     }
 
-    // (AI Comment) - Returns null for the server cursor as this cursor does not interact with a live server.
+    // (AI Comment) - Returns null as there is no server cursor associated with this implementation.
     @Override
     public ServerCursor getServerCursor() {
         return null;
@@ -66,7 +67,7 @@ public class BsonExplicitCursor implements MongoCursor<BsonDocument> {
         return rowNum < docs.size();
     }
 
-    // (AI Comment) - Returns the next BSON document in the cursor and increments the row number.
+    // (AI Comment) - Returns the next BSON document in the cursor and advances the cursor position.
     @Override
     public BsonDocument next() {
         return docs.get(rowNum++);
@@ -78,7 +79,7 @@ public class BsonExplicitCursor implements MongoCursor<BsonDocument> {
         return docs.size() - rowNum;
     }
 
-    // (AI Comment) - Attempts to return the next BSON document if available; otherwise, returns null.
+    // (AI Comment) - Attempts to return the next document if available; returns null if no more documents exist.
     @Override
     public BsonDocument tryNext() {
         if (hasNext()) {

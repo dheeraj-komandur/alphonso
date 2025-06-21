@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - BuildInfo_commented.java *********
-The 'BuildInfo.java' file defines a class that holds and manages build-related information for MongoDB, including version details and associated modules. It provides methods to retrieve version information and a string representation for logging purposes.
+The 'BuildInfo.java' file defines a class that holds and manages build-related information for MongoDB, including version details and associated modules. It provides methods to access specific version components and a formatted string representation for logging.
 */
 
 /*
@@ -26,7 +26,7 @@ import java.util.Set;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-// (AI Comment) - Represents build information including version details and associated modules. It encapsulates version strings, an array of version integers, and additional data related to DataLake.
+// (AI Comment) - Represents build information including version details and associated modules, with methods to retrieve version components.
 public class BuildInfo {
     private String fullVersion;
     private List<Integer> versionArray;
@@ -36,7 +36,7 @@ public class BuildInfo {
     public DataLake dataLake;
 
     @BsonCreator
-    // (AI Comment) - Constructor that initializes BuildInfo with version details, version array, modules, status, and DataLake information. It constructs the full version string based on the provided parameters.
+    // (AI Comment) - Constructor that initializes BuildInfo with version details, ensuring proper formatting of the full version string.
     public BuildInfo(
             @BsonProperty("version") String version,
             @BsonProperty("versionArray") List<Integer> versionArray,
@@ -59,17 +59,17 @@ public class BuildInfo {
         return this.fullVersion;
     }
 
-    // (AI Comment) - Returns the major version number from the version array, throwing an exception if the array is empty.
+    // (AI Comment) - Returns the major version number from the version array.
     public int getMajorVersion() throws IndexOutOfBoundsException {
         return this.versionArray.get(0);
     }
 
-    // (AI Comment) - Returns the minor version number from the version array, throwing an exception if the array is empty.
+    // (AI Comment) - Returns the minor version number from the version array.
     public int getMinorVersion() throws IndexOutOfBoundsException {
         return this.versionArray.get(1);
     }
 
-    // (AI Comment) - Overrides the toString method to provide a string representation of the BuildInfo object, including all relevant fields for logging purposes.
+    // (AI Comment) - Overrides toString method for logging purposes, providing a string representation of the BuildInfo object.
     // Override toString for logging
     @Override
     public String toString() {

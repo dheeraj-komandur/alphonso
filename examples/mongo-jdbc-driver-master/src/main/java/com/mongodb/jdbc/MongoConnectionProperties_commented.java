@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoConnectionProperties_commented.java *********
-This file defines the MongoConnectionProperties class, which encapsulates the properties required to establish a connection to a MongoDB database. It provides methods to retrieve connection details and a mechanism to generate a unique identifier for caching purposes.
+The 'MongoConnectionProperties.java' file defines a class that encapsulates the properties required for establishing a connection to a MongoDB database, including connection string, database name, logging configurations, and client-specific information. It provides methods to retrieve these properties and generate a unique key for connection caching.
 */
 
 /*
@@ -35,7 +35,7 @@ public class MongoConnectionProperties {
     private boolean extJsonMode;
     private String x509PemPath;
 
-    // (AI Comment) - Constructor that initializes MongoConnectionProperties with the specified connection details and configurations.
+    // (AI Comment) - Constructor that initializes MongoConnectionProperties with the specified connection string, database name, logging level, log directory, client information, JSON mode, and X.509 PEM path.
     public MongoConnectionProperties(
             ConnectionString connectionString,
             String database,
@@ -53,7 +53,7 @@ public class MongoConnectionProperties {
         this.x509PemPath = x509PemPath;
     }
 
-    // (AI Comment) - Returns the connection string used for connecting to MongoDB.
+    // (AI Comment) - Returns the connection string used for MongoDB connections.
     public ConnectionString getConnectionString() {
         return connectionString;
     }
@@ -83,7 +83,7 @@ public class MongoConnectionProperties {
         return extJsonMode;
     }
 
-    // (AI Comment) - Returns the path to the X.509 PEM file for authentication.
+    // (AI Comment) - Returns the path to the X.509 PEM file used for authentication.
     public String getX509PemPath() {
         return x509PemPath;
     }
@@ -92,7 +92,7 @@ public class MongoConnectionProperties {
      * Generate a unique key for the connection properties. This key is used to identify the connection properties in the
      * connection cache. Properties that do not differentiate a specific client such as the log level are not included in the key.
      */
-    // (AI Comment) - Generates a unique key for the connection properties, excluding non-distinguishing properties like log level.
+    // (AI Comment) - Generates a unique key for the connection properties, excluding non-distinguishing properties like log level, to identify the connection in the cache.
     public Integer generateKey() {
         StringBuilder keyBuilder = new StringBuilder();
         keyBuilder.append(connectionString.toString());

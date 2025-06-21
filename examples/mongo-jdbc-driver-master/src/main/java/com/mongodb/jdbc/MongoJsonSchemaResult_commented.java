@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - MongoJsonSchemaResult_commented.java *********
-This file defines the 'MongoJsonSchemaResult' class, which encapsulates the results of a MongoDB JSON schema operation, including the operation's success status, metadata, schema details, and field selection order.
+This file defines the 'MongoJsonSchemaResult' class, which serves as a data structure to represent the outcome of a JSON schema operation in MongoDB, including its success status, associated metadata, the schema itself, and the order of selected fields.
 */
 
 /*
@@ -28,10 +28,10 @@ import java.util.Map;
 public class MongoJsonSchemaResult {
     // (AI Comment) - Indicates the success status of the operation, where 1 means success and 0 means failure.
     public int ok;
-    // (AI Comment) - Holds additional metadata related to the JSON schema operation, represented as key-value pairs.
+    // (AI Comment) - Contains metadata related to the JSON schema operation, represented as key-value pairs.
     public Map<String, String> metadata;
-    // (AI Comment) - Contains the versioned JSON schema details, defining the structure and validation rules for the data.
+    // (AI Comment) - Holds the versioned JSON schema object that defines the structure of the data.
     public MongoVersionedJsonSchema schema;
-    // (AI Comment) - Specifies the order of selection for the schema fields, represented as a list of lists of strings.
+    // (AI Comment) - Specifies the order of selection for the fields in the JSON schema, represented as a list of lists.
     public List<List<String>> selectOrder;
 }

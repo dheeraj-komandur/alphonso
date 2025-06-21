@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - Pair_commented.java *********
-The 'Pair.java' file defines a generic class that represents a pair of objects, providing methods to access the individual elements and to compare pairs for equality.
+The 'Pair.java' file defines a generic class that represents a pair of objects, providing methods to access the individual elements and to compare pairs for equality. It is a utility class commonly used in scenarios where two related values need to be handled together.
 */
 
 /*
@@ -23,7 +23,7 @@ package com.mongodb.jdbc;
 
 import java.util.Objects;
 
-// (AI Comment) - Represents a generic pair of values, allowing for the storage of two related objects of potentially different types.
+// (AI Comment) - Represents a generic pair of values, allowing for easy storage and retrieval of two related objects.
 public class Pair<L, R> {
     private L left;
     private R right;
@@ -44,7 +44,7 @@ public class Pair<L, R> {
         return right;
     }
 
-    // (AI Comment) - Checks equality between this pair and another object, returning true if both left and right values are equal.
+    // (AI Comment) - Checks equality between this pair and another object, considering both left and right values.
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

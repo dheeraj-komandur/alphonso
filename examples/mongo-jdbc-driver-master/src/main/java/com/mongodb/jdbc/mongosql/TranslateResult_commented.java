@@ -1,6 +1,6 @@
 /*
 ********* AI-Assistant Documentation for - TranslateResult_commented.java *********
-The 'TranslateResult.java' file defines a class that encapsulates the results of a translation operation in a MongoDB context, including target database, collection, pipeline, schema, and selection order. It provides a constructor for initialization and a method for string representation, facilitating BSON serialization.
+The 'TranslateResult.java' file defines a class that encapsulates the results of a translation operation in a MongoDB context, including details such as the target database, collection, processing pipeline, schema, and selection order. It provides a constructor for initialization and overrides the toString method for JSON representation.
 */
 
 /*
@@ -45,7 +45,7 @@ public class TranslateResult {
     public final MongoJsonSchema resultSetSchema;
     public final List<List<String>> selectOrder;
 
-    // (AI Comment) - Constructor that initializes the TranslateResult with target database, collection, pipeline, result set schema, and selection order.
+    // (AI Comment) - Constructor that initializes the TranslateResult with target database, collection, pipeline, result set schema, and selection order, converting the schema if necessary.
     @BsonCreator
     public TranslateResult(
             @BsonProperty("target_db") String targetDb,
@@ -63,7 +63,7 @@ public class TranslateResult {
         this.selectOrder = selectOrder;
     }
 
-    // (AI Comment) - Returns a string representation of the TranslateResult using BSON utilities for serialization.
+    // (AI Comment) - Overrides the toString method to provide a JSON representation of the TranslateResult using the defined codec.
     @Override
     public String toString() {
         return BsonUtils.toString(CODEC, this, JSON_WRITER_NO_INDENT_SETTINGS);

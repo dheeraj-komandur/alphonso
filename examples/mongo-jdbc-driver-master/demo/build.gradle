@@ -1,0 +1,17 @@
+plugins {
+    id 'application'
+}
+
+application {
+    mainClassName = 'com.mongodb.jdbc.demo.Main'
+}
+
+dependencies {
+
+    implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+    compile rootProject
+}
+
+test {
+    exclude 'com/mongodb/jdbc/utils/**'
+}

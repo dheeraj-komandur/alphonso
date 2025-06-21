@@ -1,0 +1,10 @@
+{
+  "bsonType": "object",
+  "properties": {
+    "bar": {
+      "bsonType": "array",
+      "items":{},
+      "additionalProperties": true
+    }
+  }
+}

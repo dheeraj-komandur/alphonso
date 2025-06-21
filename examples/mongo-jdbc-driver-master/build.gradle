@@ -1,0 +1,437 @@
+plugins {
+    id 'java-library'
+    id "com.diffplug.gradle.spotless" version "3.24.3"
+    id 'io.codearte.nexus-staging' version '0.21.2'
+    id "de.marcphilipp.nexus-publish" version "0.3.0"
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "org.cyclonedx.bom" version "1.8.2"
+    id 'com.github.jk1.dependency-license-report' version '1.17'
+}
+
+import com.github.jk1.license.render.TextReportRenderer
+
+if (project.hasProperty('isRelease')) {
+    if (project.hasProperty('isEapBuild')) {
+        version = getLatestEapTag()
+    } else {
+        version = getAbbreviatedGitVersion()
+    }
+} else {
+    if (project.hasProperty('isEapBuild')) {
+        version = getGitVersion() + "-libv-SNAPSHOT"
+    }  else {
+        version = getGitVersion()
+    }
+}
+
+def thirdpartyNoticeDir = "$buildDir/" + thirdpartyNoticeDir
+
+ext {
+    println("Driver version = " + version)
+    releaseVersion = getReleaseVersion()
+    println("Artifacts version = " + releaseVersion)
+
+    javaDataLoader = "com.mongodb.jdbc.integration.testharness.DataLoader"
+    javaTestGenerator = "com.mongodb.jdbc.integration.testharness.TestGenerator"
+    aspectjVersion = '1.9.7'
+}
+
+spotless {
+    java {
+        googleJavaFormat('1.1').aosp()
+        licenseHeaderFile('resources/license_header.txt')
+    }
+}
+
+licenseReport {
+    outputDir = (thirdpartyNoticeDir as File).toPath().toString()
+    renderers = [new TextReportRenderer(thirdpartyNoticeName) ]
+}
+
+generateLicenseReport {
+
+    def tempFile = new File("$buildDir", "temp-third-party-notice.txt")
+    def header = new File("$projectDir/resources", "third_party_header.txt")
+
+    doLast {
+        // Replace original file with temp file content
+        def inputFile = new File((thirdpartyNoticeDir as File).toPath().toString(), thirdpartyNoticeName)
+        tempFile.setText(header.getText() + inputFile.getText())
+        inputFile.text = tempFile.text
+        tempFile.delete() // Clean up the temporary file
+    }
+}
+
+cyclonedxBom {
+    // includeConfigs is the list of configuration names to include when generating the BOM (leave empty to include every configuration), regex is supported
+    includeConfigs = ["runtimeClasspath"]
+    // skipConfigs is a list of configuration names to exclude when generating the BOM, regex is supported
+    skipConfigs = ["testCompileClasspath", "testRuntimeClass", "testRuntimeOnly"]
+    // skipProjects is a list of project names to exclude when generating the BOM
+    skipProjects = ["integration-test", "demo", "smoketest"]
+    // Specified the type of project being built. Defaults to 'library'
+    projectType = "library"
+    // Specified the version of the CycloneDX specification to use. Defaults to '1.5'
+    schemaVersion = "1.5"
+    // Boms destination directory. Defaults to 'build/reports'
+    destination = file(cyclonedxBomDestination)
+    // The file name for the generated BOMs (before the file format suffix). Defaults to 'bom'
+    outputName = cyclonedxBomName
+    // The file format generated, can be xml, json or all for generating both. Defaults to 'all'
+    outputFormat = "json"
+    // Exclude BOM Serial Number. Defaults to 'true'
+    includeBomSerialNumber = false
+    // Exclude License Text. Defaults to 'true'
+    includeLicenseText = false
+}
+
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/integration-test/java')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
+}
+
+allprojects {
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = sourceCompatibility
+
+    repositories {
+        mavenCentral()
+    }
+
+    configurations {
+        ajc
+        aspects
+        compile {
+            extendsFrom aspects
+        }
+        sbom
+    }
+
+    dependencies {
+        // MongoDB
+        ajc "org.aspectj:aspectjtools:$aspectjVersion"
+        implementation "org.aspectj:aspectjrt:$aspectjVersion"
+        implementation group: 'org.mongodb', name: 'mongodb-driver-sync', version: mongodbDriverVersion
+        implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
+        implementation group: 'org.apache.commons', name: 'commons-lang3', version: lang3Version
+        implementation group: 'org.apache.commons', name: 'commons-text', version: commonsTextVersion
+        ajc "org.aspectj:aspectjtools:$aspectjVersion"
+        implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: bouncyCastleVersion
+        implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: bouncyCastleVersion
+
+        // Test
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
+        testRuntimeOnly  group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
+        testCompile  group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
+        testCompile  group: 'org.mockito', name: 'mockito-junit-jupiter', version: mockitoVersion
+    }
+
+    compileJava {
+        doLast {
+            ant.taskdef(resource: "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
+                    classpath: configurations.ajc.asPath)
+
+            ant.iajc(
+                    maxmem: "1024m", fork: "true", Xlint: "ignore",
+                    destDir: project.sourceSets.main.output.classesDirs[0].absolutePath,
+                    sourceroots: project.sourceSets.main.java.srcDirs[0].absolutePath,
+                    classpath: project.sourceSets.main.runtimeClasspath.asPath,
+                    source: project.sourceCompatibility,
+                    target: project.targetCompatibility,
+                    showWeaveInfo: true
+            )
+        }
+    }
+
+    test {
+        useJUnitPlatform()
+        failFast = true
+    }
+
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+        classifier "sources"
+    }
+
+    task testJar(type: Jar) {
+        from sourceSets.test.allJava
+        classifier "test"
+    }
+
+    task javadocJar(type: Jar) {
+        from javadoc
+        classifier 'javadoc'
+    }
+
+    artifacts {
+        sourceJar
+        testJar
+        javadocJar
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom implementation
+    integrationTestRuntimeOnly.extendsFrom runtimeOnly
+
+    // Use the release version instead of gitVersion for the produced jar
+    jar.archiveVersion = releaseVersion
+    shadowJar.archiveVersion = releaseVersion
+}
+
+task integrationTest(type: Test) {
+    useJUnitPlatform()
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    dependsOn tasks.named('jar')
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath + files(tasks.jar.archiveFile.get()) - sourceSets.main.output
+    shouldRunAfter test
+}
+
+check.dependsOn integrationTest
+
+task runTestGenerator(type: JavaExec) {
+    group = "Execution"
+    description = "Run the integration test baseline file generator."
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    main = javaTestGenerator
+}
+
+task runDataLoader(type: JavaExec) {
+    group = "Execution"
+    description = "Run the data loader."
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    main = javaDataLoader
+}
+
+task runServer(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.mongodb.jdbc.oidc.manualtests.TestRFC8252Server'
+}
+
+task runAuthFlow(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.mongodb.jdbc.oidc.manualtests.TestOidcAuthFlow'
+}
+
+task runAuthFlowAndRefresh(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.mongodb.jdbc.oidc.manualtests.TestOidcAuthFlowAndRefresh'
+}
+
+task runCallback(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.mongodb.jdbc.oidc.manualtests.TestOidcCallback'
+}
+
+task runCallbackWithShortTimeout(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.mongodb.jdbc.oidc.manualtests.TestOidcCallbackWithShortTimeout'
+}
+
+task runCallbackWithBadRefreshToken(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.mongodb.jdbc.oidc.manualtests.TestOidcCallbackWithBadRefreshToken'
+}
+
+jar {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': project.version)
+    }
+}
+
+dependencies {
+    integrationTestImplementation "org.yaml:snakeyaml:$snakeYamlVersion"
+    api "org.mongodb:mongodb-driver-sync:$mongodbDriverVersion"
+    integrationTestImplementation "org.junit.jupiter:junit-jupiter:$junitJupiterVersion"
+    integrationTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
+    implementation group: 'org.thymeleaf', name: 'thymeleaf', version: thymeLeafVersion
+    implementation group: 'com.nimbusds', name: 'oauth2-oidc-sdk', version: oauth2OIDCVersion
+}
+
+def getReleaseVersion() {
+    String baseVersion = getAbbreviatedGitVersion()
+
+    boolean isSnapshot = !project.hasProperty('isRelease')
+    boolean isEap = project.hasProperty('isEapBuild')
+    String suffix = ""
+    if (isEap) {
+        suffix += "-eap"
+    }
+    if (isSnapshot) {
+        suffix += "-SNAPSHOT"
+    }
+    return baseVersion + suffix
+}
+
+def getGitVersion() {
+    def out = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags', '--always', '--dirty'
+        standardOutput = out
+    }
+    out.toString().substring(1).trim()
+}
+
+def getLatestEapTag() {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'tag', '--list', '*libv*', '--sort=-creatordate'
+        standardOutput = stdout
+    }
+    def tags = stdout.toString().trim().readLines()
+    return tags ? tags[0].toString().substring(1).trim() : null
+}
+
+def getAbbreviatedGitVersion() {
+    def out = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--abbrev=0'
+        standardOutput = out
+    }
+    out.toString().substring(1).trim()
+}
+
+// Determines the version of libmongosqltranslate to use based on the following priority:
+// Command line property 'libVersion' ie -PlibmongosqltranslateVersion=1.2.3 for manual testing
+// If build is triggered by a tag, check that LIBMONGOSQLTRANSLATE_VER environment variable is set and use that value
+// Otherwise default to "snapshot" version
+def getLibMongosqlTranslateVersion() {
+    if (project.hasProperty('libmongosqltranslateVersion')) {
+        logger.lifecycle("Using manually specified libVersion: ${project.property('libmongosqltranslateVersion')}")
+        return project.property('libmongosqltranslateVersion')
+    }
+    if (project.hasProperty('isTagTriggered')) {
+        if (System.getenv('LIBMONGOSQLTRANSLATE_VER')) {
+            logger.lifecycle("Using version from environment: ${System.getenv('LIBMONGOSQLTRANSLATE_VER')}")
+            return System.getenv('LIBMONGOSQLTRANSLATE_VER')
+        } else {
+            throw new GradleException("Build is tag-triggered but LIBMONGOSQLTRANSLATE_VER " +
+                    "environment variable is not set. This is required for tag-triggered builds.")
+        }
+    }
+    logger.lifecycle("Using snapshot version")
+    return "snapshot"
+}
+
+def libraryCache = new File("${project.rootDir}/.library_cache")
+
+task downloadLibMongosqlTranslate {
+    def libraryPlatforms = [
+            [platform: 'linux', arch: 'arm', libPrefix: 'lib', ext: 'so'],
+            [platform: 'linux', arch: 'x86_64', libPrefix: 'lib', ext: 'so'],
+            [platform: 'macos', arch: 'arm', libPrefix: 'lib', ext: 'dylib'],
+            [platform: 'macos', arch: 'x86_64', libPrefix: 'lib', ext: 'dylib'],
+            [platform: 'win', arch: 'x86_64', libPrefix: '', ext: 'dll']
+    ]
+    description = 'Downloads mongosqltranslate libraries for all platforms'
+    group = 'Build Setup'
+
+    // Read the force-update flag from the command line `-PupdateLibs=true`
+    def updateLibs = project.hasProperty('updateLibs') ? project.property('updateLibs').toBoolean() : false
+    doLast {
+        def libVersion = getLibMongosqlTranslateVersion()
+        logger.lifecycle("Using libmongosqltranslate version: ${libVersion}")
+
+        libraryCache.mkdirs()
+
+        libraryPlatforms.each { platform ->
+            def libraryFileName = "${platform.libPrefix}mongosqltranslate.${platform.ext}"
+            def s3FileName =
+                    "${platform.libPrefix}mongosqltranslate-v${libVersion}-${platform.platform}-${platform.arch}.${platform.ext}"
+            def s3Url = "https://translators-connectors-releases.s3.amazonaws.com/mongosqltranslate/${s3FileName}"
+
+            def cacheFile = new File(libraryCache, s3FileName)
+            def resourceDir = new File("${project.rootDir}/src/main/resources/${platform.arch}/${platform.platform}")
+            resourceDir.mkdirs()
+
+            def destinationFile = new File(resourceDir, libraryFileName)
+
+            // Skip the download if the force-update flag is not set and the library already exists in library cache
+            if (!updateLibs && cacheFile.exists() && cacheFile.length() > 0) {
+                logger.lifecycle("Using cached version of ${s3FileName} for ${platform.platform}-${platform.arch}")
+                destinationFile.bytes = cacheFile.bytes
+                return
+            }
+
+            try {
+                logger.lifecycle("Downloading ${s3Url}...")
+
+                def connection = new URL(s3Url).openConnection()
+                connection.connectTimeout = 30000
+                connection.readTimeout = 30000
+
+                cacheFile.withOutputStream { outputStream ->
+                    connection.getInputStream().withCloseable { inputStream ->
+                        outputStream << inputStream
+                    }
+                }
+
+                // Verify we downloaded actual content
+                if (cacheFile.length() == 0) {
+                    throw new IOException("Downloaded file is empty")
+                }
+
+                destinationFile.bytes = cacheFile.bytes
+                logger.lifecycle("Successfully downloaded ${s3FileName} for ${platform.platform}-${platform.arch}")
+
+            } catch (Exception e) {
+                logger.warn("Could not download ${s3FileName}: ${e.message}")
+
+                if (cacheFile.exists() && cacheFile.length() > 0) {
+                    logger.lifecycle("Using cached version from ${cacheFile.path}")
+                    destinationFile.bytes = cacheFile.bytes
+                } else {
+                    logger.error("ERROR: Could not download ${s3FileName} and no valid cached version available.")
+                    logger.error("S3 URL attempted: ${s3Url}")
+                    throw new GradleException("Failed to download " + s3FileName +
+                            " and no valid cached version exists. Build cannot continue.")
+                }
+            }
+        }
+    }
+}
+
+tasks.named('compileJava').configure {
+    dependsOn tasks.named('downloadLibMongosqlTranslate')
+}
+
+tasks.register('runMongoSQLTranslateLibTest', Test) {
+    description = 'Runs MongoSQLTranslateLibTest'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform()
+
+    filter {
+        if (project.hasProperty('testMethod')) {
+            includeTestsMatching "*MongoSQLTranslateLibTest.$testMethod"
+        } else {
+            includeTestsMatching "*MongoSQLTranslateLibTest"
+        }
+    }
+}
+
+tasks.test {
+    filter {
+        excludeTestsMatching "*MongoSQLTranslateLibTest"
+    }
+}
+
+apply from: 'gradle/publish.gradle'
+apply from: 'gradle/deploy.gradle'
